@@ -1,0 +1,9 @@
+# Python Environment for NCIL Coding Camp
+# Python 3.11 recommended for best compatibility
+
+# Core dependencies (turtle comes with standard Python)
+# Note: tkinter/turtle is included with Python installations
+# If missing, reinstall Python with "Install tcl/tk and IDLE" option checked
+
+# No additional packages required for Session 1
+# Future sessions may add: flask, requests, etc.
