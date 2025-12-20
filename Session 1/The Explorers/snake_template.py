@@ -4,10 +4,10 @@ import random
 
 # --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---
 DELAY = 0.1          # How fast is the game? (Lower is faster. Try 0.05)
-SNAKE_COLOR = "green" # Try "blue", "red", "yellow", "white", "purple"
-BG_COLOR = "black"    # Try "white", "navy", "darkred"
-FOOD_COLOR = "red"    # Color of the food
-SHAPE = "square"      # Try "circle" or "triangle"
+SNAKE_COLOR = "red" # Try "blue", "red", "yellow", "white", "purple"
+BG_COLOR = "white"   # Try "black", "green", "blue", "gray"
+FOOD_COLOR = "blue"    # Color of the food
+SHAPE = "circle"      # Try "circle" or "triangle"
 # ----------------------------------------------
 
 # Set up the screen
@@ -83,8 +83,21 @@ wn.onkey(go_right, "Right")
 
 # Main Game Loop
 try:
+    delay = DELAY  # Create a working copy of DELAY
+    last_time = time.time()  # Track time for frame-independent delays
     while True:
         wn.update()
+        
+        # Calculate time since last frame
+        current_time = time.time()
+        elapsed = current_time - last_time
+        
+        # Only process game logic if enough time has passed
+        if elapsed < delay:
+            time.sleep(0.01)  # Small sleep to prevent CPU overuse
+            continue
+        
+        last_time = current_time
 
         # Check for collision with border
         if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
@@ -96,7 +109,7 @@ try:
             for segment in segments:
                 segment.goto(1000, 1000)
             segments.clear()
-            DELAY = 0.1
+            delay = 0.1
 
         # Check for collision with food
         if head.distance(food) < 20:
@@ -114,7 +127,7 @@ try:
             segments.append(new_segment)
 
             # Shorten the delay slightly to make it harder
-            DELAY -= 0.001
+            delay -= 0.001
 
         # Move the end segments first in reverse order
         for index in range(len(segments) - 1, 0, -1):
@@ -139,9 +152,7 @@ try:
                 for segment in segments:
                     segment.goto(1000, 1000)
                 segments.clear()
-                DELAY = 0.1
-
-        time.sleep(DELAY)
+                delay = 0.1
 
 except turtle.Terminator:
     print("Game closed.")
