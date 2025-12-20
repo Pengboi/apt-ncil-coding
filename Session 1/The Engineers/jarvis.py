@@ -34,6 +34,8 @@ task = ""  # Replace this with input()
 advice = ""  # This will store Jarvis's advice
 
 # Example structure (you need to complete this):
+# == basically means "are these two things equal?"
+
 # if mood == "tired":
 #     advice = "Take a 15-minute break and grab some water"
 # elif mood == "excited":
