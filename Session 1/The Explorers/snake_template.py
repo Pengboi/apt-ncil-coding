@@ -1,12 +1,12 @@
 import turtle
 import time
-import random
+import rando
 
 # --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---
-DELAY = 0.1          # How fast is the game? (Lower is faster. Try 0.05)
-SNAKE_COLOR = "red" # Try "blue", "red", "yellow", "white", "purple"
-BG_COLOR = "white"   # Try "black", "green", "blue", "gray"
-FOOD_COLOR = "blue"    # Color of the food
+DELAY = 0.2           # How fast is the game? (Lower is faster. Try 0.05)
+SNAKE_COLOR  = "purple" # Try "blue", "red", "yellow", "white", "purple"
+BG_COLOR = "skyblue" # Try "black", "green", "blue", "gray"
+FOOD_COLOR = "black"    # Color of the food
 SHAPE = "circle"      # Try "circle" or "triangle"
 # ----------------------------------------------
 

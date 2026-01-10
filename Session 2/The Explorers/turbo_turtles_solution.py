@@ -1,4 +1,4 @@
-import turtle
+simport turtle
 import random
 
 # --- SETUP THE GAME WINDOW ---
