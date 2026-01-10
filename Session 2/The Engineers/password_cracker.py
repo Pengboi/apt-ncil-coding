@@ -30,14 +30,19 @@ time.sleep(1) # Dramatic pause
 #     ... compare with target_password ...
 
 # (Scroll down for Level 2 only after you finish Level 1!)
-
-
-
-
-
-
-
-
+5#i means a variable that represents each number from 0 to 9999
+#print means your telling the computer what to say
+if not found:
+    for i in range(1000000):  # Try all numbers from 0 to 9999
+        guess = str(i).zfill(6)  # Convert to string and pad with zeros (e.g., "0042")
+        attempts += 1
+        
+        # Optional: Print attempts (WARNING: This slows down the program!)
+        print(f"Trying: {guess}")
+        
+        if guess == target_password:
+            found = True
+            break
 
 
 
