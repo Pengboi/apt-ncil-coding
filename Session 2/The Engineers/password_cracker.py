@@ -31,8 +31,18 @@ time.sleep(1) # Dramatic pause
 
 # (Scroll down for Level 2 only after you finish Level 1!)
 
-
-
+# if we havent found the password yet: what the line is doing is adding zeros before the number to fill it to 4 digits
+if not found:
+    for i in range(100000000):  # Try all numbers from 0 to 9999
+        guess = str(i).zfill(7)  # Convert to string and pad with zeros (e.g., "0042")
+        attempts += 1
+        
+        # Optional: Print attempts (WARNING: This slows down the program!)
+        print(f"Trying: {guess}")
+        
+        if guess == target_password:
+            found = True
+            break
 
 
 
