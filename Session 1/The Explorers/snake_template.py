@@ -4,7 +4,8 @@ import random
 
 # --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---
 DELAY = 0.1          # How fast is the game? (Lower is faster. Try 0.05)
-SNAKE_COLOR = "red" # Try "blue", "red", "yellow", "white", "purple"
+COLORS = ["green", "red"]
+SNAKE_COLOR = random.choice(COLORS) # Try "blue", "red", "yellow", "white", "purple"
 BG_COLOR = "white"   # Try "black", "green", "blue", "gray"
 FOOD_COLOR = "blue"    # Color of the food
 SHAPE = "circle"      # Try "circle" or "triangle"
