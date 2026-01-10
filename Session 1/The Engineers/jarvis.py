@@ -10,50 +10,52 @@ Your Task: Fill in the blanks (marked with TODO) to complete Jarvis.
 print("🤖 JARVIS: Hello! I'm your AI assistant.")
 print("🤖 JARVIS: What's your name?")
 
-# TODO: Get the user's name and store it in a variable called 'name'
-name = ""  # Replace this with input()
+name = input("👤 YOU: ").strip()
 
-print(f"🤖 JARVIS: Nice to meet you, {name}!")
+print(f"\n🤖 JARVIS: Nice to meet you, {name}!")
 
 # --- STEP 2: ASSESS MOOD ---
 print("\n🤖 JARVIS: How are you feeling today?")
-print("   Options: tired, excited, stressed, happy")
+print("   Options: tired, excited, stressed, happy, annoyed ,  you need help ")
 
-# TODO: Get the user's mood and store it in a variable called 'mood'
-mood = ""  # Replace this with input()
+mood = input("👤 YOU: ").strip().lower()
 
 # --- STEP 3: GET CONTEXT ---
 print("\n🤖 JARVIS: What are you working on today?")
 
-# TODO: Get what they're working on and store it in 'task'
-task = ""  # Replace this with input()
+task = input("👤 YOU: ").strip()
 
 # --- STEP 4: GENERATE ADVICE (THE BRAIN) ---
-# TODO: Create an if/elif/else statement to give different advice based on mood
+advice = ""
+emoji = ""
 
-advice = ""  # This will store Jarvis's advice
+if "tired" in mood:
+    advice = "Take a 15-minute break, grab some water, and come back refreshed"
+    emoji = "😴"
+elif "exited" in mood :
+    advice = "Use that energy and do something bro "
+    emoji = "🚀"
+elif "stressed" in mood :
+    advice = "Take a deep breath. Chill life is not supposed to be bad its supposed to be fun have some fun"
+    emoji = "🧘"
+elif "happy" in mood :
+    advice = "Love the positive energy! Enjoy your happines"
+    emoji = "😊"
+elif "annoyed" in mood :
+    advice = " Drink water eat food and calm down and relax"
+    emoji = ""
+elif " i need help" in mood :
+    advice = " Go and search what your stuck on"
 
-# Example structure (you need to complete this):
-# == basically means "are these two things equal?"
-
-# if mood == "tired":
-#     advice = "Take a 15-minute break and grab some water"
-# elif mood == "excited":
-#     advice = "Channel that energy! You're going to crush it"
-# elif mood == "stressed":
-#     advice = "..."
-# elif mood == "happy":
-#     advice = "..."
-# else:
-#     advice = "Whatever you're feeling, I'm here to help"
+else:
+    advice = "Whatever you're feeling, remember that you're capable of amazing things"
+    emoji = "💪"
 
 # --- STEP 5: PERSONALIZED RESPONSE ---
-# TODO: Create a personalized response using an f-string
-# It should include: name, mood, task, and advice
-
-response = f""  # Create your f-string here
+response = f"{emoji} {name}, since you're feeling {mood}, here's my advice: {advice}."
 
 print(f"\n🤖 JARVIS: {response}")
+print(f"🤖 JARVIS: Focus on {task} and make today count!")
 
 # --- BONUS: ADD A MOTIVATIONAL QUOTE ---
 print("\n🤖 JARVIS: Remember: 'The best way to predict the future is to invent it.' - Alan Kay")
