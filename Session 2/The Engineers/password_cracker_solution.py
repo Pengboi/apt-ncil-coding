@@ -1,6 +1,7 @@
 import time
 import itertools
 import string
+import getpass  # For hiding password input
 
 print("=========================================")
 print("🕵️  M.I.6 AUTOMATED PASSWORD AUDITOR  🕵️")
@@ -8,13 +9,13 @@ print("=========================================")
 print("WARNING: Only use this on your own passwords.")
 print("ETHICAL HACKING RULE: Never attempt to crack accounts you don't own.\n")
 
-target_password = input("ENTER PASSWORD TO TEST STRENGTH > ")
+target_password = getpass.getpass("ENTER PASSWORD TO TEST STRENGTH > ")
 
 start_time = time.time()
 found = False
 attempts = 0
 
-print(f"\n[*] INITIATING BRUTE FORCE ATTACK ON: {target_password}")
+print(f"\n[*] INITIATING BRUTE FORCE ATTACK ON PASSWORD")
 print("[*] GENERATING KEYS...")
 time.sleep(1)
 
@@ -83,8 +84,25 @@ if not found:
             if found:
                 break
     
-    # Now try doing 4-character passwords (aaaa, aaab, ...)
-    # Do this from scratch!
+    # Try 4-character passwords (aaaa, aaab, aaac, ...)
+    # WARNING: This takes VERY LONG! (1,679,616 combinations)
+    if not found:
+        for char1 in chars:
+            for char2 in chars:
+                for char3 in chars:
+                    for char4 in chars:
+                        guess = char1 + char2 + char3 + char4
+                        attempts += 1
+                        
+                        if guess == target_password:
+                            found = True
+                            break
+                    if found:
+                        break
+                if found:
+                    break
+            if found:
+                break
 
 # ==============================================================================
 # ADVANCED LEVEL: Using itertools.product (For Instructors)

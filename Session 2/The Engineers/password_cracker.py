@@ -1,6 +1,5 @@
 import time
-import itertools
-import string
+import getpass  # For hiding password input
 
 print("=========================================")
 print("🕵️  M.I.6 AUTOMATED PASSWORD AUDITOR  🕵️")
@@ -8,13 +7,13 @@ print("=========================================")
 print("WARNING: Only use this on your own passwords.")
 print("ETHICAL HACKING RULE: Never attempts to crack accounts you don't own.\n")
 
-target_password = input("ENTER PASSWORD TO TEST STRENGTH > ")
+target_password = getpass.getpass("ENTER PASSWORD TO TEST STRENGTH > ")
 
 start_time = time.time()
 found = False
 attempts = 0
 
-print(f"\n[*] INITIATING BRUTE FORCE ATTACK ON: {target_password}")
+print(f"\n[*] INITIATING BRUTE FORCE ATTACK ON PASSWORD")
 print("[*] GENERATING KEYS...")
 time.sleep(1) # Dramatic pause
 
