@@ -28,6 +28,22 @@ time.sleep(1) # Dramatic pause
 # for i in range(1000):
 #     guess = str(i)
 #     ... compare with target_password ...
+if not found:
+    for i in range(10000000000):  # Try all numbers from 0 to 9999
+        guess = str(i).zfill(10)  # Convert to string and pad with zeros (e.g., "0042")
+        attempts += 1
+        print(f"trying:{guess}")
+        #SO it starts to tell the code try all number from 0 - 9999 because thats all the digits in a four digit password.
+        #The guess = line is telling the code to print i which is the variable for numbers. 
+        #The the zfill(4) makes sure the i prints a 4 digit number.NoT A 3 or another number.
+        #so if i put zfill(10)it will give me a 10 digit number.
+    
+        # Optional: Print attempts (WARNING: This slows down the program!)
+        # print(f"Trying: {guess}")
+        
+        if guess == target_password:
+            found = True
+            break
 
 # (Scroll down for Level 2 only after you finish Level 1!)
 
