@@ -45,14 +45,27 @@ time.sleep(1) # Dramatic pause
 # ==============================================================================
 # LEVEL 2: THE "MATRIX" ATTACK (Letters & Numbers)
 # ==============================================================================
-# Since we don't know the length, we might need a library called 'itertools'.
-# or just a simple character list loop.
+# What if the password is "cat" or "dog"? We need to try LETTERS now!
 
-chars = "abcdefghijklmnopqrstuvwxyz" # Add numbers/symbols here to make it stronger!
+# This is the character set we'll try:
+chars = "abcdefghijklmnopqrstuvwxyz"  # TODO: Add numbers later! Try "abc123"
 
-# Logic to try 1-character, then 2-character, then 3-character passwords...
-# This is hard to write with just 'for' loops! 
-# We will use itertools.product later.
+# CHALLENGE: Try all 2-letter combinations (aa, ab, ac, ..., zz)
+# HINT: You need TWO for loops (one inside another!)
+
+# TODO: WRITE YOUR NESTED LOOP HERE
+# Example structure:
+# for letter1 in chars:
+#     for letter2 in chars:
+#         guess = letter1 + letter2
+#         attempts += 1
+#         if guess == target_password:
+#             found = True
+#             break  # Exit the inner loop
+#     if found:
+#         break  # Exit the outer loop too!
+
+# BONUS: Can you add a THIRD loop to try 3-letter passwords? (Warning: SLOW!)
 
 # ==============================================================================
 # [SYSTEM OUTPUT]
