@@ -15,7 +15,7 @@ import random
 bg_color = "white"       # Try: "black", "navy", "purple", "darkgreen"
 target_color = "green"   # Try: "red", "yellow", "cyan", "hotpink"
 target_shape = "turtle"  # Try: "square", "triangle", "circle", "arrow"
-game_speed = 1.0         # How long the target stays still (seconds). Try: 0.8, 0.5, 0.3!
+game_speed = 3         # How long the target stays still (seconds). Try: 0.8, 0.5, 0.3!
 
 # --- SETUP THE GAME WINDOW ---
 screen = turtle.Screen()
