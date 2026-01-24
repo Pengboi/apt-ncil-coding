@@ -14,7 +14,7 @@ import random
 
 bg_color = "white"       # Try: "black", "navy", "purple", "darkgreen"
 target_color = "green"   # Try: "red", "yellow", "cyan", "hotpink"
-target_shape = "circle"  # Try: "square", "triangle", "turtle", "arrow"
+target_shape = "turtle"  # Try: "square", "triangle", "circle", "arrow"
 game_speed = 1.0         # How long the target stays still (seconds). Try: 0.8, 0.5, 0.3!
 
 # --- SETUP THE GAME WINDOW ---
@@ -47,7 +47,7 @@ game_running = True
 
 def update_scoreboard():
     """
-    This function should display the score on screen.
+    This function should show the score on screen.
     Right now it does NOTHING!
     
     YOUR MISSION:
@@ -79,7 +79,7 @@ def player_clicked(x, y):
     # ========================================
     # CHALLENGE 2 (CONTINUED): UPDATE THE SCORE!
     # ========================================
-    # Right now clicking does nothing useful.
+    # Right now clicking does nothing!
     # 
     # YOUR MISSION:
     # 1. Add 1 to the score variable
