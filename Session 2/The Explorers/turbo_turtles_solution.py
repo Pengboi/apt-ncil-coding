@@ -1,10 +1,10 @@
-simport turtle
+import turtle
 import random
 
 # --- SETUP THE GAME WINDOW ---
 screen = turtle.Screen()
 screen.title("Turbo Turtles - 2 Player Race")
-screen.bgcolor("forestgreen")
+screen.bgcolor("greenl")
 
 # --- MESSAGE WRITER ---
 writer = turtle.Turtle()
@@ -23,7 +23,7 @@ referee.hideturtle()
 
 # --- PLAYER 1 (Red Turtle) ---
 player_1 = turtle.Turtle()
-player_1.color("red")
+player_1.color("purple")
 player_1.shape("turtle")
 player_1.penup()
 player_1.goto(-200, 50)

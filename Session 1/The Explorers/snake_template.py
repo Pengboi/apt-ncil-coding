@@ -1,6 +1,6 @@
 import turtle
 import time
-import rando
+import random
 
 # --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---
 DELAY = 0.2           # How fast is the game? (Lower is faster. Try 0.05)
