@@ -11,7 +11,7 @@ import random
 # ========================================
 bg_color = "black"       # Space theme!
 target_color = "red"     # The enemy!
-target_shape = "circle"
+target_shape = "turtle"
 game_speed = 0.8         # Faster!
 
 # --- SETUP THE GAME WINDOW ---
