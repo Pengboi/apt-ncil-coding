@@ -13,9 +13,9 @@ import random
 # Change these values to make the game YOUR OWN!
 
 bg_color = "white"       # Try: "black", "navy", "purple", "darkgreen"
-target_color = "green"   # Try: "red", "yellow", "cyan", "hotpink"
+target_color = "turquoise"   # Try: "red", "yellow", "cyan", "hotpink"
 target_shape = "turtle"  # Try: "square", "triangle", "circle", "arrow"
-game_speed = 1.0         # How long the target stays still (seconds). Try: 0.8, 0.5, 0.3!
+game_speed =  67.0         # How long the target stays still (seconds). Try: 0.8, 0.5, 0.3!
 
 # --- SETUP THE GAME WINDOW ---
 screen = turtle.Screen()
@@ -58,9 +58,9 @@ def update_scoreboard():
         pen.clear()
         pen.write(f"Score: {score}", align="center", font=("Arial", 24, "bold"))
     """
-    pass  # DELETE THIS LINE and write your code!
-
-
+    pen.clear()
+    pen.write(f"Score is: {score}", font=("Arial", 24, "bold"))
+    
 def move_target():
     """Moves the target to a random spot on the screen"""
     if game_running:
@@ -86,6 +86,17 @@ def player_clicked(x, y):
     # 2. Call update_scoreboard() to show the new score
     #
     # HINT: score = score + 1
+
+    score = score + 1
+    update_scoreboard()
+
+    if score == 10:
+        game_running = False
+        target.hideturtle()
+        pen.goto(0, 0)
+        pen.color("lime")
+        pen.write("🎉 MISSION COMPLETE! 🎉", align="center", font=("Arial", 28, "bold"))
+        return
     
     print("You got it!")  # This only prints to the console (boring!)
     
@@ -103,11 +114,7 @@ def player_clicked(x, y):
 # Can you make the game END when score reaches 10?
 #
 # HINT: Inside player_clicked, after updating the score:
-#   if score >= 10:
-#       game_running = False
-#       target.hideturtle()
-#       pen.goto(0, 0)
-#       pen.write("MISSION COMPLETE!", align="center", font=("Arial", 32, "bold"))
+#   PLETE!", align="center", font=("Arial", 32, "bold"))
 
 
 # --- CONNECT THE CLICK EVENT ---

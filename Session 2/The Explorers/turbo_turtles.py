@@ -86,7 +86,15 @@ def check_winner():
     if player_1.xcor() > 200:
         game_active = False  # Stop the game so players can't keep moving
         writer.goto(0, 20)   # Move to the middle of the screen
-        writer.write("PLAYER 1 WINS!", align="center", font=("Arial", 24, "bold"))  # Your message!
+        writer.write("HAHAHAHA I WON U LOSER LOLL SO BADD AT THIS GAMEEE!", align="center", font=("Arial", 24, "bold"))  # Your message!
+        writer.goto(0, -20)
+        writer.write("Press SPACE to play again", align="center", font=("Arial", 16, "normal"))
+    
+
+    if player_2.xcor() > 200:
+        game_active = False  # Stop the game so players can't keep moving
+        writer.goto(0, 20)   # Move to the middle of the screen
+        writer.write("Amina the slayest one wins AND U LOST LOSER LOSER BLEHH!", align="center", font=("Arial", 24, "bold"))  # Your message!
         writer.goto(0, -20)
         writer.write("Press SPACE to play again", align="center", font=("Arial", 16, "normal"))
     
