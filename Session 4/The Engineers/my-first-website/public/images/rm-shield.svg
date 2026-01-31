@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230">
+  <defs>
+    <style>
+      .bg{fill:#ffffff}
+      .border{fill:none;stroke:#c5a800;stroke-width:6}
+      .text{fill:#0b0b0b;font-family:Arial-BoldMT, Arial;font-weight:700}
+    </style>
+  </defs>
+  <rect width="200" height="230" rx="24" fill="#ffffff"/>
+  <path class="border" d="M30 30 L170 30 L170 200 L30 200 Z"/>
+  <text x="100" y="120" font-size="30" text-anchor="middle" class="text">RMCF</text>
+  <text x="100" y="150" font-size="12" text-anchor="middle" class="text">Fan Zone</text>
+</svg>

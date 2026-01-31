@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+  <rect width="160" height="60" rx="8" fill="#ffffff"/>
+  <rect x="10" y="10" width="140" height="40" fill="#c5a800" rx="6"/>
+  <text x="80" y="36" font-size="12" text-anchor="middle" fill="#0b0b0b" font-family="Arial">Hala Madrid</text>
+</svg>

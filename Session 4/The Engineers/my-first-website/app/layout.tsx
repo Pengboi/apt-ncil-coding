@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My First Website",
-  description: "Built at APT Coding Camp",
+  title: "Real Madrid Fan Zone",
+  description: "A Real Madrid themed fan page built at APT Coding Camp",
 };
 
 export default function RootLayout({
