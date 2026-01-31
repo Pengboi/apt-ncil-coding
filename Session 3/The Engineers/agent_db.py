@@ -42,7 +42,8 @@ def view_all_agents():
     print("\n--- 📂 CLASSIFIED AGENT LIST ---")
     
     # TODO: Write your loop here!
-    pass
+    for agent in database:
+        print(f"ID: {agent['id']} | Name: {agent['name']} | Status: {agent['status']}")
 
 
 # ============================================
@@ -74,6 +75,16 @@ def add_new_agent():
     name = input("Enter Agent Name: ")
     codename = input("Enter Codename: ")
     skill = input("Enter Primary Skill: ")
+
+    new_id = len(database) + 101  # Auto-generate ID
+    new_agent = {
+        "id": new_id,
+        "codename": codename,
+        "name": name,
+        "status": "Active",
+        "skill": skill
+    }
+    database.append(new_agent)
     
     # TODO: Create the dictionary and append it!
     
