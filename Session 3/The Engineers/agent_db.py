@@ -42,8 +42,10 @@ def view_all_agents():
     print("\n--- 📂 CLASSIFIED AGENT LIST ---")
     
     # TODO: Write your loop here!
-    pass
-
+    for agent in database:
+        print(agent["name"])
+     
+     
 
 # ============================================
 # CHALLENGE 2: ADD NEW AGENT ➕
@@ -74,6 +76,14 @@ def add_new_agent():
     name = input("Enter Agent Name: ")
     codename = input("Enter Codename: ")
     skill = input("Enter Primary Skill: ")
+
+    new_agent = {
+        "id": 104
+        "codename": "JAMICAN RICE AND PEAS"
+        "name": "Bob Marley"
+        "status": "Active",
+        "skill": "Jerk Chicken"
+    }
     
     # TODO: Create the dictionary and append it!
     
@@ -85,23 +95,31 @@ def add_new_agent():
 # ============================================
 
 def find_agent():
-    """
-    Search the database for a specific agent.
-    
-    YOUR MISSION:
-    Loop through database and check if the name matches.
-    
-    HINT - Here's the structure:
-    
-    found = False
-    for agent in database:
-        if search_name.lower() in agent["name"].lower():
+    wer():
             print(f"MATCH FOUND: {agent}")
             found = True
     
     if not found:
         print("No agent found with that name.")
     """
+    search_name = input("Enter name to search: ")
+    
+    found = False
+    for agent in database:
+        # Case-insensitive partial match
+        if search_name.lower() in agent["name"].lower():
+            print(f"\n🎯 MATCH FOUND:")
+            print(f"   ID: {agent['id']}")
+            print(f"   Codename: {agent['codename']}")
+            print(f"   Name: {agent['name']}")
+            print(f"   Status: {agent['status']}")
+            print(f"   Skill: {agent['skill']}")
+            found = True
+    
+    if not found:
+        print(f"\n❌ No agent found matching '{search_name}'")
+
+
     print("\n--- 🔍 SEARCH DATABASE ---")
     
     search_name = input("Enter name to search: ")
