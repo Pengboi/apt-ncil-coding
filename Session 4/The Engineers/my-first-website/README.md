@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## "Every Pokémon" Site
+
+This project now includes a small Pokédex-style site that lists Pokémon and shows details (data comes from PokeAPI).
+
+Run the dev server and open http://localhost:3000 to browse every Pokémon:
+
+```bash
+npm run dev
+```
+
+Click any entry to view details and stats.
