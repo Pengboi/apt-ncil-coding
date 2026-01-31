@@ -17,8 +17,8 @@ export default function CardGallery({ name, onClose }: { name: string; onClose: 
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const q = encodeURIComponent(`name:"${name}"`);
-        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=${q}`);
+        const q = encodeURIComponent(name);
+        const res = await fetch(`/api/tcg/cards?name=${q}`);
         if (!res.ok) throw new Error("Cards fetch failed");
         const json = await res.json();
         if (!cancelled) setCards(json.data || []);
