@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <style>
+      .helmet { fill: #7a9db5; }
+      .helmet-dark { fill: #5a7d95; }
+      .helmet-light { fill: #9abdd5; }
+      .plume { fill: #b83a3a; }
+      .armor { fill: #6a8a9a; }
+      .armor-dark { fill: #4a6a7a; }
+      .shield { fill: #8a9aa5; }
+      .shield-dark { fill: #6a7a85; }
+      .cape { fill: #c54a4a; }
+      .cape-dark { fill: #a53a3a; }
+      .face { fill: #e8e8e8; }
+      .mouth { fill: #d54545; }
+      .eye { fill: #2a2a2a; }
+    </style>
+  </defs>
+  
+  <!-- Cape left -->
+  <path class="cape-dark" d="M 65 110 L 60 115 L 55 125 L 52 140 L 55 155 L 60 165 L 65 130 Z"/>
+  
+  <!-- Cape right -->
+  <path class="cape" d="M 135 110 L 140 115 L 145 125 L 148 140 L 145 155 L 140 165 L 135 130 Z"/>
+  
+  <!-- Body/Armor -->
+  <rect class="armor" x="75" y="110" width="50" height="60" rx="5"/>
+  <rect class="armor-dark" x="75" y="110" width="15" height="60" rx="5"/>
+  <rect class="armor-dark" x="110" y="110" width="15" height="60" rx="5"/>
+  
+  <!-- Belt -->
+  <rect class="helmet-dark" x="75" y="130" width="50" height="8"/>
+  <circle class="helmet-light" cx="100" cy="134" r="4"/>
+  
+  <!-- Shield (left arm) -->
+  <rect class="shield" x="50" y="115" width="30" height="40" rx="3"/>
+  <rect class="shield-dark" x="55" y="120" width="20" height="30" rx="2"/>
+  <line x1="65" y1="120" x2="65" y2="150" stroke="#9aaab5" stroke-width="2"/>
+  
+  <!-- Sword handle (right side) -->
+  <rect class="armor-dark" x="128" y="125" width="6" height="35" rx="1"/>
+  <rect class="helmet-dark" x="125" y="122" width="12" height="6" rx="1"/>
+  <rect class="plume" x="126" y="115" width="10" height="10"/>
+  
+  <!-- Helmet base -->
+  <ellipse class="helmet" cx="100" cy="75" rx="30" ry="28"/>
+  <ellipse class="helmet-dark" cx="90" cy="75" rx="15" ry="28"/>
+  <ellipse class="helmet-light" cx="110" cy="75" rx="12" ry="25"/>
+  
+  <!-- Helmet top/dome -->
+  <path class="helmet" d="M 75 65 Q 100 35 125 65 L 120 70 Q 100 45 80 70 Z"/>
+  <path class="helmet-light" d="M 105 45 Q 100 40 95 45 Q 100 42 105 45"/>
+  
+  <!-- Plume -->
+  <ellipse class="plume" cx="100" cy="35" rx="8" ry="15"/>
+  <path class="plume" d="M 100 20 Q 95 25 92 32 Q 100 28 108 32 Q 105 25 100 20"/>
+  
+  <!-- Face plate opening -->
+  <rect class="face" x="85" y="70" width="30" height="25" rx="2"/>
+  
+  <!-- Eyes -->
+  <circle class="eye" cx="92" cy="78" r="3"/>
+  <circle class="eye" cx="108" cy="78" r="3"/>
+  <circle class="helmet-light" cx="93" cy="77" r="1"/>
+  <circle class="helmet-light" cx="109" cy="77" r="1"/>
+  
+  <!-- Nose guard -->
+  <rect class="helmet-dark" x="98" y="80" width="4" height="10" rx="1"/>
+  
+  <!-- Mouth -->
+  <ellipse class="mouth" cx="100" cy="88" rx="8" ry="4"/>
+  <line x1="92" y1="88" x2="108" y2="88" stroke="#b83a3a" stroke-width="1"/>
+  
+  <!-- Helmet details -->
+  <path class="helmet-dark" d="M 85 68 L 115 68" stroke="#5a7d95" stroke-width="2" fill="none"/>
+  <circle class="helmet-dark" cx="85" cy="75" r="2"/>
+  <circle class="helmet-dark" cx="115" cy="75" r="2"/>
+  
+  <!-- Shoulder guards -->
+  <ellipse class="armor" cx="70" cy="105" rx="12" ry="10"/>
+  <ellipse class="armor" cx="130" cy="105" rx="12" ry="10"/>
+  
+  <!-- Legs -->
+  <rect class="armor-dark" x="80" y="170" width="15" height="25" rx="2"/>
+  <rect class="armor-dark" x="105" y="170" width="15" height="25" rx="2"/>
+  
+  <!-- Feet -->
+  <ellipse class="helmet-dark" cx="87" cy="192" rx="10" ry="6"/>
+  <ellipse class="helmet-dark" cx="112" cy="192" rx="10" ry="6"/>
+</svg>

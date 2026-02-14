@@ -48,6 +48,22 @@ export default function ModularRPG() {
 
     enemies.forEach((e) => scene.addEntity(e));
 
+    // Load knight SVG and assign as sprite for player + enemies
+    const knightImg = new Image();
+    knightImg.src = '/assets/knight.svg';
+    knightImg.onload = () => {
+      // make sprite a bit larger than default for visibility
+      player.sprite = knightImg;
+      player.width = 48;
+      player.height = 48;
+
+      enemies.forEach((en) => {
+        en.sprite = knightImg;
+        en.width = 48;
+        en.height = 48;
+      });
+    };
+
     let kills = 0;
     let hitboxes: any[] = [];
 
