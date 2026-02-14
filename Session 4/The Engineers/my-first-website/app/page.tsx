@@ -2,6 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import PigeonChat from './components/PigeonChat';
+import PigeonGallery from './components/PigeonGallery';
+import customerHenry from './images/customer-henry.jpg';
 
 export default function Home() {
   return (
@@ -66,6 +69,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ADVERT SECTION */}
+      <section id="advert" className="section bg-gradient bg-dots">
+        <div className="container grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <div className="badge">
+              <span>🎬</span>
+              <span>In Use</span>
+            </div>
+            <h2 className="text-4xl font-bold">PigeonBot — Seen in Real Homes</h2>
+            <p className="text-muted max-w-xl">
+              Watch how PigeonBot helps around the house: plays with kids, manages reminders, and adds personality to your workspace. Compact, friendly, and smart — designed to fit into everyday life.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="#chat" className="btn btn-primary glow">Try the Live Demo</Link>
+              <Link href="#gallery" className="btn btn-secondary">View Skins</Link>
+            </div>
+            <div className="mt-6 flex items-center gap-4 text-sm text-muted">
+              <div className="avatar bg-pink-500 text-white rounded-full w-10 h-10 flex items-center justify-center">SJ</div>
+              <div>“PigeonBot brightened our mornings — a perfect desk companion.” — Sarah J.</div>
+            </div>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black/5 border border-white/5 h-72 lg:h-auto">
+            <Image src={customerHenry} alt="PigeonBot in use" fill className="object-cover" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/10 text-white px-4 py-2 rounded-full backdrop-blur">▶ Play demo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FEATURES SECTION */}
       <section id="features" className="section">
         <div className="container">
@@ -96,6 +130,78 @@ export default function Home() {
                 <p className="text-muted">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* GALLERY SECTION */}
+      <section id="gallery" className="section">
+        <div className="container">
+          <div className="section-header text-center mb-8">
+            <div className="badge mb-4">
+              <span>🖼️</span>
+              <span>Gallery</span>
+            </div>
+            <h2 className="text-4xl font-bold">Pick Your <span className="text-gradient">Pigeon</span></h2>
+            <p className="text-muted max-w-2xl mx-auto">Choose a pigeon skin and preview it live — click a thumbnail to select.</p>
+          </div>
+
+          <PigeonGallery />
+        </div>
+      </section>
+
+      {/* PRICES SECTION */}
+      <section id="prices" className="section">
+        <div className="container">
+          <div className="section-header text-center mb-12">
+            <div className="badge mb-4">
+              <span>💲</span>
+              <span>Prices</span>
+            </div>
+            <h2 className="text-4xl font-bold">
+              Simple Pricing — Choose Your <span className="text-gradient">Size</span>
+            </h2>
+            <p className="text-muted max-w-2xl mx-auto">
+              Pick the PigeonBot size that fits your needs. No hidden fees — just delightful company.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="card text-center p-6">
+              <div className="text-sm font-semibold text-muted mb-2">Small</div>
+              <div className="text-3xl font-extrabold">$79</div>
+              <div className="text-muted mt-2">Compact companion — perfect for casual users</div>
+              <ul className="mt-4 space-y-2 text-sm text-muted">
+                <li>Standard AI features</li>
+                <li>12‑hr battery</li>
+                <li>1‑year warranty</li>
+              </ul>
+              <Link href="#contact" className="btn btn-primary mt-6">Buy Small</Link>
+            </div>
+
+            <div className="card text-center p-6 ring-2 ring-pink-200/30">
+              <div className="text-sm font-semibold text-muted mb-2">Medium</div>
+              <div className="text-3xl font-extrabold">$129</div>
+              <div className="text-muted mt-2">Our most popular choice — balanced performance</div>
+              <ul className="mt-4 space-y-2 text-sm text-muted">
+                <li>Enhanced AI + personalization</li>
+                <li>24‑hr battery</li>
+                <li>2‑year warranty</li>
+              </ul>
+              <Link href="#contact" className="btn btn-primary mt-6">Buy Medium</Link>
+            </div>
+
+            <div className="card text-center p-6">
+              <div className="text-sm font-semibold text-muted mb-2">Large</div>
+              <div className="text-3xl font-extrabold">$199</div>
+              <div className="text-muted mt-2">Premium model — best for power users and collectors</div>
+              <ul className="mt-4 space-y-2 text-sm text-muted">
+                <li>All premium features</li>
+                <li>48‑hr battery</li>
+                <li>3‑year warranty + priority support</li>
+              </ul>
+              <Link href="#contact" className="btn btn-primary mt-6">Buy Large</Link>
+            </div>
           </div>
         </div>
       </section>
@@ -193,6 +299,24 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* CHAT SECTION */}
+      <section id="chat" className="section">
+        <div className="container max-w-3xl">
+          <div className="section-header text-center mb-8">
+            <div className="badge mb-4">
+              <span>🐦</span>
+              <span>Chat</span>
+            </div>
+            <h2 className="text-4xl font-bold">
+              Chat with <span className="text-gradient">Pigeon AI</span>
+            </h2>
+            <p className="text-muted">Ask questions about PigeonBot — instant, playful answers.</p>
+          </div>
+
+          <PigeonChat />
         </div>
       </section>
 
