@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My First Website",
-  description: "Built at APT Coding Camp",
+  title: "Ascension Eagles Cheer - Soar to Excellence! 🦅",
+  description: "Learn about the Ascension Eagles cheer team - our history, values, and what we represent",
 };
 
 export default function RootLayout({
