@@ -955,3 +955,458 @@ body {
     display: none;
   }
 }
+
+/* ============================================
+   PIGEON GALLERY - IMMERSIVE SHOWCASE
+   ============================================ */
+
+.pigeon-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Hero Preview Zone */
+.pigeon-hero {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  min-height: 320px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.pigeon-hero.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pigeon-hero.animating {
+  opacity: 0.7;
+}
+
+.pigeon-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+.pigeon-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, var(--hero-glow, rgba(236, 72, 153, 0.3)) 0%, transparent 70%);
+  animation: hero-pulse 4s ease-in-out infinite;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Floating Particles */
+.pigeon-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pigeon-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--particle-color, #ec4899);
+  left: var(--particle-x, 50%);
+  bottom: -10px;
+  opacity: 0;
+  animation: particle-rise var(--particle-duration, 4s) ease-out infinite;
+  animation-delay: var(--particle-delay, 0s);
+  box-shadow: 0 0 10px var(--particle-color, #ec4899);
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  10% {
+    opacity: 0.8;
+    transform: translateY(-20px) scale(1);
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-350px) scale(0.5);
+  }
+}
+
+/* Hero Content */
+.pigeon-hero-content {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .pigeon-hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+/* Hero Image */
+.pigeon-hero-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pigeon-glow-ring {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--hero-glow, rgba(236, 72, 153, 0.4)) 0%, transparent 70%);
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.pigeon-float {
+  animation: pigeon-float 4s ease-in-out infinite;
+}
+
+@keyframes pigeon-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-12px) rotate(2deg); }
+  75% { transform: translateY(-8px) rotate(-2deg); }
+}
+
+.pigeon-hero-image {
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  transition: transform 0.4s ease;
+}
+
+/* Hero Details */
+.pigeon-hero-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pigeon-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--hero-accent, #ec4899), #9333ea);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+.pigeon-hero-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pigeon-hero-desc {
+  color: #9ca3af;
+  font-size: 1.1rem;
+  margin: 0;
+  max-width: 400px;
+}
+
+.pigeon-hero-traits {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pigeon-trait {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  color: #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.pigeon-trait:hover {
+  background: var(--hero-accent, #ec4899);
+  border-color: var(--hero-accent, #ec4899);
+  color: white;
+}
+
+.pigeon-hero-footer {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.pigeon-hero-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+}
+
+.pigeon-buy-btn {
+  animation: btn-glow 2s ease-in-out infinite;
+}
+
+@keyframes btn-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
+  50% { box-shadow: 0 0 35px rgba(236, 72, 153, 0.7); }
+}
+
+/* ============================================
+   3D PIGEON CARDS
+   ============================================ */
+
+.pigeon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .pigeon-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pigeon-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .pigeon-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pigeon-card-wrapper {
+  animation: card-enter 0.5s ease backwards;
+  animation-delay: var(--animation-delay, 0s);
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pigeon-card-3d {
+  cursor: pointer;
+  transition: transform 0.15s ease-out, filter 0.3s ease;
+  border-radius: 1rem;
+}
+
+.pigeon-card-3d:hover {
+  filter: brightness(1.1);
+}
+
+.pigeon-card-inner {
+  position: relative;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.pigeon-card-3d:hover .pigeon-card-inner {
+  border-color: var(--accent-color, #ec4899);
+}
+
+/* Card Glow Effect */
+.pigeon-card-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--accent-color, #ec4899), transparent, var(--accent-color, #ec4899));
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.pigeon-card-3d:hover .pigeon-card-glow {
+  opacity: 0.5;
+  animation: glow-rotate 3s linear infinite;
+}
+
+@keyframes glow-rotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Shimmer Effect */
+.pigeon-card-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.pigeon-card-3d:hover .pigeon-card-shimmer {
+  left: 100%;
+}
+
+/* Card Image */
+.pigeon-card-image {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  margin-bottom: 0.5rem;
+}
+
+/* Card Info */
+.pigeon-card-info {
+  text-align: center;
+}
+
+.pigeon-card-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pigeon-card-price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-color, #ec4899);
+}
+
+/* Selected Badge */
+.pigeon-card-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--accent-color, #ec4899);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Selected Card State */
+.pigeon-card-wrapper.selected .pigeon-card-inner {
+  border-color: var(--accent-color, #ec4899);
+  box-shadow: 0 0 30px var(--glow-color, rgba(236, 72, 153, 0.3)), inset 0 0 20px rgba(255, 255, 255, 0.02);
+}
+
+.pigeon-card-wrapper.selected .pigeon-card-glow {
+  opacity: 0.6;
+}
+
+/* ============================================
+   SUGGEST FORM
+   ============================================ */
+
+.pigeon-suggest {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.pigeon-suggest-label {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 0.75rem;
+}
+
+.pigeon-suggest-form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pigeon-suggest-form .form-input {
+  flex: 1;
+}
+
+.pigeon-suggest-success {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 0.5rem;
+  color: #22c55e;
+  font-size: 0.9rem;
+  animation: success-pop 0.3s ease;
+}
+
+@keyframes success-pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Outline button style */
+.btn-outline {
+  background: transparent;
+  border: 2px solid #ec4899;
+  color: #ec4899;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background: #ec4899;
+  color: white;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+}
