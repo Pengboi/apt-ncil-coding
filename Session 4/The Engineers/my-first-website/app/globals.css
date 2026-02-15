@@ -1,20 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff; /* white */
-  --foreground: #0b0b0b; /* near-black text */
-  --accent-yellow: #ffd700; /* yellow */
-  --accent-blue: #0033a0; /* blue */
-  --accent-red: #c8102e; /* red */
-  --muted: rgba(11,11,11,0.7);
-  --black: #000000;
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --accent-gold: #c4a35a;
+  --accent-purple: #5c2d91;
+  --accent-real: #c4a35a;
+  --muted: rgba(26,26,26,0.7);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #8b0000;
-    --foreground: #ffffff;
-    --accent: #ffd100;
+    --background: #1a1a2e;
+    --foreground: #f5f5f5;
+    --muted: rgba(245,245,245,0.7);
   }
 }
 
@@ -22,64 +21,109 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
 }
 
-/* Manchester United themed background */
-.bg-rm {
-  background-image: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.03));
+.bg-main {
   background-color: var(--background);
 }
 
-/* Header / nav */
 header {
-  border-bottom: 3px solid var(--accent-blue);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  header {
+    border-bottom-color: rgba(255,255,255,0.1);
+  }
 }
 
 nav a {
   color: var(--foreground);
   text-decoration: none;
-  padding: 6px 8px;
-  transition: color .15s ease, opacity .15s ease;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  font-weight: 500;
 }
 
 nav a:hover {
-  color: var(--accent-blue);
+  color: var(--accent-real);
   opacity: 1;
+  text-shadow: 0 0 10px rgba(196, 163, 90, 0.5);
 }
 
-/* Buttons */
+@media (prefers-color-scheme: dark) {
+  nav a:hover {
+    color: var(--accent-gold);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  }
+}
+
+/* Buttons - Real Madrid Style */
 
 .btn-primary {
-  background: var(--accent-yellow);
-  color: var(--black);
-  padding: 0.6rem 1.2rem;
-  border-radius: 9999px;
-  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-real) 0%, #e0c275 100%);
+  color: #1a1a1a;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(196, 163, 90, 0.4);
 }
 
-.btn-primary:hover { filter: brightness(.96); transform: translateY(-1px); }
+.btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(196, 163, 90, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #ffd700 100%);
+    color: #1a1a1a;
+    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
+  }
+}
 
 .btn-secondary {
   background: transparent;
-  border: 2px solid var(--accent-blue);
-  color: var(--accent-blue);
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  border: 2px solid var(--accent-real);
+  color: var(--accent-real);
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.flag-accents {
-  display: inline-block;
-  width: 1.6rem;
-  height: 0.9rem;
-  border-radius: 0.12rem;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset;
+.btn-secondary:hover {
+  background: var(--accent-real);
+  color: #1a1a1a;
+  box-shadow: 0 2px 10px rgba(196, 163, 90, 0.4);
 }
 
-.flag-yellow { background: var(--accent-yellow); }
-.flag-blue { background: var(--accent-blue); }
-.flag-red { background: var(--accent-red); }
+@media (prefers-color-scheme: dark) {
+  .btn-secondary {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+  }
+  
+  .btn-secondary:hover {
+    background: var(--accent-gold);
+    color: #1a1a1a;
+    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
+  }
+}
 
-footer { border-top: 1px solid rgba(0,0,0,0.2); }
+footer { 
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  footer {
+    border-top-color: rgba(255,255,255,0.1);
+  }
+}
 
 img {
   max-width: 100%;

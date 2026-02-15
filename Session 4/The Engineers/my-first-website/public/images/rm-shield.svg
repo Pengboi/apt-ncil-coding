@@ -1,13 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230">
-  <defs>
-    <style>
-      .bg{fill:#ffffff}
-      .border{fill:none;stroke:#c5a800;stroke-width:6}
-      .text{fill:#0b0b0b;font-family:Arial-BoldMT, Arial;font-weight:700}
-    </style>
-  </defs>
-  <rect width="200" height="230" rx="24" fill="#ffffff"/>
-  <path class="border" d="M30 30 L170 30 L170 200 L30 200 Z"/>
-  <text x="100" y="120" font-size="30" text-anchor="middle" class="text">RMCF</text>
-  <text x="100" y="150" font-size="12" text-anchor="middle" class="text">Fan Zone</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+  <!-- Crown -->
+  <path d="M10 35 L15 20 L25 30 L35 15 L50 28 L65 15 L75 30 L85 20 L90 35 Z" fill="#FFC400"/>
+  <circle cx="15" cy="18" r="3" fill="#FFC400"/>
+  <circle cx="35" cy="13" r="3" fill="#FFC400"/>
+  <circle cx="65" cy="13" r="3" fill="#FFC400"/>
+  <circle cx="85" cy="18" r="3" fill="#FFC400"/>
+  
+  <!-- Crown Band -->
+  <rect x="10" y="32" width="80" height="6" fill="#00459C"/>
+  <rect x="10" y="36" width="80" height="2" fill="#FFC400"/>
+  
+  <!-- Shield Shape -->
+  <path d="M10 40 Q10 40 10 60 Q10 85 50 105 Q90 85 90 60 Q90 40 90 40 Q50 50 10 40 Z" fill="white" stroke="#00459C" stroke-width="2"/>
+  
+  <!-- Inner Shield -->
+  <path d="M18 45 Q18 45 18 62 Q18 82 50 98 Q82 82 82 62 Q82 45 82 45 Q50 53 18 45 Z" fill="white"/>
+  
+  <!-- Text Container Background -->
+  <rect x="25" y="48" width="50" height="30" fill="#00459C" rx="2"/>
+  
+  <!-- REAL MADRID Text -->
+  <text x="50" y="58" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">REAL</text>
+  <text x="50" y="68" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">MADRID</text>
+  
+  <!-- Decorative Lines -->
+  <rect x="28" y="72" width="44" height="2" fill="#FFC400"/>
+  
+  <!-- Small Crown on Shield -->
+  <polygon points="42,78 46,72 50,78 54,72 58,78" fill="#FFC400"/>
 </svg>
