@@ -32,18 +32,21 @@ export default function PokemonCard({ id, name, img }: { id: string; name: strin
 
   return (
       <div className="relative">
-        <div className="group bg-white rounded-lg p-3 shadow hover:shadow-md flex flex-col items-center text-center">
-          <img src={img} alt={name} className="w-24 h-24 object-contain mb-2 grayscale group-hover:grayscale-0" loading="lazy" onClick={(e: any) => { e.stopPropagation(); setShowGallery(true); }} />
+        <div className="group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl border border-slate-100 hover:border-slate-200 transition-all duration-300 ease-out flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-1">
+          <div className="relative w-24 h-24 mb-3">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <img src={img} alt={name} className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10" loading="lazy" onClick={(e: any) => { e.stopPropagation(); setShowGallery(true); }} />
+          </div>
 
-          <button onClick={(e) => { e.stopPropagation(); toggle(); }} className="capitalize font-medium text-slate-800 hover:underline">
+          <button onClick={(e) => { e.stopPropagation(); toggle(); }} className="capitalize font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
             {name}
           </button>
 
-          <div className="text-xs text-slate-500">#{id}</div>
+          <div className="text-xs font-medium text-slate-400 mt-1">#{id}</div>
         </div>
 
         {open && (
-          <div className="mt-2 w-full bg-slate-50 p-2 rounded text-sm text-slate-700">
+          <div className="mt-3 w-full bg-gradient-to-br from-slate-50 to-white p-3 rounded-xl text-sm text-slate-700 border border-slate-100 shadow-inner">
             {loading ? (
               <div>Loading...</div>
             ) : stats && stats.length > 0 ? (

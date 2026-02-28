@@ -47,13 +47,7 @@ npm run dev
 
 Click any entry to view details and stats.
 
-TCG API key
+TCG Cards
 ---------------
 
-If you want the app to fetch Pokémon TCG cards, create a local `.env.local` file in the project root with your Pokémon TCG API key:
-
-```env
-POKEMON_TCG_KEY=your_api_key_here
-```
-
-I added a local `.env.local` for development (ignored by git) with the key you provided. The app proxies TCG requests through `/api/tcg/cards` so the key stays server-side.
+Click on a Pokémon's image to view their TCG (Trading Card Game) cards. The app uses the TCGdex API to fetch card images.
