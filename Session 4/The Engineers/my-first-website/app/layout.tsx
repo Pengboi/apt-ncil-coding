@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My First Website",
-  description: "Built at APT Coding Camp",
+  title: "Tactical Ops - Military Adventure Platformer",
+  description: "A 2D military RPG platformer with exploration, combat, and progression",
 };
 
 export default function RootLayout({
