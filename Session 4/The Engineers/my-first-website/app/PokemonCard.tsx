@@ -30,12 +30,41 @@ export default function PokemonCard({ id, name, img }: { id: string; name: strin
     }
   };
 
+  const playCry = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const pokemonId = id;
+    
+    // Try multiple sources for the cry
+    const sources = [
+      `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${pokemonId}.ogg`,
+      `https://pokemoncries.com/cries/${pokemonId}.mp3`,
+      `https://veekun.com/dex/media/pokemon/cries/${pokemonId}.wav`,
+    ];
+    
+    let audio = new Audio();
+    let currentSource = 0;
+    
+    const tryPlay = () => {
+      if (currentSource >= sources.length) {
+        return;
+      }
+      audio.src = sources[currentSource];
+      audio.volume = 0.4;
+      audio.play().catch(() => {
+        currentSource++;
+        tryPlay();
+      });
+    };
+    
+    tryPlay();
+  };
+
   return (
       <div className="relative">
         <div className="group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl border border-slate-100 hover:border-slate-200 transition-all duration-300 ease-out flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-1">
           <div className="relative w-24 h-24 mb-3">
             <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <img src={img} alt={name} className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10" loading="lazy" onClick={(e: any) => { e.stopPropagation(); setShowGallery(true); }} />
+            <img src={img} alt={name} className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10 cursor-pointer" loading="lazy" onClick={(e: any) => { e.stopPropagation(); setShowGallery(true); }} onDoubleClick={playCry} />
           </div>
 
           <button onClick={(e) => { e.stopPropagation(); toggle(); }} className="capitalize font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">

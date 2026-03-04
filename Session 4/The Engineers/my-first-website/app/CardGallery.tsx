@@ -8,6 +8,10 @@ type Card = {
   setName: string;
   releaseDate: string;
   images?: { small?: string; large?: string };
+  price?: number;
+  previousPrice?: number;
+  priceSource?: string;
+  priceChange?: 'up' | 'down' | 'stable';
 };
 
 type SetInfo = {
@@ -22,6 +26,7 @@ export default function CardGallery({ name, onClose }: { name: string; onClose: 
   const [sets, setSets] = useState<SetInfo[]>([]);
   const [selectedSet, setSelectedSet] = useState<string>("all");
   const [error, setError] = useState<string | null>(null);
+  const [loadingPrices, setLoadingPrices] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +51,50 @@ export default function CardGallery({ name, onClose }: { name: string; onClose: 
     fetchCards();
     return () => { cancelled = true; };
   }, [name]);
+
+  useEffect(() => {
+    if (cards.length === 0) return;
+    
+    let cancelled = false;
+    const fetchPrices = async () => {
+      setLoadingPrices(true);
+      try {
+        const cardsWithPrices = [...cards];
+        
+        for (let i = 0; i < cardsWithPrices.length; i++) {
+          if (cancelled) break;
+          
+          const card = cardsWithPrices[i];
+          try {
+            const res = await fetch(`/api/prices?name=${encodeURIComponent(card.name)}&cardId=${card.id}&setName=${encodeURIComponent(card.setName)}`);
+            if (!cancelled && res.ok) {
+              const data = await res.json();
+              if (data.price) {
+                cardsWithPrices[i] = { 
+                  ...card, 
+                  price: data.price.price, 
+                  previousPrice: data.price.previousPrice,
+                  priceSource: data.price.source,
+                  priceChange: data.price.change
+                };
+              }
+            }
+          } catch {
+            // ignore errors for individual cards
+          }
+          
+          if (!cancelled) {
+            setCards([...cardsWithPrices]);
+          }
+        }
+      } finally {
+        if (!cancelled) setLoadingPrices(false);
+      }
+    };
+    
+    fetchPrices();
+    return () => { cancelled = true; };
+  }, [cards.length, name]);
 
   const filteredCards = useMemo(() => {
     if (selectedSet === "all") return cards;
@@ -91,7 +140,7 @@ export default function CardGallery({ name, onClose }: { name: string; onClose: 
             ))}
           </select>
           <span className="ml-4 text-sm text-slate-500">
-            Showing {filteredCards.length} cards
+            Showing {filteredCards.length} cards {loadingPrices && '(loading prices...)'}
           </span>
         </div>
 
@@ -109,17 +158,40 @@ export default function CardGallery({ name, onClose }: { name: string; onClose: 
                   {group.setName}
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {group.cards.map((c) => (
-                    <div key={c.id} className="border rounded p-2 bg-slate-50">
-                      <img 
-                        src={c.images?.small || c.images?.large} 
-                        alt={c.name} 
-                        className="w-full object-contain" 
-                      />
-                      <div className="mt-2 text-sm font-medium">{c.name}</div>
-                      <div className="text-xs text-slate-500">{c.id}</div>
-                    </div>
-                  ))}
+                  {group.cards.map((c) => {
+                    const priceChange = c.previousPrice && c.price 
+                      ? ((c.price - c.previousPrice) / c.previousPrice * 100).toFixed(1)
+                      : null;
+                    const isUp = c.priceChange === 'up';
+                    const isDown = c.priceChange === 'down';
+                    const changeColor = isUp ? 'text-emerald-600' : isDown ? 'text-red-600' : 'text-slate-500';
+                    
+                    return (
+                      <div key={c.id} className="border rounded p-2 bg-slate-50 flex">
+                        {c.price ? (
+                          <div className={`flex flex-col justify-center mr-2 min-w-[55px] text-right ${changeColor}`}>
+                            <div className="text-sm font-bold">
+                              £{c.price.toFixed(2)}
+                            </div>
+                            {priceChange && priceChange !== '0.0' && (
+                              <div className={`text-[10px] font-medium`}>
+                                {isUp ? '↑' : isDown ? '↓' : ''}{priceChange}%
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
+                        <div className="flex-1">
+                          <img 
+                            src={c.images?.small || c.images?.large} 
+                            alt={c.name} 
+                            className="w-full object-contain" 
+                          />
+                          <div className="mt-2 text-sm font-medium">{c.name}</div>
+                          <div className="text-xs text-slate-500">{c.id}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
