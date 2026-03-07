@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-red-400 via-red-500 to-red-600 overflow-hidden">
         {/* Animated Pom-Poms Background */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Floating Pom-Poms */}
@@ -39,7 +39,7 @@ export default function Home() {
             <p className="text-white text-lg mb-2">Spirit Meter! 🔥</p>
             <div className="w-full bg-white/30 rounded-full h-6 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-full transition-all duration-500"
+                className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 h-full transition-all duration-500"
                 style={{width: `${spiritLevel}%`}}
               />
             </div>
@@ -55,31 +55,31 @@ export default function Home() {
       </section>
 
       {/* Motivational Quotes Section */}
-      <section className="py-20 bg-gradient-to-b from-pink-100 to-purple-100">
+      <section className="py-20 bg-gradient-to-b from-red-50 to-red-100">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-red-800">
             Cheer Spirit Quotes ✨
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-pink-400 to-pink-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <p className="text-white text-xl md:text-2xl font-semibold italic">
                 "Cheerleading is not just about the pom-poms, it's about the heart!"
               </p>
               <div className="mt-4 text-4xl">💖</div>
             </div>
-            <div className="bg-gradient-to-br from-orange-400 to-orange-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-red-500 to-red-700 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <p className="text-white text-xl md:text-2xl font-semibold italic">
                 "Together we shine, together we win!"
               </p>
               <div className="mt-4 text-4xl">🏆</div>
             </div>
-            <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <p className="text-white text-xl md:text-2xl font-semibold italic">
                 "Spirit is the heart of cheerleading!"
               </p>
               <div className="mt-4 text-4xl">💙</div>
             </div>
-            <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <p className="text-white text-xl md:text-2xl font-semibold italic">
                 "Dream big, cheer loud, shine bright!"
               </p>
@@ -90,9 +90,9 @@ export default function Home() {
       </section>
 
       {/* What is Cheerleading Section */}
-      <section className="py-20 bg-gradient-to-b from-purple-100 to-blue-100">
+      <section className="py-20 bg-gradient-to-b from-red-50 to-red-100">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-red-800">
             What is Cheerleading? 🎉
           </h2>
           <p className="text-xl md:text-2xl text-center mb-12 text-gray-700 max-w-4xl mx-auto">
@@ -100,34 +100,105 @@ export default function Home() {
             Cheerleaders use energetic routines, chants, and stunts to motivate crowds and support their teams.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-pink-400">
+            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-5xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold text-pink-600 mb-2">Teamwork & Trust</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Teamwork & Trust</h3>
               <p className="text-gray-600">Building strong bonds and trusting your teammates</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-orange-400">
+            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-500">
               <div className="text-5xl mb-4">💪</div>
-              <h3 className="text-xl font-bold text-orange-600 mb-2">Athleticism & Strength</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Athleticism & Strength</h3>
               <p className="text-gray-600">Developing power, flexibility, and coordination</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-blue-400">
+            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-5xl mb-4">🌟</div>
-              <h3 className="text-xl font-bold text-blue-600 mb-2">Performance & Showmanship</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Performance & Showmanship</h3>
               <p className="text-gray-600">Entertaining crowds with amazing routines</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-yellow-400">
+            <div className="bg-white p-6 rounded-2xl shadow-lg text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-5xl mb-4">🏫</div>
-              <h3 className="text-xl font-bold text-yellow-600 mb-2">School Spirit & Pride</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">School Spirit & Pride</h3>
               <p className="text-gray-600">Showing support and building community</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 🎀 Pom-Poms Section */}
-      <section className="py-20 bg-gradient-to-b from-pink-200 to-rose-200">
+      {/* Why Join Cheer Section */}
+      <section className="py-20 bg-gradient-to-b from-purple-100 to-pink-100">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-rose-700">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-red-800">
+            Why Join Cheer? 🏆
+          </h2>
+          <p className="text-xl md:text-2xl text-center mb-12 text-gray-700 max-w-4xl mx-auto">
+            Cheerleading is more than just pom-poms and chants — it's a sport that builds champions on and off the mat! 
+            Whether you're looking to make new friends, stay active, or push yourself to new heights, 
+            cheer has something amazing for everyone.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">💖</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Make Lifelong Friends</h3>
+              <p className="text-white/90">
+                Cheer teams become like family! You'll build unbreakable bonds with teammates who support you through every stunt, routine, and challenge.
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-400 to-purple-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">💪</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Get Stronger & Fitter</h3>
+              <p className="text-white/90">
+                Cheer builds incredible strength, flexibility, and endurance. From tumbling to stunting, you'll become an athlete in the best shape of your life!
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">🎯</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Build Confidence</h3>
+              <p className="text-white/90">
+                Stand tall, speak loud, and shine bright! Cheerleading helps you overcome fears, master new skills, and believe in yourself like never before.
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-red-500 to-red-700 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">⭐</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Learn Teamwork</h3>
+              <p className="text-white/90">
+                In cheer, you literally lift each other up! You'll learn to trust, communicate, and work together to create something amazing.
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">🏆</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Compete & Win</h3>
+              <p className="text-white/90">
+                Travel to exciting competitions, perform incredible routines, and bring home trophies! The thrill of competition is unlike anything else.
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-green-400 to-green-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="text-5xl mb-4">🌟</div>
+              <h3 className="text-2xl font-bold text-white mb-3">Have TONS of Fun!</h3>
+              <p className="text-white/90">
+                From team bonding to game day excitement, cheer is packed with memorable moments, laughter, and pure joy. It's the best time you'll ever have!
+              </p>
+            </div>
+          </div>
+          <div className="mt-12 text-center">
+            <div className="inline-block bg-gradient-to-r from-red-500 to-red-600 p-8 rounded-3xl shadow-2xl">
+              <p className="text-white text-2xl md:text-3xl font-bold mb-4">
+                Ready to Join the Ascension Eagles? 🦅
+              </p>
+              <p className="text-white/90 text-lg mb-6">
+                No experience needed — just bring your energy and enthusiasm!
+              </p>
+              <button className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold text-xl px-10 py-4 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300">
+                Sign Up Today! 🎉
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 🎀 Pom-Poms Section */}
+      <section className="py-20 bg-gradient-to-b from-red-100 to-red-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-red-700">
             Pom-Poms & Poms! 🎀
           </h2>
           {/* Photo Showcase */}
@@ -143,16 +214,16 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <p className="text-xl text-center mb-12 text-rose-600">
+          <p className="text-xl text-center mb-12 text-red-600">
             The most iconic cheerleading accessory! Shake them with spirit!
           </p>
           
           {/* Pom-Pom Types */}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {/* Plastic Pom-Poms */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-pink-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-6xl mb-4 animate-bounce">🎀</div>
-              <h3 className="text-2xl font-bold text-pink-600 mb-2">Plastic Pom-Poms</h3>
+              <h3 className="text-2xl font-bold text-red-600 mb-2">Plastic Pom-Poms</h3>
               <p className="text-gray-600 mb-4">Shiny and loud! Perfect for game day noise!</p>
               <div className="flex justify-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-pink-500"></span>
@@ -163,9 +234,9 @@ export default function Home() {
             </div>
             
             {/* Metallic Pom-Poms */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-yellow-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-6xl mb-4 animate-pulse">✨</div>
-              <h3 className="text-2xl font-bold text-yellow-600 mb-2">Metallic Pom-Poms</h3>
+              <h3 className="text-2xl font-bold text-red-600 mb-2">Metallic Pom-Poms</h3>
               <p className="text-gray-600 mb-4">Super sparkly! Catches the lights beautifully!</p>
               <div className="flex justify-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500"></span>
@@ -174,9 +245,9 @@ export default function Home() {
             </div>
             
             {/* Paper Pom-Poms */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-blue-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl text-center transform hover:scale-105 transition-all duration-300 border-4 border-red-400">
               <div className="text-6xl mb-4 animate-bounce" style={{animationDelay: '0.5s'}}>📄</div>
-              <h3 className="text-2xl font-bold text-blue-600 mb-2">Tissue Pom-Poms</h3>
+              <h3 className="text-2xl font-bold text-red-600 mb-2">Tissue Pom-Poms</h3>
               <p className="text-gray-600 mb-4">Light and fluffy! Great for decorations!</p>
               <div className="flex justify-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-red-400"></span>
@@ -187,7 +258,7 @@ export default function Home() {
           </div>
 
           {/* Pom-Pom Movements */}
-          <div className="bg-gradient-to-r from-rose-400 to-pink-500 p-8 rounded-2xl shadow-xl">
+          <div className="bg-gradient-to-r from-red-400 to-red-600 p-8 rounded-2xl shadow-xl">
             <h3 className="text-3xl font-bold text-white text-center mb-6">Pom-Pom Moves! 📣</h3>
             <div className="grid md:grid-cols-4 gap-4">
               <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl text-center">
@@ -216,9 +287,9 @@ export default function Home() {
       </section>
 
       {/* 👕 Cheer Uniforms Section */}
-      <section className="py-20 bg-gradient-to-b from-purple-200 to-indigo-200">
+      <section className="py-20 bg-gradient-to-b from-red-100 to-red-200">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-purple-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-red-800">
             Cheer Uniforms 👕✨
           </h2>
           {/* Photo Showcase */}
@@ -234,7 +305,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <p className="text-xl text-center mb-12 text-purple-600">
+          <p className="text-xl text-center mb-12 text-red-600">
             Look your best while cheering! Style meets spirit!
           </p>
 
@@ -243,50 +314,50 @@ export default function Home() {
             {/* Classic Shell Top */}
             <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <div className="text-6xl mb-4 text-center">👕</div>
-              <h3 className="text-xl font-bold text-purple-600 mb-2">Shell Top</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Shell Top</h3>
               <p className="text-gray-600 text-sm mb-3">The classic sleeveless uniform top with team colors</p>
               <div className="flex flex-wrap gap-1">
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Sleeveless</span>
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">V-Neck</span>
+                <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs">Sleeveless</span>
+                <span className="px-2 py-1 bg-red-50 text-purple-700 rounded text-xs">V-Neck</span>
               </div>
             </div>
 
             {/* Skirt */}
             <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <div className="text-6xl mb-4 text-center">👗</div>
-              <h3 className="text-xl font-bold text-pink-600 mb-2">Cheer Skirt</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Cheer Skirt</h3>
               <p className="text-gray-600 text-sm mb-3">Pleated skirt, usually 12-14 inches long</p>
               <div className="flex flex-wrap gap-1">
-                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">Pleated</span>
-                <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded text-xs">Spandex</span>
+                <span className="px-2 py-1 bg-red-50 text-pink-700 rounded text-xs">Pleated</span>
+                <span className="px-2 py-1 bg-red-50 text-pink-700 rounded text-xs">Spandex</span>
               </div>
             </div>
 
             {/* Warm-Ups */}
             <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <div className="text-6xl mb-4 text-center">🧥</div>
-              <h3 className="text-xl font-bold text-blue-600 mb-2">Warm-Ups</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Warm-Ups</h3>
               <p className="text-gray-600 text-sm mb-3">Track suits for practice and travel</p>
               <div className="flex flex-wrap gap-1">
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Jacket</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Pants</span>
+                <span className="px-2 py-1 bg-red-50 text-red-700 rounded text-xs">Jacket</span>
+                <span className="px-2 py-1 bg-red-50 text-blue-700 rounded text-xs">Pants</span>
               </div>
             </div>
 
             {/* Shoes */}
             <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
               <div className="text-6xl mb-4 text-center">👟</div>
-              <h3 className="text-xl font-bold text-orange-600 mb-2">Cheer Shoes</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2">Cheer Shoes</h3>
               <p className="text-gray-600 text-sm mb-3">Special lightweight shoes for stunts</p>
               <div className="flex flex-wrap gap-1">
-                <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs">Lightweight</span>
+                <span className="px-2 py-1 bg-orange-100 text-red-700 rounded text-xs">Lightweight</span>
                 <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs">Grippy</span>
               </div>
             </div>
           </div>
 
           {/* Uniform Color Ideas */}
-          <div className="bg-gradient-to-r from-purple-500 to-indigo-500 p-8 rounded-2xl shadow-xl">
+          <div className="bg-gradient-to-r from-red-500 to-red-600 p-8 rounded-2xl shadow-xl">
             <h3 className="text-3xl font-bold text-white text-center mb-6">Popular Uniform Colors! 🎨</h3>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl text-center">
@@ -317,12 +388,12 @@ export default function Home() {
       </section>
 
       {/* 📋 Cheer Routines & Positioning Section */}
-      <section className="py-20 bg-gradient-to-b from-blue-200 to-cyan-200">
+      <section className="py-20 bg-gradient-to-b from-red-100 to-red-200">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-blue-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-red-800">
             Routines & Positioning 📋🎯
           </h2>
-          <p className="text-xl text-center mb-12 text-blue-600">
+          <p className="text-xl text-center mb-12 text-red-600">
             Learn formations, stunts, and routine basics!
           </p>
 
@@ -335,7 +406,7 @@ export default function Home() {
               {/* Line Formation */}
               <div className="text-center">
                 <p className="font-bold text-gray-700 mb-4">Single Line</p>
-                <div className="bg-blue-100 p-4 rounded-xl inline-block">
+                <div className="bg-red-50 p-4 rounded-xl inline-block">
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs">1</div>
                     <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">2</div>
@@ -349,7 +420,7 @@ export default function Home() {
               {/* V Formation */}
               <div className="text-center">
                 <p className="font-bold text-gray-700 mb-4">V Formation</p>
-                <div className="bg-purple-100 p-4 rounded-xl inline-block">
+                <div className="bg-red-50 p-4 rounded-xl inline-block">
                   <div className="flex gap-4 justify-center">
                     <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs">1</div>
                     <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">2</div>
@@ -365,7 +436,7 @@ export default function Home() {
               {/* Circle Formation */}
               <div className="text-center">
                 <p className="font-bold text-gray-700 mb-4">Circle</p>
-                <div className="bg-cyan-100 p-4 rounded-xl inline-block">
+                <div className="bg-red-50 p-4 rounded-xl inline-block">
                   <div className="relative w-20 h-20">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-pink-500"></div>
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-purple-500"></div>
@@ -380,7 +451,7 @@ export default function Home() {
 
           {/* Stunt Positions */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-6 rounded-2xl shadow-xl">
+            <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-2xl shadow-xl">
               <h3 className="text-2xl font-bold text-white mb-4">Stunt Positions 🤸</h3>
               <div className="space-y-3">
                 <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg flex items-center gap-3">
@@ -407,7 +478,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-pink-500 to-rose-500 p-6 rounded-2xl shadow-xl">
+            <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-2xl shadow-xl">
               <h3 className="text-2xl font-bold text-white mb-4">Routine Elements 🎵</h3>
               <div className="space-y-3">
                 <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg flex items-center gap-3">
@@ -436,12 +507,12 @@ export default function Home() {
           </div>
 
           {/* Count Guide */}
-          <div className="bg-gradient-to-r from-cyan-400 to-blue-500 p-6 rounded-2xl shadow-xl text-center">
+          <div className="bg-gradient-to-r from-red-400 to-red-500 p-6 rounded-2xl shadow-xl text-center">
             <h3 className="text-2xl font-bold text-white mb-4">Counting in 8s! 🎶</h3>
             <p className="text-white mb-4">Cheer routines are counted in sets of 8 beats</p>
             <div className="flex justify-center gap-2 flex-wrap">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                <div key={num} className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold">
+                <div key={num} className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-600 font-bold">
                   {num}
                 </div>
               ))}
@@ -452,21 +523,21 @@ export default function Home() {
       </section>
 
       {/* 🏆 Cheer Competitions Section */}
-      <section className="py-20 bg-gradient-to-b from-yellow-200 to-orange-200">
+      <section className="py-20 bg-gradient-to-b from-red-100 to-red-200">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-orange-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-red-800">
             Cheer Competitions! 🏆🥇
           </h2>
-          <p className="text-xl text-center mb-12 text-orange-600">
+          <p className="text-xl text-center mb-12 text-red-600">
             Where the best teams compete for glory!
           </p>
 
           {/* Competition Levels */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* Recreational */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-green-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-red-400">
               <div className="text-5xl mb-4 text-center">🌱</div>
-              <h3 className="text-xl font-bold text-green-600 mb-2 text-center">Recreational</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2 text-center">Recreational</h3>
               <p className="text-gray-600 text-center mb-4">For beginners and fun!</p>
               <ul className="text-sm text-gray-500 space-y-1">
                 <li>✓ No experience needed</li>
@@ -476,9 +547,9 @@ export default function Home() {
             </div>
 
             {/* School */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-blue-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-red-400">
               <div className="text-5xl mb-4 text-center">🏫</div>
-              <h3 className="text-xl font-bold text-blue-600 mb-2 text-center">School Teams</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2 text-center">School Teams</h3>
               <p className="text-gray-600 text-center mb-4">Middle & High School squads</p>
               <ul className="text-sm text-gray-500 space-y-1">
                 <li>✓ Represent your school</li>
@@ -488,9 +559,9 @@ export default function Home() {
             </div>
 
             {/* All-Star */}
-            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-purple-400">
+            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-8 border-red-400">
               <div className="text-5xl mb-4 text-center">⭐</div>
-              <h3 className="text-xl font-bold text-purple-600 mb-2 text-center">All-Star</h3>
+              <h3 className="text-xl font-bold text-red-600 mb-2 text-center">All-Star</h3>
               <p className="text-gray-600 text-center mb-4">Elite competitive teams</p>
               <ul className="text-sm text-gray-500 space-y-1">
                 <li>✓ Private gyms/clubs</li>
@@ -501,7 +572,7 @@ export default function Home() {
           </div>
 
           {/* Competition Divisions */}
-          <div className="bg-gradient-to-r from-orange-400 to-red-400 p-8 rounded-2xl shadow-xl mb-12">
+          <div className="bg-gradient-to-r from-red-400 to-red-600 p-8 rounded-2xl shadow-xl mb-12">
             <h3 className="text-3xl font-bold text-white text-center mb-6">Competition Divisions 📊</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl text-center">
@@ -600,7 +671,7 @@ export default function Home() {
       <Gallery />
 
       {/* Cheer Spirit Section */}
-      <section className="py-20 bg-gradient-to-b from-blue-100 to-pink-100 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-b from-red-50 to-red-100 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-10 left-5 text-4xl animate-bounce">📣</div>
           <div className="absolute top-20 right-10 text-4xl animate-pulse">🎊</div>
@@ -608,7 +679,7 @@ export default function Home() {
           <div className="absolute bottom-20 right-1/4 text-4xl animate-pulse" style={{animationDelay: '0.6s'}}>✨</div>
         </div>
         <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-purple-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-red-800">
             Unleash Your Spirit! 🔥
           </h2>
           <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -638,7 +709,7 @@ export default function Home() {
             </div>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
-            <h3 className="text-2xl font-bold text-purple-800 mb-4">Fun Cheerleading Fact! 🎉</h3>
+            <h3 className="text-2xl font-bold text-red-800 mb-4">Fun Cheerleading Fact! 🎉</h3>
             <p className="text-xl text-gray-700">
               Did you know? Cheerleading began in the United States in the late 1800s, 
               and today over 3 million people participate in cheerleading across the country! 
@@ -649,7 +720,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 py-12">
+      <footer className="bg-gradient-to-r from-red-500 via-red-600 to-red-700 py-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-white text-2xl font-bold mb-4">
             Keep the Spirit Alive! 💫
