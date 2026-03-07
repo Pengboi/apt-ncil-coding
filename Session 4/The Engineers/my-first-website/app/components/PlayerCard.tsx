@@ -13,12 +13,12 @@ export default function PlayerCard({ player }: { player: Player }) {
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-gray-800 dark:text-white truncate">{player.name}</div>
+          <div className="font-semibold text-gray-800 dark:text-white">{player.name}</div>
           <div className="text-sm text-yellow-600 flex items-center gap-1">
             {player.role}
             {flag && <span className="ml-1">{flag}</span>}
           </div>
-          <div className="text-sm text-muted-foreground mt-1 truncate">{player.shortDescription}</div>
+          <div className="text-sm text-muted-foreground mt-1">{player.shortDescription}</div>
         </div>
       </div>
     </div>
