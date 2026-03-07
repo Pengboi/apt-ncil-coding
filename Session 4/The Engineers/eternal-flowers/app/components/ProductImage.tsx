@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface ProductImageProps {
   src: string;
@@ -10,39 +10,55 @@ interface ProductImageProps {
 
 export default function ProductImage({ src, alt, className = '' }: ProductImageProps) {
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Fallback gradient colors based on product type
-  const getGradient = () => {
-    if (alt.includes('Blue')) return 'from-blue-200 to-indigo-200';
-    if (alt.includes('Red')) return 'from-red-200 to-rose-200';
-    if (alt.includes('Pink')) return 'from-pink-200 to-rose-200';
-    if (alt.includes('Purple')) return 'from-purple-200 to-violet-200';
-    return 'from-violet-200 to-pink-200';
-  };
+  useEffect(() => {
+    // Check if image is already loaded (cached)
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true);
+    }
+  }, []);
 
+  // If image fails to load, show fallback
   if (error) {
     return (
-      <div className={`bg-gradient-to-br ${getGradient()} flex flex-col items-center justify-center ${className}`}>
-        <span className="text-6xl mb-2">🌹</span>
-        <span className="text-sm text-gray-600 text-center px-4">{alt}</span>
+      <div className={`bg-gradient-to-br from-violet-200 to-pink-200 flex flex-col items-center justify-center ${className}`}>
+        <span className="text-6xl">🌹</span>
+        <span className="text-sm text-gray-600 mt-2">{alt}</span>
       </div>
     );
   }
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {loading && (
-        <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} animate-pulse flex items-center justify-center`}>
+      {/* Loading placeholder - only shows while loading */}
+      {!loaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-100 to-pink-100 animate-pulse flex items-center justify-center z-10">
           <span className="text-4xl">🌹</span>
         </div>
       )}
+      
+      {/* Actual image */}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${loading ? 'opacity-0' : 'opacity-100'}`}
-        onError={() => setError(true)}
-        onLoad={() => setLoading(false)}
+        className="w-full h-full object-cover"
+        onError={() => {
+          console.error('Image failed to load:', src);
+          setError(true);
+        }}
+        onLoad={() => {
+          console.log('Image loaded:', src);
+          setLoaded(true);
+        }}
+        style={{ 
+          opacity: loaded ? 1 : 0, 
+          transition: 'opacity 0.3s ease',
+          position: 'relative',
+          zIndex: 1
+        }}
       />
     </div>
   );
