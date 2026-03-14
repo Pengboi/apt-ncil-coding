@@ -11,52 +11,100 @@ type PriceData = {
   changePercent: number;
 };
 
-async function fetchPriceFromTcgDex(cardId: string): Promise<PriceData | null> {
+const API_KEY = process.env.POKEMON_PRICE_API_KEY;
+
+async function fetchFromPokemonPriceTracker(cardId: string): Promise<PriceData | null> {
+  if (!API_KEY) {
+    return null;
+  }
+  
   try {
-    const url = `https://api.tcgdex.net/v2/en/cards/${cardId}`;
-    const response = await fetch(url);
+    const response = await fetch(
+      `https://www.pokemonpricetracker.com/api/v2/cards?tcgPlayerId=${cardId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Accept': 'application/json',
+        },
+      }
+    );
     
     if (!response.ok) return null;
     
     const data = await response.json();
     
-    if (!data || !data.pricing) return null;
+    if (!data?.data?.[0]) return null;
     
+    const card = data.data[0];
+    const prices = card.prices?.[0];
+    
+    if (!prices) return null;
+    
+    let price = 0;
+    let previousPrice = 0;
+    
+    if (prices.tcgplayer?.market) {
+      price = Math.round(prices.tcgplayer.market * 0.79 * 100) / 100;
+      const low = prices.tcgplayer.low || prices.tcgplayer.market;
+      previousPrice = Math.round(low * 0.79 * 100) / 100;
+    } else if (prices.ebay?.average) {
+      price = Math.round(prices.ebay.average * 0.79 * 100) / 100;
+      previousPrice = price;
+    }
+    
+    if (price <= 0) return null;
+    
+    const changePercent = previousPrice > 0 
+      ? Math.round(((price - previousPrice) / previousPrice) * 100 * 10) / 10
+      : 0;
+    
+    return {
+      cardId,
+      price,
+      previousPrice,
+      currency: 'GBP',
+      condition: 'Raw',
+      source: 'PokemonPriceTracker',
+      change: changePercent > 1 ? 'up' : changePercent < -1 ? 'down' : 'stable',
+      changePercent,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Fallback to TCGdex
+async function fetchFromTcgDex(cardId: string): Promise<PriceData | null> {
+  try {
+    const response = await fetch(`https://api.tcgdex.net/v2/en/cards/${cardId}`);
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    if (!data?.pricing) return null;
+    
+    const pricing = data.pricing;
     let price = 0;
     let previousPrice = 0;
     let source = '';
     
-    // Priority: holofoil > reverse-holofoil > normal
-    if (data.pricing.tcgplayer?.holofoil?.marketPrice) {
-      const usdPrice = data.pricing.tcgplayer.holofoil.marketPrice;
-      price = Math.round(usdPrice * 0.79 * 100) / 100;
-      
-      const trend = data.pricing.tcgplayer.holofoil.trendPrice || usdPrice;
-      previousPrice = Math.round(trend * 0.79 * 100) / 100;
-      source = 'TCGPlayer';
-    } 
-    else if (data.pricing.tcgplayer?.reverseHolofoil?.marketPrice) {
-      const usdPrice = data.pricing.tcgplayer.reverseHolofoil.marketPrice;
-      price = Math.round(usdPrice * 0.79 * 100) / 100;
-      
-      const trend = data.pricing.tcgplayer.reverseHolofoil.trendPrice || usdPrice;
+    if (pricing.tcgplayer?.holofoil?.marketPrice) {
+      const usd = pricing.tcgplayer.holofoil.marketPrice;
+      price = Math.round(usd * 0.79 * 100) / 100;
+      const trend = pricing.tcgplayer.holofoil.trendPrice || usd;
       previousPrice = Math.round(trend * 0.79 * 100) / 100;
       source = 'TCGPlayer';
     }
-    else if (data.pricing.tcgplayer?.normal?.marketPrice) {
-      const usdPrice = data.pricing.tcgplayer.normal.marketPrice;
-      price = Math.round(usdPrice * 0.79 * 100) / 100;
-      
-      const trend = data.pricing.tcgplayer.normal.trendPrice || usdPrice;
+    else if (pricing.tcgplayer?.normal?.marketPrice) {
+      const usd = pricing.tcgplayer.normal.marketPrice;
+      price = Math.round(usd * 0.79 * 100) / 100;
+      const trend = pricing.tcgplayer.normal.trendPrice || usd;
       previousPrice = Math.round(trend * 0.79 * 100) / 100;
       source = 'TCGPlayer';
     }
-    else if (data.pricing.cardmarket?.trend) {
-      const eurPrice = data.pricing.cardmarket.trend;
-      price = Math.round(eurPrice * 0.85 * 100) / 100;
-      
-      const avg30 = data.pricing.cardmarket.avg30 || eurPrice;
-      previousPrice = Math.round(avg30 * 0.85 * 100) / 100;
+    else if (pricing.cardmarket?.trend) {
+      const eur = pricing.cardmarket.trend;
+      price = Math.round(eur * 0.85 * 100) / 100;
+      previousPrice = price;
       source = 'CardMarket';
     }
     
@@ -66,10 +114,6 @@ async function fetchPriceFromTcgDex(cardId: string): Promise<PriceData | null> {
       ? Math.round(((price - previousPrice) / previousPrice) * 100 * 10) / 10
       : 0;
     
-    let change: 'up' | 'down' | 'stable' = 'stable';
-    if (changePercent > 1) change = 'up';
-    else if (changePercent < -1) change = 'down';
-    
     return {
       cardId,
       price,
@@ -77,35 +121,35 @@ async function fetchPriceFromTcgDex(cardId: string): Promise<PriceData | null> {
       currency: 'GBP',
       condition: 'Raw',
       source,
-      change,
-      changePercent
+      change: changePercent > 1 ? 'up' : changePercent < -1 ? 'down' : 'stable',
+      changePercent,
     };
   } catch {
     return null;
   }
 }
 
-async function searchAndFetchPrice(cardName: string): Promise<PriceData | null> {
-  try {
-    const searchUrl = `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(cardName)}`;
-    const response = await fetch(searchUrl);
-    
-    if (!response.ok) return null;
-    
-    const cards = await response.json();
-    
-    if (!cards || !Array.isArray(cards) || cards.length === 0) return null;
-    
-    // Try to find a holo variant first by checking each card's pricing
-    for (const card of cards) {
-      const price = await fetchPriceFromTcgDex(card.id);
-      if (price && price.price > 0.5) return price;
-    }
-    
-    return null;
-  } catch {
-    return null;
+async function searchCards(cardName: string): Promise<PriceData | null> {
+  const searchResponse = await fetch(
+    `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(cardName)}`
+  );
+  if (!searchResponse.ok) return null;
+  
+  const cards = await searchResponse.json();
+  if (!Array.isArray(cards) || cards.length === 0) return null;
+  
+  const baseSetCard = cards.find((c: any) => c.id.startsWith('base1-'));
+  if (baseSetCard) {
+    const price = await fetchFromTcgDex(baseSetCard.id);
+    if (price) return price;
   }
+  
+  for (const card of cards) {
+    const price = await fetchFromTcgDex(card.id);
+    if (price && price.price > 0.5) return price;
+  }
+  
+  return null;
 }
 
 export async function GET(req: Request) {
@@ -113,28 +157,34 @@ export async function GET(req: Request) {
   const name = searchParams.get('name') || '';
   const cardId = searchParams.get('cardId') || '';
   
-  if (!name) {
-    return NextResponse.json({ price: null }, { status: 200 });
+  if (!name && !cardId) {
+    return NextResponse.json({ price: null });
   }
   
   try {
-    let price = null;
+    // Try PokemonPriceTracker first if API key is set
+    if (cardId && API_KEY) {
+      const price = await fetchFromPokemonPriceTracker(cardId);
+      if (price) return NextResponse.json({ price });
+    }
     
+    // Fallback to TCGdex
     if (cardId) {
-      price = await fetchPriceFromTcgDex(cardId);
+      const price = await fetchFromTcgDex(cardId);
+      if (price) return NextResponse.json({ price });
     }
     
-    if (!price) {
-      price = await searchAndFetchPrice(name);
+    if (name) {
+      const price = await searchCards(name);
+      if (price) return NextResponse.json({ price });
+      
+      const fallback = name.replace(/-/g, ' ');
+      const price2 = await searchCards(fallback);
+      if (price2) return NextResponse.json({ price: price2 });
     }
     
-    if (!price) {
-      const fallback = name.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
-      price = await searchAndFetchPrice(fallback);
-    }
-    
-    return NextResponse.json({ price }, { status: 200 });
+    return NextResponse.json({ price: null });
   } catch {
-    return NextResponse.json({ price: null }, { status: 200 });
+    return NextResponse.json({ price: null });
   }
 }
