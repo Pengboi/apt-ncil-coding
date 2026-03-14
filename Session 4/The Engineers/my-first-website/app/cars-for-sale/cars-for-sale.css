@@ -1,0 +1,415 @@
+/* Cars For Sale Page Styles */
+
+.cars-page {
+  min-height: 100vh;
+  background: var(--mercedes-dark);
+}
+
+/* Hero Section */
+.cars-hero {
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%),
+              url('https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&h=600&fit=crop') center center / cover no-repeat;
+  padding: 10rem 3rem 6rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+}
+
+.cars-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cars-hero-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--mercedes-gold);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.cars-hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem;
+  font-weight: 400;
+  color: var(--mercedes-white);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.cars-hero-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+/* Filters Section */
+.filters-section {
+  padding: 3rem;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(10, 10, 10, 0.95) 100%);
+  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+}
+
+.filters-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--mercedes-silver);
+  font-weight: 600;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.body-type-buttons {
+  gap: 0.75rem;
+}
+
+.body-type-btn {
+  padding: 0.8rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  background: rgba(192, 192, 192, 0.1);
+  color: var(--mercedes-white);
+  border: 1px solid rgba(192, 192, 192, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(192, 192, 192, 0.2);
+  border-color: var(--mercedes-silver);
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background: var(--mercedes-gold);
+  color: var(--mercedes-dark);
+  border-color: var(--mercedes-gold);
+  font-weight: 600;
+}
+
+.filter-icon {
+  font-size: 1.2rem;
+}
+
+/* Class Selector */
+.class-selector {
+  max-width: 300px;
+}
+
+.class-dropdown {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  background: rgba(192, 192, 192, 0.1);
+  color: var(--mercedes-white);
+  border: 1px solid rgba(192, 192, 192, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.class-dropdown:hover,
+.class-dropdown:focus {
+  background: rgba(192, 192, 192, 0.15);
+  border-color: var(--mercedes-silver);
+  outline: none;
+}
+
+.class-dropdown option {
+  background: var(--mercedes-charcoal);
+  color: var(--mercedes-white);
+}
+
+/* Results Count */
+.results-count {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(192, 192, 192, 0.1);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.results-count strong {
+  color: var(--mercedes-gold);
+  font-size: 1.2rem;
+}
+
+/* Cars Listing */
+.cars-listing {
+  padding: 4rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.cars-grid-page {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2.5rem;
+}
+
+/* Car Card */
+.car-card-page {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.5));
+  border: 1px solid rgba(192, 192, 192, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.car-card-page:hover {
+  transform: translateY(-10px);
+  border-color: var(--mercedes-gold);
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.15);
+}
+
+.car-image-wrapper-page {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+}
+
+.car-image-page {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.car-card-page:hover .car-image-page {
+  transform: scale(1.05);
+}
+
+.car-badge-page {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  background: var(--mercedes-silver);
+  color: var(--mercedes-dark);
+  font-weight: 700;
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.car-badge-page.popular {
+  background: var(--mercedes-gold);
+  color: var(--mercedes-dark);
+}
+
+.car-badge-page.premium {
+  background: linear-gradient(135deg, var(--mercedes-gold), #f0d878);
+  color: var(--mercedes-dark);
+}
+
+.car-categories {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.category-tag {
+  font-size: 0.7rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-tag.cheap {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.category-tag.expensive {
+  background: rgba(168, 85, 247, 0.9);
+  color: white;
+}
+
+.category-tag.performance {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+}
+
+.category-tag.luxury {
+  background: rgba(212, 175, 55, 0.9);
+  color: var(--mercedes-dark);
+}
+
+.category-tag.body-type {
+  background: rgba(0, 173, 239, 0.9);
+  color: white;
+}
+
+.car-content-page {
+  padding: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-name-page {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--mercedes-white);
+}
+
+.car-price-page {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--mercedes-gold);
+  margin-bottom: 1.5rem;
+}
+
+.car-features-page {
+  list-style: none;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.car-features-page li {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0.6rem;
+  padding-left: 0.3rem;
+  position: relative;
+}
+
+.car-features-page li::before {
+  content: '✓';
+  color: var(--mercedes-gold);
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+.car-btn-page {
+  width: 100%;
+  text-align: center;
+  padding: 1rem 2rem;
+  font-size: 0.85rem;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(26, 26, 26, 0.5);
+  border-radius: 12px;
+  border: 1px dashed rgba(192, 192, 192, 0.3);
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-results h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--mercedes-white);
+  margin-bottom: 0.5rem;
+}
+
+.no-results p {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2rem;
+}
+
+/* CTA Section */
+.cars-cta-section {
+  padding: 5rem 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 173, 239, 0.1));
+  border-top: 1px solid rgba(192, 192, 192, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cars-hero-title {
+    font-size: 3.5rem;
+  }
+  
+  .cars-grid-page {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .cars-hero {
+    padding: 8rem 1.5rem 4rem;
+  }
+  
+  .cars-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .filters-section {
+    padding: 2rem 1.5rem;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .filter-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .cars-listing {
+    padding: 2rem 1.5rem;
+  }
+  
+  .cars-grid-page {
+    grid-template-columns: 1fr;
+  }
+  
+  .car-image-wrapper-page {
+    height: 200px;
+  }
+}

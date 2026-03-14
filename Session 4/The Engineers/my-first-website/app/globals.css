@@ -115,7 +115,7 @@ html {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: url('../images/S-class.jpg') center center / cover no-repeat;
+  background: url('https://www.topgear.com/sites/default/files/2022/03/1-Mercedes-S-Class-plug-in.jpg') center center / cover no-repeat;
 }
 
 .hero::before {
@@ -233,10 +233,10 @@ html {
 }
 
 .btn {
-  padding: 1rem 2.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  padding: 1.1rem 3rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   border: 2px solid;
@@ -245,6 +245,7 @@ html {
   overflow: hidden;
   cursor: pointer;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -761,6 +762,14 @@ section {
     grid-template-columns: 1fr;
   }
 
+  .cars-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .car-image-wrapper {
+    height: 180px;
+  }
+
   .f1-stats {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -851,4 +860,187 @@ a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--mercedes-blue);
   outline-offset: 2px;
+}
+
+/* Cars for Sale Section */
+.cars-for-sale-section {
+  padding: 8rem 3rem;
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.8) 100%);
+  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+}
+
+.car-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.car-selector-label {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mercedes-silver);
+  font-weight: 500;
+}
+
+.car-selector-dropdown {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  background: var(--mercedes-charcoal);
+  color: var(--mercedes-white);
+  border: 2px solid var(--mercedes-silver);
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 300px;
+  transition: all 0.3s ease;
+}
+
+.car-selector-dropdown:hover {
+  border-color: var(--mercedes-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.car-selector-dropdown:focus {
+  outline: none;
+  border-color: var(--mercedes-gold);
+}
+
+.car-selector-dropdown option {
+  background: var(--mercedes-charcoal);
+  color: var(--mercedes-white);
+  padding: 0.5rem;
+}
+
+.cars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.car-card {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.5));
+  border: 1px solid rgba(192, 192, 192, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.car-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 173, 239, 0.1));
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.car-card:hover::before {
+  opacity: 1;
+}
+
+.car-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--mercedes-gold);
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.15);
+}
+
+.car-card.featured {
+  border-color: var(--mercedes-gold);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(26, 26, 26, 0.9));
+}
+
+.car-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.car-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.car-card:hover .car-image {
+  transform: scale(1.05);
+}
+
+.car-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  background: var(--mercedes-silver);
+  color: var(--mercedes-dark);
+  font-weight: 700;
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.car-badge.popular {
+  background: var(--mercedes-gold);
+  color: var(--mercedes-dark);
+}
+
+.car-badge.premium {
+  background: linear-gradient(135deg, var(--mercedes-gold), #f0d878);
+  color: var(--mercedes-dark);
+}
+
+.car-content {
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--mercedes-white);
+}
+
+.car-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--mercedes-gold);
+  margin-bottom: 1.5rem;
+}
+
+.car-features {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.car-features li {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.car-btn {
+  width: 100%;
+  text-align: center;
+  padding: 1rem 2rem;
+  font-size: 0.85rem;
+  margin-top: auto;
 }

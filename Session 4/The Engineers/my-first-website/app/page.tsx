@@ -60,6 +60,7 @@ export default function Home() {
           <div className="logo">MERCEDES-BENZ</div>
           <ul className="nav-links">
             <li><a href="#home">Home</a></li>
+            <li><a href="/cars-for-sale">Cars for Sale</a></li>
             <li><a href="#models">Models</a></li>
             <li><a href="#f1">F1 History</a></li>
           </ul>
@@ -77,8 +78,8 @@ export default function Home() {
             Experience luxury, performance, and innovation. From the C-Class to the S-Class, and the dominance of Mercedes-AMG Petronas in Formula 1.
           </p>
           <div className="hero-cta">
-            <a href="#models" className="btn btn-primary">Explore Models</a>
-            <a href="#f1" className="btn btn-secondary">F1 History</a>
+            <a href="/cars-for-sale" className="btn btn-primary">Browse Cars for Sale</a>
+            <a href="#models" className="btn btn-secondary">Explore Models</a>
           </div>
         </div>
         <div className="scroll-indicator">
@@ -163,7 +164,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <a href="#" className="btn btn-primary">Explore F1 History</a>
+              <a href="/f1-history" className="btn btn-primary">Explore F1 History</a>
             </div>
 
             <div className="f1-visual">
@@ -199,6 +200,7 @@ export default function Home() {
             <h4>Quick Links</h4>
             <ul className="footer-links">
               <li><a href="#home">Home</a></li>
+              <li><a href="/cars-for-sale">Cars for Sale</a></li>
               <li><a href="#models">Models</a></li>
               <li><a href="#f1">F1 History</a></li>
             </ul>

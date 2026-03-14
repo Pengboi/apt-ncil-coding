@@ -24,6 +24,12 @@ export default function Navigation() {
               Home
             </Link>
             <Link
+              href="/cars-for-sale"
+              className="text-gray-300 hover:text-white transition-colors duration-200 font-medium px-2 py-1"
+            >
+              Cars for Sale
+            </Link>
+            <Link
               href="/models"
               className="text-gray-300 hover:text-white transition-colors duration-200 font-medium px-2 py-1"
             >
@@ -74,6 +80,13 @@ export default function Navigation() {
               Home
             </Link>
             <Link
+              href="/cars-for-sale"
+              className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              Cars for Sale
+            </Link>
+            <Link
               href="/models"
               className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
@@ -82,7 +95,7 @@ export default function Navigation() {
             </Link>
             <Link
               href="/f1-history"
-              className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors duration-200"
+              className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               F1 History
