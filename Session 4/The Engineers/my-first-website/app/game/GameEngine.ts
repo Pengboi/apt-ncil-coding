@@ -324,7 +324,15 @@ export class GameEngine {
       case 'weapon':
         if (pickup.weaponId) {
           this.player.unlockWeapon(pickup.weaponId);
-          console.log(`Unlocked ${pickup.weaponId}!`);
+          // Get weapon name for better notification
+          const weaponNames: Record<string, string> = {
+            'rifle': 'Assault Rifle',
+            'shotgun': 'Shotgun',
+            'sniper': 'Sniper Rifle',
+            'lmg': 'Light Machine Gun',
+          };
+          const weaponName = weaponNames[pickup.weaponId] || pickup.weaponId;
+          console.log(`🎉 UNLOCKED: ${weaponName}! Press ${this.player.weapons.findIndex(w => w.id === pickup.weaponId) + 1} to equip`);
         }
         break;
     }
@@ -428,12 +436,9 @@ export class GameEngine {
     
     if (now - this.lastShotTime < fireInterval) return;
     
-    // Check ammo
-    if (weapon.ammo <= 0) return;  // Need to reload (not implemented yet)
-    
-    // Fire!
+    // Fire! (Unlimited ammo - no ammo check)
     this.fireBullet(weapon);
-    weapon.ammo--;
+    // weapon.ammo--;  // Unlimited ammo - don't decrement
     this.lastShotTime = now;
   }
   
@@ -795,22 +800,59 @@ export class GameEngine {
       
       // Floating animation
       const float = Math.sin(performance.now() / 300) * 3;
+      const centerX = pickup.x + pickup.width / 2;
+      const centerY = pickup.y + pickup.height / 2 + float;
       
-      ctx.fillStyle = pickup.type === 'medkit' ? '#2ecc71' : '#f39c12';
+      // Determine color based on pickup type
+      let color = '#f39c12';  // Default orange
+      let label = '';
+      
+      if (pickup.type === 'medkit') {
+        color = '#2ecc71';  // Green for health
+        label = '+';
+      } else if (pickup.type === 'weapon' && pickup.weaponId) {
+        // Different colors for different weapons
+        switch (pickup.weaponId) {
+          case 'rifle':
+            color = '#e74c3c';  // Red for Assault Rifle
+            label = 'AR';
+            break;
+          case 'shotgun':
+            color = '#9b59b6';  // Purple for Shotgun
+            label = 'SG';
+            break;
+          case 'sniper':
+            color = '#3498db';  // Blue for Sniper
+            label = 'SR';
+            break;
+          case 'lmg':
+            color = '#f39c12';  // Orange for LMG
+            label = 'LMG';
+            break;
+          default:
+            color = '#e67e22';
+            label = 'WPN';
+        }
+      }
+      
+      ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(
-        pickup.x + pickup.width / 2,
-        pickup.y + pickup.height / 2 + float,
-        pickup.width / 2,
-        0,
-        Math.PI * 2
-      );
+      ctx.arc(centerX, centerY, pickup.width / 2, 0, Math.PI * 2);
       ctx.fill();
       
       // Glow
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 2;
       ctx.stroke();
+      
+      // Draw label
+      if (label) {
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, centerX, centerY);
+      }
     }
   }
   
@@ -971,10 +1013,10 @@ export class GameEngine {
     ctx.font = 'bold 14px Arial';
     ctx.fillText(weapon.name, 20, 125);
     
-    // Ammo counter
-    ctx.fillStyle = weapon.ammo > 0 ? '#f1c40f' : '#e74c3c';
+    // Ammo counter (UNLIMITED)
+    ctx.fillStyle = '#2ecc71';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`${weapon.ammo}/${weapon.maxAmmo}`, 20, 145);
+    ctx.fillText('∞', 20, 145);
     
     // Current area
     ctx.textAlign = 'right';
@@ -1098,4 +1140,49 @@ export class GameEngine {
   setMouseDown(down: boolean): void {
     this.input.shoot = down;
   }
+  
+  // ----------------------------------------------------------
+  // Developer Mode - Quick Area Warp
+  // ----------------------------------------------------------
+  warpToArea(areaId: string): boolean {
+    const area = getAreaById(areaId);
+    if (!area) {
+      console.warn(`Area "${areaId}" not found`);
+      return false;
+    }
+    
+    // Clear bullets
+    this.bullets = [];
+    this.enemyBullets = [];
+    
+    // Update current area
+    this.currentArea = area;
+    this.player.currentAreaId = areaId;
+    
+    // Move player to spawn
+    this.player.x = area.playerSpawn.x;
+    this.player.y = area.playerSpawn.y;
+    this.player.vx = 0;
+    this.player.vy = 0;
+    
+    // Update camera
+    this.camera.setWorldBounds(area.width, area.height);
+    this.camera.centerOn(this.player.x, this.player.y, this.player.width, this.player.height);
+    
+    // Track discovered
+    if (!this.areasDiscovered.includes(areaId)) {
+      this.areasDiscovered.push(areaId);
+      this.player.unlockedAreas.push(areaId);
+    }
+    
+    console.log(`🎮 Warped to: ${area.name}`);
+    return true;
+  }
+  
+  // Quick warp shortcuts for development
+  warpToBootCamp(): void { this.warpToArea('bootcamp'); }
+  warpToCity(): void { this.warpToArea('city'); }
+  warpToBunker(): void { this.warpToArea('bunker'); }
+  warpToMountain(): void { this.warpToArea('mountain'); }
+  warpToHQ(): void { this.warpToArea('hq'); }
 }

@@ -44,7 +44,7 @@ function createEnemy(type: 'grunt' | 'soldier' | 'drone' | 'heavy', x: number, y
 }
 
 // Helper to create pickups
-function createPickup(type: 'medkit' | 'ammo', x: number, y: number): Pickup {
+function createPickup(type: 'medkit' | 'ammo' | 'weapon', x: number, y: number, weaponId?: string): Pickup {
   return {
     x,
     y,
@@ -53,8 +53,14 @@ function createPickup(type: 'medkit' | 'ammo', x: number, y: number): Pickup {
     type,
     value: type === 'medkit' ? 25 : 30,
     duration: 0,
+    weaponId,
     isCollected: false,
   };
+}
+
+// Helper to create weapon pickups
+function createWeaponPickup(weaponId: string, x: number, y: number): Pickup {
+  return createPickup('weapon', x, y, weaponId);
 }
 
 // Helper to create save points
@@ -82,40 +88,44 @@ export const bootCampArea: Area = {
   playerSpawn: { x: 100, y: 500 },
   
   platforms: [
-    // Ground floor
-    createPlatform(0, 650, 600, 150),
-    createPlatform(700, 650, 500, 150),
-    createPlatform(1300, 650, 400, 150),
-    createPlatform(1900, 650, 500, 150),
+    // Ground floor - CONNECTED with 40px gaps (wider than player width)
+    createPlatform(0, 650, 700, 150),
+    createPlatform(740, 650, 600, 150),  // 40px gap
+    createPlatform(1380, 650, 500, 150), // 40px gap
+    createPlatform(1920, 650, 600, 150), // 40px gap
     
-    // Tutorial platforms
-    createPlatform(300, 500, 150, 20),   // First jump
-    createPlatform(550, 400, 150, 20),   // Second jump
-    createPlatform(850, 350, 150, 20),   // Third jump
+    // Tutorial platforms - SMALL steps, easy jumps (40px gaps)
+    createPlatform(300, 600, 150, 20),
+    createPlatform(490, 580, 100, 20),   // 40px gap
+    createPlatform(630, 560, 100, 20),   // 40px gap
+    createPlatform(770, 540, 150, 20),   // 40px gap
     
-    // Elevated sections
-    createPlatform(1200, 450, 200, 20),
-    createPlatform(1600, 350, 200, 20),
-    createPlatform(2100, 450, 200, 20),
+    // Easy elevated platforms (40px gaps)
+    createPlatform(1100, 580, 200, 20),
+    createPlatform(1340, 560, 150, 20),  // 40px gap
+    createPlatform(1530, 540, 200, 20),  // 40px gap
+    createPlatform(1760, 520, 200, 20),  // 40px gap
+    createPlatform(2000, 540, 200, 20),  // 40px gap
+    createPlatform(2240, 560, 150, 20),  // 40px gap
   ],
   
   enemies: [
     // Easy grunts to practice on
-    createEnemy('grunt', 800, 610),
-    createEnemy('grunt', 1100, 610),
-    createEnemy('grunt', 1500, 610),
-    createEnemy('grunt', 2000, 410),  // On elevated platform
+    createEnemy('grunt', 900, 610),
+    createEnemy('grunt', 1100, 610),       // Adjusted: was 1200, now on platform 2
+    createEnemy('grunt', 1600, 610),
+    createEnemy('grunt', 2100, 520),
   ],
   
   pickups: [
-    createPickup('medkit', 375, 460),
-    createPickup('ammo', 925, 310),
-    createPickup('medkit', 1700, 310),
+    createPickup('medkit', 375, 560),
+    createWeaponPickup('rifle', 845, 520),   // Assault Rifle pickup
+    createPickup('medkit', 1600, 500),
   ],
   
   savePoints: [
     createSavePoint(50, 590, 'bootcamp'),   // Start
-    createSavePoint(1200, 590, 'bootcamp'), // Middle
+    createSavePoint(1100, 590, 'bootcamp'), // Adjusted: was 1200, now on platform 2
     createSavePoint(2200, 590, 'bootcamp'), // End - before exit
   ],
   
@@ -143,29 +153,31 @@ export const cityArea: Area = {
   playerSpawn: { x: 100, y: 500 },
   
   platforms: [
-    // Street level
-    createPlatform(0, 700, 400, 100),
-    createPlatform(500, 700, 600, 100),
-    createPlatform(1200, 700, 400, 100),
-    createPlatform(1800, 700, 500, 100),
-    createPlatform(2500, 700, 500, 100),
+    // Street level - CONNECTED (40px gaps to prevent player getting stuck)
+    createPlatform(0, 700, 520, 100),
+    createPlatform(560, 700, 700, 100),  // 40px gap
+    createPlatform(1300, 700, 550, 100), // 40px gap
+    createPlatform(1890, 700, 680, 100), // 40px gap
+    createPlatform(2610, 700, 500, 100), // 40px gap
     
-    // Building 1 - Lower floors
-    createPlatform(600, 550, 150, 20),
-    createPlatform(800, 450, 150, 20),
-    createPlatform(600, 350, 150, 20),
+    // Building 1 - Easy stairs (40px gaps)
+    createPlatform(500, 640, 150, 20),
+    createPlatform(790, 600, 100, 20),   // 40px gap
+    createPlatform(600, 560, 150, 20),   // Back left
     
-    // Building 2 - Ruined building
-    createPlatform(1400, 550, 200, 20),
-    createPlatform(1700, 450, 200, 20),
-    createPlatform(1400, 350, 200, 20),
-    createPlatform(1700, 250, 200, 20),
+    // Building 2 - Connected platforms (40px gaps)
+    createPlatform(1400, 640, 220, 20),
+    createPlatform(1660, 600, 100, 20),  // 40px gap
+    createPlatform(1800, 560, 150, 20),  // 40px gap
+    createPlatform(1400, 520, 200, 20),  // Back down
+    createPlatform(1660, 480, 150, 20),  // 40px gap
     
-    // Rooftop path
-    createPlatform(2000, 500, 100, 20),
-    createPlatform(2200, 400, 100, 20),
-    createPlatform(2400, 300, 200, 20),
-    createPlatform(2700, 400, 150, 20),
+    // Rooftop path - Easy stepping stones (40px gaps)
+    createPlatform(2000, 640, 120, 20),
+    createPlatform(2160, 600, 100, 20),  // 40px gap
+    createPlatform(2300, 560, 120, 20),  // 40px gap
+    createPlatform(2460, 520, 220, 20),  // 40px gap
+    createPlatform(2720, 560, 150, 20),  // 40px gap
   ],
   
   enemies: [
@@ -175,31 +187,31 @@ export const cityArea: Area = {
     createEnemy('soldier', 1400, 660),
     
     // Building 1
-    createEnemy('grunt', 650, 510),
-    createEnemy('grunt', 650, 310),
+    createEnemy('grunt', 675, 600),
+    createEnemy('grunt', 675, 520),
     
     // Building 2
-    createEnemy('soldier', 1500, 510),
-    createEnemy('grunt', 1500, 310),
-    createEnemy('soldier', 1800, 210),
+    createEnemy('soldier', 1510, 600),
+    createEnemy('grunt', 1510, 490),
+    createEnemy('soldier', 1855, 540),
     
     // Rooftop
-    createEnemy('grunt', 2450, 260),
-    createEnemy('grunt', 2750, 360),
+    createEnemy('grunt', 2540, 490),
+    createEnemy('grunt', 2755, 540),
   ],
   
   pickups: [
-    createPickup('medkit', 875, 410),
-    createPickup('ammo', 650, 310),
-    createPickup('medkit', 1800, 210),
-    createPickup('ammo', 2500, 260),
+    createPickup('medkit', 810, 600),
+    createWeaponPickup('shotgun', 650, 520),   // Shotgun pickup
+    createPickup('medkit', 1800, 520),
+    createWeaponPickup('sniper', 2550, 520),   // Sniper Rifle pickup
   ],
   
   savePoints: [
     createSavePoint(50, 640, 'city'),
     createSavePoint(900, 640, 'city'),
-    createSavePoint(1900, 640, 'city'),
-    createSavePoint(2700, 640, 'city'),
+    createSavePoint(1820, 640, 'city'),   // Adjusted: was 1900, now on platform 3 (ends at 1850)
+    createSavePoint(2650, 640, 'city'),   // Adjusted: was 2700, now on platform 5 (starts at 2610)
   ],
   
   connections: [
@@ -233,42 +245,43 @@ export const bunkerArea: Area = {
   playerSpawn: { x: 100, y: 400 },
   
   platforms: [
-    // Entry tunnel
-    createPlatform(0, 500, 400, 100),
-    createPlatform(500, 550, 300, 50),
+    // Entry tunnel - CONNECTED
+    createPlatform(0, 500, 520, 100),
+    createPlatform(540, 550, 320, 50),   // Small gap, slight step up
     
-    // Main chamber
-    createPlatform(900, 500, 600, 100),
-    createPlatform(1600, 500, 400, 100),
+    // Main chamber - CONNECTED
+    createPlatform(880, 500, 650, 100),  // Small gap
+    createPlatform(1550, 500, 480, 100), // Small gap
     
-    // Upper catwalks
-    createPlatform(800, 350, 200, 20),
-    createPlatform(1100, 250, 200, 20),
-    createPlatform(1400, 350, 200, 20),
-    createPlatform(1700, 250, 200, 20),
+    // Upper catwalks - Connected walkway
+    createPlatform(800, 520, 220, 20),
+    createPlatform(1040, 480, 100, 20),  // Small gap
+    createPlatform(1180, 480, 220, 20),  // Small gap
+    createPlatform(1440, 520, 220, 20),  // Small gap
+    createPlatform(1700, 480, 200, 20),  // Small gap
     
-    // Lower tunnels
-    createPlatform(500, 650, 800, 50),
-    createPlatform(1400, 650, 400, 50),
-    createPlatform(2000, 600, 400, 100),
+    // Lower tunnels - CONNECTED
+    createPlatform(500, 650, 830, 50),
+    createPlatform(1350, 650, 470, 50),  // Small gap
+    createPlatform(1840, 600, 580, 100), // Small gap
     
     // Exit tunnel
-    createPlatform(2500, 550, 300, 50),
+    createPlatform(2440, 550, 380, 50),  // Small gap
   ],
   
   enemies: [
     // Entry
-    createEnemy('grunt', 600, 510),
-    createEnemy('grunt', 700, 510),
+    createEnemy('grunt', 650, 510),
+    createEnemy('grunt', 750, 510),
     
     // Main chamber
-    createEnemy('soldier', 1100, 460),
-    createEnemy('soldier', 1400, 460),
+    createEnemy('soldier', 1150, 460),
+    createEnemy('soldier', 1750, 460),
     
     // Catwalks
-    createEnemy('drone', 900, 310),
-    createEnemy('drone', 1300, 210),
-    createEnemy('drone', 1600, 310),
+    createEnemy('drone', 910, 500),
+    createEnemy('drone', 1400, 460),
+    createEnemy('drone', 1800, 460),
     
     // Lower tunnels
     createEnemy('grunt', 700, 610),
@@ -281,10 +294,10 @@ export const bunkerArea: Area = {
   ],
   
   pickups: [
-    createPickup('medkit', 850, 310),
-    createPickup('ammo', 1200, 210),
-    createPickup('medkit', 1800, 210),
-    createPickup('ammo', 2200, 560),
+    createPickup('medkit', 900, 480),
+    createWeaponPickup('lmg', 1300, 440),     // LMG pickup
+    createPickup('medkit', 1900, 440),
+    createWeaponPickup('rifle', 2100, 560),   // Extra Assault Rifle
   ],
   
   savePoints: [
@@ -324,27 +337,29 @@ export const mountainArea: Area = {
   playerSpawn: { x: 100, y: 500 },
   
   platforms: [
-    // Mountain base
-    createPlatform(0, 600, 500, 100),
-    createPlatform(600, 550, 400, 50),
+    // Mountain base - CONNECTED
+    createPlatform(0, 600, 520, 100),
+    createPlatform(540, 550, 450, 50),   // Small gap
     
-    // Climbing path
-    createPlatform(1100, 500, 200, 50),
-    createPlatform(1400, 450, 200, 50),
-    createPlatform(1700, 400, 200, 50),
+    // Climbing path - Easy steps
+    createPlatform(1010, 580, 220, 50),  // Small gap
+    createPlatform(1260, 580, 220, 50),  // Small gap
+    createPlatform(1510, 560, 220, 50),  // Small gap
     
-    // Upper ridge
-    createPlatform(2000, 350, 600, 50),
-    createPlatform(2800, 300, 400, 50),
+    // Upper ridge - Connected
+    createPlatform(1760, 520, 650, 50),  // Small gap
+    createPlatform(2430, 470, 400, 50),  // Small gap
+    createPlatform(2850, 470, 380, 50),  // Small gap
     
-    // Lower caves
-    createPlatform(800, 700, 400, 50),
-    createPlatform(1400, 750, 300, 50),
-    createPlatform(2000, 700, 400, 50),
+    // Lower caves - Connected
+    createPlatform(800, 700, 430, 50),
+    createPlatform(1250, 750, 350, 50),  // Small gap
+    createPlatform(2030, 700, 430, 50),  // Small gap
     
-    // Ice platforms
-    createPlatform(500, 400, 150, 20),
-    createPlatform(900, 300, 150, 20),
+    // Ice platforms - Easy reach
+    createPlatform(500, 580, 170, 20),
+    createPlatform(690, 560, 120, 20),   // Small gap
+    createPlatform(900, 560, 170, 20),   // Small gap
   ],
   
   enemies: [
@@ -353,14 +368,14 @@ export const mountainArea: Area = {
     createEnemy('soldier', 800, 510),
     
     // Climbing path
-    createEnemy('drone', 1200, 460),
-    createEnemy('soldier', 1500, 410),
-    createEnemy('drone', 1800, 360),
+    createEnemy('drone', 1200, 540),
+    createEnemy('soldier', 1500, 540),
+    createEnemy('drone', 1800, 500),
     
     // Upper ridge - Heavy enemy!
-    createEnemy('heavy', 2300, 294),
-    createEnemy('soldier', 2600, 310),
-    createEnemy('drone', 3000, 260),
+    createEnemy('heavy', 2300, 444),
+    createEnemy('soldier', 2600, 460),
+    createEnemy('drone', 3000, 410),
     
     // Caves
     createEnemy('grunt', 1000, 660),
@@ -369,22 +384,22 @@ export const mountainArea: Area = {
     createEnemy('soldier', 2200, 660),
     
     // Ice platforms
-    createEnemy('drone', 550, 360),
-    createEnemy('drone', 950, 260),
+    createEnemy('drone', 550, 510),
+    createEnemy('drone', 950, 490),
   ],
   
   pickups: [
-    createPickup('medkit', 1200, 460),
-    createPickup('ammo', 1500, 410),
-    createPickup('medkit', 2400, 310),
-    createPickup('ammo', 3000, 260),
+    createPickup('medkit', 1120, 540),
+    createWeaponPickup('shotgun', 1370, 540),  // Shotgun pickup
+    createPickup('medkit', 2085, 470),
+    createWeaponPickup('sniper', 3030, 420),   // Sniper pickup
   ],
   
   savePoints: [
     createSavePoint(50, 540, 'mountain'),
-    createSavePoint(1200, 440, 'mountain'),
-    createSavePoint(2300, 290, 'mountain'),
-    createSavePoint(3000, 240, 'mountain'),
+    createSavePoint(1120, 520, 'mountain'),
+    createSavePoint(2085, 460, 'mountain'),
+    createSavePoint(3040, 410, 'mountain'),
   ],
   
   connections: [
@@ -418,68 +433,69 @@ export const hqArea: Area = {
   playerSpawn: { x: 100, y: 500 },
   
   platforms: [
-    // Entry hall
-    createPlatform(0, 600, 400, 100),
-    createPlatform(500, 600, 300, 100),
+    // Entry hall - CONNECTED
+    createPlatform(0, 600, 420, 100),
+    createPlatform(440, 600, 380, 100),  // Small gap
     
-    // Security checkpoint
-    createPlatform(900, 550, 400, 50),
-    createPlatform(1400, 550, 200, 50),
+    // Security checkpoint - CONNECTED
+    createPlatform(840, 550, 430, 50),   // Small gap
+    createPlatform(1290, 550, 330, 50),  // Small gap
     
     // Command center
-    createPlatform(1700, 500, 500, 50),
+    createPlatform(1640, 500, 550, 50),  // Small gap
     
-    // Upper levels
-    createPlatform(600, 400, 200, 20),
-    createPlatform(900, 350, 200, 20),
-    createPlatform(1200, 400, 200, 20),
+    // Upper levels - Easy walkway
+    createPlatform(600, 560, 220, 20),
+    createPlatform(840, 560, 100, 20),   // Small gap
+    createPlatform(960, 560, 220, 20),   // Small gap
+    createPlatform(1200, 560, 220, 20),  // Small gap
     
     // Boss platform (final)
-    createPlatform(1900, 400, 300, 50),
+    createPlatform(1850, 520, 350, 50),  // Small gap
     
-    // Side passages
-    createPlatform(300, 750, 400, 50),
-    createPlatform(800, 750, 400, 50),
+    // Side passages - CONNECTED
+    createPlatform(300, 750, 430, 50),
+    createPlatform(750, 750, 480, 50),   // Small gap
   ],
   
   enemies: [
     // Entry
-    createEnemy('soldier', 600, 560),
-    createEnemy('soldier', 700, 560),
+    createEnemy('soldier', 630, 560),
+    createEnemy('soldier', 730, 560),
     
     // Security
-    createEnemy('drone', 1000, 510),
-    createEnemy('heavy', 1200, 504),
-    createEnemy('drone', 1500, 510),
+    createEnemy('drone', 1055, 510),
+    createEnemy('heavy', 1365, 500),
+    createEnemy('drone', 1555, 500),
     
     // Command center
-    createEnemy('soldier', 1900, 460),
-    createEnemy('soldier', 2000, 460),
-    createEnemy('heavy', 2100, 454),
+    createEnemy('soldier', 1950, 450),
+    createEnemy('soldier', 2050, 450),
+    createEnemy('heavy', 2200, 470),
     
     // Upper levels
-    createEnemy('drone', 700, 360),
-    createEnemy('drone', 1000, 310),
-    createEnemy('drone', 1300, 360),
+    createEnemy('drone', 710, 540),
+    createEnemy('drone', 1070, 540),
+    createEnemy('drone', 1310, 540),
     
     // Side passages
-    createEnemy('grunt', 400, 710),
-    createEnemy('soldier', 600, 710),
-    createEnemy('grunt', 1000, 710),
+    createEnemy('grunt', 430, 710),
+    createEnemy('soldier', 640, 710),
+    createEnemy('grunt', 1050, 710),
   ],
   
   pickups: [
-    createPickup('medkit', 1000, 510),
-    createPickup('ammo', 1400, 510),
-    createPickup('medkit', 2000, 460),
-    createPickup('ammo', 2100, 360),
+    createPickup('medkit', 1055, 510),
+    createWeaponPickup('lmg', 1455, 510),      // LMG pickup
+    createPickup('medkit', 1915, 540),
+    createWeaponPickup('shotgun', 2025, 490), // Shotgun pickup
   ],
   
   savePoints: [
     createSavePoint(50, 540, 'hq'),
-    createSavePoint(1100, 490, 'hq'),
-    createSavePoint(1800, 440, 'hq'),
-    createSavePoint(2100, 340, 'hq'),  // Before boss
+    createSavePoint(1100, 500, 'hq'),
+    createSavePoint(1750, 450, 'hq'),
+    createSavePoint(2025, 460, 'hq'),
   ],
   
   connections: [

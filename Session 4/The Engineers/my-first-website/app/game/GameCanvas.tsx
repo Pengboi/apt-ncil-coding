@@ -41,6 +41,20 @@ export default function GameCanvas() {
       e.preventDefault();
     }
     
+    // Developer shortcuts: F1-F5 to warp to areas
+    const areaMap: Record<string, string> = {
+      'F1': 'bootcamp',
+      'F2': 'city',
+      'F3': 'bunker',
+      'F4': 'mountain',
+      'F5': 'hq',
+    };
+    if (areaMap[e.key]) {
+      e.preventDefault();
+      (game as any).warpToArea(areaMap[e.key]);
+      return;
+    }
+    
     game.setKeyDown(e.key);
   }, []);
   
@@ -124,7 +138,7 @@ export default function GameCanvas() {
       </div>
       
       {/* Controls Reference */}
-      <div className="mt-6 grid grid-cols-2 gap-8 text-gray-300 text-sm">
+      <div className="mt-6 grid grid-cols-3 gap-6 text-gray-300 text-sm">
         <div>
           <h3 className="font-bold text-white mb-2">Movement</h3>
           <ul className="space-y-1">
@@ -140,6 +154,16 @@ export default function GameCanvas() {
             <li><span className="text-blue-400">M</span> or <span className="text-blue-400">LMB</span> - Shoot</li>
             <li><span className="text-blue-400">1-5</span> - Switch Weapons</li>
             <li><span className="text-blue-400">E</span> - Save at Terminal</li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-bold text-yellow-400 mb-2">🛠️ Dev Shortcuts</h3>
+          <ul className="space-y-1 text-xs">
+            <li><span className="text-yellow-400">F1</span> - Boot Camp</li>
+            <li><span className="text-yellow-400">F2</span> - City</li>
+            <li><span className="text-yellow-400">F3</span> - Bunker</li>
+            <li><span className="text-yellow-400">F4</span> - Mountain</li>
+            <li><span className="text-yellow-400">F5</span> - HQ</li>
           </ul>
         </div>
       </div>
