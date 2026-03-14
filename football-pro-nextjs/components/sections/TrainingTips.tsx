@@ -19,6 +19,7 @@ interface TipCard {
   tips: string[];
   level: 'beginner' | 'intermediate' | 'advanced';
   delay: number;
+  color: string;
 }
 
 const tips: TipCard[] = [
@@ -29,6 +30,7 @@ const tips: TipCard[] = [
     tips: ['Use both feet equally', 'Keep your head up', 'Practice daily for 20 mins'],
     level: 'beginner',
     delay: 0,
+    color: '#3498db', // Blue
   },
   {
     icon: <BullseyeIcon />,
@@ -37,6 +39,7 @@ const tips: TipCard[] = [
     tips: ['Lock your ankle', 'Follow through', 'Communicate with teammates'],
     level: 'intermediate',
     delay: 100,
+    color: '#e74c3c', // Red
   },
   {
     icon: <StopwatchIcon />,
@@ -45,6 +48,7 @@ const tips: TipCard[] = [
     tips: ['Sprint 40m x 10 sets', 'Ladder drills 3x/week', 'Rest between sprints'],
     level: 'advanced',
     delay: 200,
+    color: '#f39c12', // Orange
   },
   {
     icon: <HandPaperIcon />,
@@ -53,6 +57,7 @@ const tips: TipCard[] = [
     tips: ['Cushion the ball', 'Move with the ball', 'Use different surfaces'],
     level: 'intermediate',
     delay: 0,
+    color: '#f1c40f', // Yellow
   },
   {
     icon: <ShieldIcon />,
@@ -61,6 +66,7 @@ const tips: TipCard[] = [
     tips: ['Stay goal-side', 'Watch the ball & player', 'Communicate constantly'],
     level: 'beginner',
     delay: 100,
+    color: '#2ecc71', // Green
   },
   {
     icon: <FistIcon />,
@@ -69,6 +75,7 @@ const tips: TipCard[] = [
     tips: ['Plant foot beside ball', 'Strike with laces', 'Lean over the ball'],
     level: 'advanced',
     delay: 200,
+    color: '#e91e63', // Pink
   },
 ];
 
@@ -126,7 +133,9 @@ export default function TrainingTips() {
               data-aos="fade-up"
               data-aos-delay={tip.delay}
             >
-              <div className="tip-icon">{tip.icon}</div>
+              <div className="tip-icon" style={{ background: tip.color }}>
+                {tip.icon}
+              </div>
               <div className="tip-content">
                 <h3>{tip.title}</h3>
                 <p>{tip.description}</p>

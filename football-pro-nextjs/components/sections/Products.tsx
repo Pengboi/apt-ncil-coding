@@ -23,10 +23,11 @@ interface Product {
   description: string;
   category: 'boots' | 'gear' | 'accessories';
   badge?: string;
-  gradient: string;
+  image: string;
   icon: React.ReactNode;
 }
 
+// Product images using football-specific photos
 const products: Product[] = [
   {
     id: 1,
@@ -37,7 +38,8 @@ const products: Product[] = [
     description: 'Elite speed boots with Zoom Air technology for explosive acceleration.',
     category: 'boots',
     badge: 'Top Rated',
-    gradient: 'boots-gradient',
+    // Soccer cleats on grass
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop',
     icon: <ShoePrintsIcon />,
   },
   {
@@ -48,7 +50,8 @@ const products: Product[] = [
     rating: 4.7,
     description: 'Superior ball control with High Definition Grip technology.',
     category: 'boots',
-    gradient: 'boots-gradient2',
+    // Football boots on field
+    image: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400&h=300&fit=crop',
     icon: <ShoePrintsIcon />,
   },
   {
@@ -60,7 +63,8 @@ const products: Product[] = [
     description: 'Breathable, moisture-wicking training top and shorts set.',
     category: 'gear',
     badge: 'Best Value',
-    gradient: 'gear-gradient',
+    // Sports jersey/shirt
+    image: 'https://images.unsplash.com/photo-1580231680660-26a7f7e8c3b7?w=400&h=300&fit=crop',
     icon: <TshirtIcon />,
   },
   {
@@ -71,7 +75,8 @@ const products: Product[] = [
     rating: 4.9,
     description: 'FIFA Quality Pro match ball with zero-wing bladder.',
     category: 'accessories',
-    gradient: 'acc-gradient',
+    // Classic soccer ball
+    image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=300&fit=crop',
     icon: <BallIcon />,
   },
   {
@@ -82,7 +87,8 @@ const products: Product[] = [
     rating: 4.6,
     description: 'Lightweight, flexible guards that harden on impact.',
     category: 'gear',
-    gradient: 'gear-gradient2',
+    // Football socks/shin guards on player
+    image: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&h=300&fit=crop',
     icon: <ShieldIcon />,
   },
   {
@@ -94,7 +100,8 @@ const products: Product[] = [
     description: '32oz stainless steel, keeps drinks cold for 24 hours.',
     category: 'accessories',
     badge: 'Essential',
-    gradient: 'acc-gradient2',
+    // Sports water bottle
+    image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400&h=300&fit=crop',
     icon: <BottleWaterIcon />,
   },
 ];
@@ -109,6 +116,7 @@ const categories = [
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -147,6 +155,10 @@ export default function Products() {
 
     return () => observer.disconnect();
   }, []);
+
+  const handleImageError = (productId: number) => {
+    setImageErrors(prev => ({ ...prev, [productId]: true }));
+  };
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -200,9 +212,19 @@ export default function Products() {
             >
               {product.badge && <div className="product-badge">{product.badge}</div>}
               <div className="product-image">
-                <div className={`product-placeholder ${product.gradient}`}>
-                  {product.icon}
-                </div>
+                {imageErrors[product.id] ? (
+                  <div className={`product-placeholder ${product.category === 'boots' ? 'boots-gradient' : product.category === 'gear' ? 'gear-gradient' : 'acc-gradient'}`}>
+                    {product.icon}
+                  </div>
+                ) : (
+                  <img
+                    src={product.image}
+                    alt={`${product.brand} ${product.name}`}
+                    className="product-img"
+                    loading="lazy"
+                    onError={() => handleImageError(product.id)}
+                  />
+                )}
               </div>
               <div className="product-info">
                 <span className="product-brand">{product.brand}</span>
