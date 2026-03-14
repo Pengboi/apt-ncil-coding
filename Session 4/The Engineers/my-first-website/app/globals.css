@@ -1,26 +1,459 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ========================================
+   NEO-POKÉDEX ARCHIVES - Design System
+   Deep space sci-fi with holographic accents
+   ======================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- Core Colors --- */
+  --bg-primary: #0a0e27;
+  --bg-secondary: #0f1535;
+  --bg-tertiary: #151d45;
+  --bg-card: rgba(15, 21, 53, 0.7);
+  
+  /* --- Text Colors --- */
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+  --text-muted: #64748b;
+  --text-accent: #00d4ff;
+  
+  /* --- Accent Colors --- */
+  --accent-cyan: #00d4ff;
+  --accent-magenta: #ff00a0;
+  --accent-gold: #ffd700;
+  --accent-lime: #a3e635;
+  
+  /* --- Type Colors (Official Pokémon palette) --- */
+  --type-normal: #A8A77A;
+  --type-fire: #EE8130;
+  --type-water: #6390F0;
+  --type-electric: #F7D02C;
+  --type-grass: #7AC74C;
+  --type-ice: #96D9D6;
+  --type-fighting: #C22E28;
+  --type-poison: #A33EA1;
+  --type-ground: #E2BF65;
+  --type-flying: #A98FF3;
+  --type-psychic: #F95587;
+  --type-bug: #A6B91A;
+  --type-rock: #B6A136;
+  --type-ghost: #735797;
+  --type-dragon: #6F35FC;
+  --type-dark: #705746;
+  --type-steel: #B7B7CE;
+  --type-fairy: #D685AD;
+  
+  /* --- Glow Effects --- */
+  --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.5);
+  --glow-magenta: 0 0 20px rgba(255, 0, 160, 0.5);
+  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.4);
+  
+  /* --- Typography --- */
+  --font-display: 'Orbitron', sans-serif;
+  --font-data: 'Rajdhani', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* --- Base Styles --- */
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- Starfield Background --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 230px 80px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 350px 50px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 400px 200px, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1px 1px at 450px 100px, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 500px 250px, rgba(255,255,255,0.2), transparent);
+  background-size: 550px 350px;
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* --- Scanline/Grain Overlay --- */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* --- Utility Classes --- */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-data {
+  font-family: var(--font-data);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* --- Glassmorphism --- */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-strong {
+  background: rgba(15, 21, 53, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* --- Glow Effects --- */
+.glow-cyan {
+  box-shadow: var(--glow-cyan);
+}
+
+.glow-magenta {
+  box-shadow: var(--glow-magenta);
+}
+
+.glow-gold {
+  box-shadow: var(--glow-gold);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+/* --- Type Color Utilities --- */
+.type-normal { color: var(--type-normal); }
+.type-fire { color: var(--type-fire); }
+.type-water { color: var(--type-water); }
+.type-electric { color: var(--type-electric); }
+.type-grass { color: var(--type-grass); }
+.type-ice { color: var(--type-ice); }
+.type-fighting { color: var(--type-fighting); }
+.type-poison { color: var(--type-poison); }
+.type-ground { color: var(--type-ground); }
+.type-flying { color: var(--type-flying); }
+.type-psychic { color: var(--type-psychic); }
+.type-bug { color: var(--type-bug); }
+.type-rock { color: var(--type-rock); }
+.type-ghost { color: var(--type-ghost); }
+.type-dragon { color: var(--type-dragon); }
+.type-dark { color: var(--type-dark); }
+.type-steel { color: var(--type-steel); }
+.type-fairy { color: var(--type-fairy); }
+
+/* Type backgrounds */
+.bg-type-normal { background-color: var(--type-normal); }
+.bg-type-fire { background-color: var(--type-fire); }
+.bg-type-water { background-color: var(--type-water); }
+.bg-type-electric { background-color: var(--type-electric); }
+.bg-type-grass { background-color: var(--type-grass); }
+.bg-type-ice { background-color: var(--type-ice); }
+.bg-type-fighting { background-color: var(--type-fighting); }
+.bg-type-poison { background-color: var(--type-poison); }
+.bg-type-ground { background-color: var(--type-ground); }
+.bg-type-flying { background-color: var(--type-flying); }
+.bg-type-psychic { background-color: var(--type-psychic); }
+.bg-type-bug { background-color: var(--type-bug); }
+.bg-type-rock { background-color: var(--type-rock); }
+.bg-type-ghost { background-color: var(--type-ghost); }
+.bg-type-dragon { background-color: var(--type-dragon); }
+.bg-type-dark { background-color: var(--type-dark); }
+.bg-type-steel { background-color: var(--type-steel); }
+.bg-type-fairy { background-color: var(--type-fairy); }
+
+/* Type glows */
+.glow-type-normal { box-shadow: 0 0 20px var(--type-normal); }
+.glow-type-fire { box-shadow: 0 0 20px var(--type-fire); }
+.glow-type-water { box-shadow: 0 0 20px var(--type-water); }
+.glow-type-electric { box-shadow: 0 0 20px var(--type-electric); }
+.glow-type-grass { box-shadow: 0 0 20px var(--type-grass); }
+.glow-type-ice { box-shadow: 0 0 20px var(--type-ice); }
+.glow-type-fighting { box-shadow: 0 0 20px var(--type-fighting); }
+.glow-type-poison { box-shadow: 0 0 20px var(--type-poison); }
+.glow-type-ground { box-shadow: 0 0 20px var(--type-ground); }
+.glow-type-flying { box-shadow: 0 0 20px var(--type-flying); }
+.glow-type-psychic { box-shadow: 0 0 20px var(--type-psychic); }
+.glow-type-bug { box-shadow: 0 0 20px var(--type-bug); }
+.glow-type-rock { box-shadow: 0 0 20px var(--type-rock); }
+.glow-type-ghost { box-shadow: 0 0 20px var(--type-ghost); }
+.glow-type-dragon { box-shadow: 0 0 20px var(--type-dragon); }
+.glow-type-dark { box-shadow: 0 0 20px var(--type-dark); }
+.glow-type-steel { box-shadow: 0 0 20px var(--type-steel); }
+.glow-type-fairy { box-shadow: 0 0 20px var(--type-fairy); }
+
+/* --- Animations --- */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes holographic {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-holographic {
+  background-size: 200% 200%;
+  animation: holographic 3s ease infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+/* --- Holographic Card Effect --- */
+.holo-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.holo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(255, 0, 160, 0.1) 20%,
+    rgba(0, 212, 255, 0.2) 40%,
+    rgba(255, 215, 0, 0.1) 60%,
+    rgba(163, 230, 53, 0.1) 80%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.holo-card:hover::before {
+  opacity: 1;
+  animation: holographic 2s ease infinite;
+}
+
+/* --- Scrollbar Styling --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+}
+
+/* --- Focus States --- */
+*:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+/* --- Button Base --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+  color: var(--bg-primary);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- Input Base --- */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+/* --- Card Base --- */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Stat Bar Animation --- */
+.stat-bar-fill {
+  transition: width 1s ease-out;
+}
+
+/* --- Grid Pattern Overlay --- */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
 }

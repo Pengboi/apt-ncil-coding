@@ -1,30 +1,51 @@
 "use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import CardGallery from "./CardGallery";
+import StatBar from "./components/StatBar";
+import HoloCard from "./components/HoloCard";
 
-export default function PokemonCard({ id, name, img }: { id: string; name: string; img: string }) {
-  const [open, setOpen] = useState(false);
+interface PokemonCardProps {
+  id: string;
+  name: string;
+  img: string;
+}
+
+interface Stat {
+  stat: {
+    name: string;
+  };
+  base_stat: number;
+}
+
+export default function PokemonCard({ id, name, img }: PokemonCardProps) {
+  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState<any[] | null>(null);
+  const [stats, setStats] = useState<Stat[] | null>(null);
   const [showGallery, setShowGallery] = useState(false);
 
-  const toggle = async () => {
-    if (open) {
-      setOpen(false);
+  const toggleStats = async () => {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+
+    if (stats) {
+      setExpanded(true);
       return;
     }
 
     setLoading(true);
     try {
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      if (!res.ok) throw new Error('fetch failed');
+      if (!res.ok) throw new Error("fetch failed");
       const data = await res.json();
       setStats(data.stats || []);
-      setOpen(true);
+      setExpanded(true);
     } catch (e) {
       setStats(null);
-      setOpen(true);
+      setExpanded(true);
     } finally {
       setLoading(false);
     }
@@ -32,22 +53,16 @@ export default function PokemonCard({ id, name, img }: { id: string; name: strin
 
   const playCry = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const pokemonId = id;
-    
-    // Try multiple sources for the cry
     const sources = [
-      `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${pokemonId}.ogg`,
-      `https://pokemoncries.com/cries/${pokemonId}.mp3`,
-      `https://veekun.com/dex/media/pokemon/cries/${pokemonId}.wav`,
+      `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${id}.ogg`,
+      `https://pokemoncries.com/cries/${id}.mp3`,
     ];
-    
-    let audio = new Audio();
+
+    const audio = new Audio();
     let currentSource = 0;
-    
+
     const tryPlay = () => {
-      if (currentSource >= sources.length) {
-        return;
-      }
+      if (currentSource >= sources.length) return;
       audio.src = sources[currentSource];
       audio.volume = 0.4;
       audio.play().catch(() => {
@@ -55,56 +70,116 @@ export default function PokemonCard({ id, name, img }: { id: string; name: strin
         tryPlay();
       });
     };
-    
+
     tryPlay();
   };
 
   return (
-      <div className="relative">
-        <div className="group bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl border border-slate-100 hover:border-slate-200 transition-all duration-300 ease-out flex flex-col items-center text-center cursor-pointer transform hover:-translate-y-1">
-          <div className="relative w-24 h-24 mb-3">
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <img src={img} alt={name} className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10 cursor-pointer" loading="lazy" onClick={(e: any) => { e.stopPropagation(); setShowGallery(true); }} onDoubleClick={playCry} />
+    <div className="relative">
+      <HoloCard intensity={0.3}>
+        <div className="card p-5 flex flex-col items-center text-center">
+          {/* Image Container */}
+          <div className="relative w-28 h-28 mb-4 group">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 blur-xl group-hover:blur-2xl transition-all duration-500" />
+            <img
+              src={img}
+              alt={name}
+              className="w-full h-full object-contain relative z-10 transition-all duration-300 group-hover:scale-110 cursor-pointer"
+              loading="lazy"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowGallery(true);
+              }}
+              onDoubleClick={playCry}
+            />
           </div>
 
-          <button onClick={(e) => { e.stopPropagation(); toggle(); }} className="capitalize font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
-            {name}
-          </button>
+          {/* Name */}
+          <h3 className="font-display text-sm font-semibold text-white capitalize mb-1">
+            {name.replace(/-/g, " ")}
+          </h3>
 
-          <div className="text-xs font-medium text-slate-400 mt-1">#{id}</div>
+          {/* ID */}
+          <div className="font-data text-xs text-slate-500 mb-3">
+            #{id.padStart(3, "0")}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 w-full">
+            <Link
+              href={`/pokemon/${id}`}
+              className="flex-1 btn btn-primary py-2 text-[10px]"
+            >
+              Details
+            </Link>
+            <button
+              onClick={toggleStats}
+              className="btn btn-secondary py-2 px-3 text-[10px]"
+            >
+              {expanded ? (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 15l7-7 7 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+      </HoloCard>
 
-        {open && (
-          <div className="mt-3 w-full bg-gradient-to-br from-slate-50 to-white p-3 rounded-xl text-sm text-slate-700 border border-slate-100 shadow-inner">
-            {loading ? (
-              <div>Loading...</div>
-            ) : stats && stats.length > 0 ? (
-              <div className="space-y-2">
-                {stats.map((s) => {
-                  const label = s.stat.name.replace('-', ' ');
-                  const value = s.base_stat;
-                  const max = 255; // scale reference
-                  const pct = Math.min(100, Math.round((value / max) * 100));
-                  return (
-                    <div key={s.stat.name}>
-                      <div className="flex items-center justify-between">
-                        <div className="capitalize text-sm text-slate-700">{label}</div>
-                        <div className="text-sm font-semibold text-slate-800">{value}</div>
-                      </div>
-                      <div className="w-full h-2 bg-slate-200 rounded mt-1">
-                        <div className="h-2 bg-emerald-500 rounded" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div>No stats available.</div>
-            )}
-          </div>
-        )}
+      {/* Expanded Stats */}
+      {expanded && (
+        <div className="mt-3 glass rounded-xl p-4 animate-fade-in-up">
+          {loading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : stats && stats.length > 0 ? (
+            <div className="space-y-3">
+              {stats.map((s, idx) => (
+                <StatBar
+                  key={s.stat.name}
+                  label={s.stat.name}
+                  value={s.base_stat}
+                  delay={idx * 100}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-slate-500 text-sm">
+              No stats available
+            </p>
+          )}
+        </div>
+      )}
 
-        {showGallery && <CardGallery name={name} onClose={() => setShowGallery(false)} />}
-      </div>
+      {/* Card Gallery Modal */}
+      {showGallery && (
+        <CardGallery name={name} onClose={() => setShowGallery(false)} />
+      )}
+    </div>
   );
 }
