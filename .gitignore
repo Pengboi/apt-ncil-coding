@@ -72,3 +72,8 @@ my_*.py
 # OS
 Thumbs.db
 .DS_Store
+node_modules/
+.next/
+dist/
+*.log
+.env.local
