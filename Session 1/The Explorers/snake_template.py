@@ -2,11 +2,10 @@ import turtle
 import time
 import random
 
-# --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---
-DELAY = 0.1          # How fast is the game? (Lower is faster. Try 0.05)
-SNAKE_COLOR = "red" # Try "blue", "red", "yellow", "white", "purple"
+# --- CONFIG (TEAM EXPLORERS EDIT THIS SECTION) ---          # How fast is the game? (Lower is faster. Try 0.05)
+SNAKE_COLOR = "blue" # Try "blue", "red", "yellow", "white", "purple"
 BG_COLOR = "white"   # Try "black", "green", "blue", "gray"
-FOOD_COLOR = "blue"    # Color of the food
+FOOD_COLOR = "purple"    # Color of the food
 SHAPE = "circle"      # Try "circle" or "triangle"
 # ----------------------------------------------
 
@@ -83,7 +82,7 @@ wn.onkey(go_right, "Right")
 
 # Main Game Loop
 try:
-    delay = DELAY  # Create a working copy of DELAY
+    delay = 0.6  # Create a working copy of 0.6
     last_time = time.time()  # Track time for frame-independent delays
     while True:
         wn.update()
@@ -109,7 +108,7 @@ try:
             for segment in segments:
                 segment.goto(1000, 1000)
             segments.clear()
-            delay = 0.1
+            delay = 0.6
 
         # Check for collision with food
         if head.distance(food) < 20:
@@ -152,7 +151,7 @@ try:
                 for segment in segments:
                     segment.goto(1000, 1000)
                 segments.clear()
-                delay = 0.1
+                delay = 0.6
 
 except turtle.Terminator:
     print("Game closed.")
