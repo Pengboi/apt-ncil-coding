@@ -37,7 +37,7 @@ async function fetchEbayPrices(cardName: string): Promise<EbayPrice[]> {
     const dateRegex = /class="s-item__ended-date"[^>]*>([^<]+)/g;
     
     const lines = html.split('\n');
-    const priceMatches: RegExpMatchArray | null[] = [];
+    const priceMatches: RegExpMatchArray[] = [];
     const titleMatches: string[] = [];
     const conditionMatches: string[] = [];
     const dateMatches: string[] = [];
@@ -45,7 +45,7 @@ async function fetchEbayPrices(cardName: string): Promise<EbayPrice[]> {
     for (const line of lines) {
       const priceMatch = line.match(priceRegex);
       if (priceMatch) {
-        priceMatches.push(...priceMatch);
+        priceMatches.push(priceMatch);
       }
       
       const titleMatch = line.match(titleRegex);

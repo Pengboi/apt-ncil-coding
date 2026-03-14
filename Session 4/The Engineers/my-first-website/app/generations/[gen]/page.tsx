@@ -1,4 +1,4 @@
-import PokemonFamilyCard from "../components/PokemonFamilyCard";
+import PokemonFamilyCard from "../../components/PokemonFamilyCard";
 import Link from "next/link";
 
 type PokemonForm = {

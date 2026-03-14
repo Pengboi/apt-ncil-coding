@@ -1,9 +1,10 @@
 import Link from "next/link";
 import TypeBadge from "../../components/TypeBadge";
 import StatBar from "../../components/StatBar";
+import CardGalleryButton from "./CardGalleryButton";
 
 interface Params {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // Type effectiveness data (simplified)
@@ -29,7 +30,7 @@ const typeEffectiveness: Record<string, { strong: string[]; weak: string[] }> = 
 };
 
 export default async function PokemonPage({ params }: Params) {
-  const { id } = params;
+  const { id } = await params;
 
   // Fetch Pokemon data
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, {
@@ -87,8 +88,8 @@ export default async function PokemonPage({ params }: Params) {
     return typeEffectiveness[typeName] || { strong: [], weak: [] };
   });
 
-  const allStrong = [...new Set(matchups.flatMap((m: any) => m.strong))];
-  const allWeak = [...new Set(matchups.flatMap((m: any) => m.weak))];
+  const allStrong = [...new Set<string>(matchups.flatMap((m: { strong: string[] }) => m.strong))];
+  const allWeak = [...new Set<string>(matchups.flatMap((m: { weak: string[] }) => m.weak))];
 
   return (
     <div className="min-h-screen pb-20">
@@ -297,6 +298,9 @@ export default async function PokemonPage({ params }: Params) {
                 </div>
               </div>
             </div>
+
+            {/* TCG Cards Button */}
+            <CardGalleryButton name={data.name} />
           </div>
         </div>
 

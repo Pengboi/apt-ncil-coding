@@ -134,29 +134,6 @@ function TCGCard({ card, index }: TCGCardProps) {
 
       {/* Card Content */}
       <div className="relative bg-slate-900 rounded-xl overflow-hidden border border-slate-700 group-hover:border-slate-500 transition-colors">
-        {/* Price Badge */}
-        {card.price && (
-          <div
-            className={`absolute top-2 left-2 z-10 px-2 py-1 rounded-lg font-data font-bold text-xs ${
-              isUp
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : isDown
-                ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                : "bg-slate-700/50 text-slate-300 border border-slate-600/30"
-            }`}
-          >
-            <div className="flex items-center gap-1">
-              <span>£{card.price.toFixed(2)}</span>
-              {priceChange && priceChange !== "0.0" && (
-                <span className="text-[10px]">
-                  {isUp ? "↑" : isDown ? "↓" : "→"}
-                  {Math.abs(Number(priceChange)).toFixed(0)}%
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Card Image */}
         <div className="aspect-[2.5/3.5] relative">
           <img
@@ -167,18 +144,36 @@ function TCGCard({ card, index }: TCGCardProps) {
           />
         </div>
 
-        {/* Card Info */}
+        {/* Card Info with Price */}
         <div className="p-3 bg-slate-800/50 border-t border-slate-700">
           <h4 className="font-display text-xs font-semibold text-white truncate">
             {card.name}
           </h4>
-          <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center justify-between mt-2">
             <span className="font-data text-[10px] text-slate-500">
               {card.setName}
             </span>
-            <span className="font-data text-[10px] text-slate-600">
-              {card.id}
-            </span>
+            {card.price ? (
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg font-data font-bold text-xs ${
+                isUp
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  : isDown
+                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                  : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+              }`}>
+                <span>£{card.price.toFixed(2)}</span>
+                {priceChange && priceChange !== "0.0" && (
+                  <span className="text-[9px]">
+                    {isUp ? "↑" : isDown ? "↓" : "→"}
+                    {Math.abs(Number(priceChange)).toFixed(0)}%
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="font-data text-[10px] text-slate-600">
+                {card.id}
+              </span>
+            )}
           </div>
         </div>
       </div>
