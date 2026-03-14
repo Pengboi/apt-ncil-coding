@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pixel Adventure</title>
+
+<style>
+body{
+margin:0;
+background:#222;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+canvas{
+display:block;
+background:#87CEEB;
+image-rendering: pixelated;
+border:4px solid white;
+}
+
+#info{
+position:absolute;
+top:10px;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="info">
+<h2>Pixel Adventure</h2>
+<p>Arrow Keys: Move | Space: Jump</p>
+</div>
+
+<canvas id="game" width="800" height="400"></canvas>
+
+<script>
+
+const canvas = document.getElementById("game")
+const ctx = canvas.getContext("2d")
+
+let gravity = 0.5
+
+let player = {
+x:100,
+y:200,
+width:32,
+height:32,
+vx:0,
+vy:0,
+jump:false,
+color:"#2b6cff"
+}
+
+let keys = {}
+
+document.addEventListener("keydown", e=>keys[e.key]=true)
+document.addEventListener("keyup", e=>keys[e.key]=false)
+
+let ground = [
+{x:0,y:350,w:800,h:50},
+{x:200,y:280,w:120,h:20},
+{x:400,y:220,w:120,h:20},
+{x:600,y:160,w:120,h:20},
+{x:50,y:150,w:100,h:20},
+{x:700,y:280,w:100,h:20}
+]
+
+let coins = [
+{x:250,y:240,w:16,h:16},
+{x:450,y:180,w:16,h:16},
+{x:650,y:120,w:16,h:16},
+{x:90,y:110,w:16,h:16}
+]
+
+let score = 0
+
+function drawPlayer(){
+    ctx.fillStyle=player.color
+    ctx.fillRect(player.x,player.y,player.width,player.height)
+
+    // Eyes
+    ctx.fillStyle="white"
+    ctx.fillRect(player.x+6,player.y+8,8,8)
+    ctx.fillRect(player.x+18,player.y+8,8,8)
+    
+    // Pupils
+    ctx.fillStyle="black"
+    ctx.fillRect(player.x+8,player.y+10,4,4)
+    ctx.fillRect(player.x+20,player.y+10,4,4)
+}
+
+function drawGround(){
+    ctx.fillStyle="#2ecc71"
+    ground.forEach(g=>{
+        ctx.fillRect(g.x,g.y,g.w,g.h)
+        // Grass top
+        ctx.fillStyle="#27ae60"
+        ctx.fillRect(g.x,g.y,g.w,4)
+        ctx.fillStyle="#2ecc71"
+    })
+}
+
+function drawCoins(){
+    ctx.fillStyle="#f1c40f"
+    coins.forEach((c,i)=>{
+        if(c.collected) return
+        // Coin animation
+        let offset = Math.sin(Date.now()/200) * 3
+        ctx.beginPath()
+        ctx.arc(c.x+c.w/2,c.y+c.h/2+offset,8,0,Math.PI*2)
+        ctx.fill()
+        ctx.strokeStyle="#f39c12"
+        ctx.lineWidth=2
+        ctx.stroke()
+    })
+}
+
+function drawClouds(){
+    ctx.fillStyle="rgba(255,255,255,0.6)"
+    ctx.fillRect(100,50,80,30)
+    ctx.fillRect(130,35,50,30)
+    ctx.fillRect(500,80,100,35)
+    ctx.fillRect(540,60,60,35)
+    ctx.fillRect(300,40,70,25)
+}
+
+function checkCoinCollision(){
+    coins.forEach(c=>{
+        if(c.collected) return
+        if(
+            player.x < c.x+c.w &&
+            player.x+player.width > c.x &&
+            player.y < c.y+c.h &&
+            player.y+player.height > c.y
+        ){
+            c.collected = true
+            score += 10
+        }
+    })
+}
+
+function physics(){
+    player.vy += gravity
+
+    if(keys["ArrowRight"]) player.vx = 4
+    else if(keys["ArrowLeft"]) player.vx = -4
+    else player.vx *= 0.8
+
+    if(keys[" "] && !player.jump){
+        player.vy = -12
+        player.jump = true
+    }
+
+    player.x += player.vx
+    player.y += player.vy
+
+    // Screen bounds
+    if(player.x < 0) player.x = 0
+    if(player.x > canvas.width-player.width) player.x = canvas.width-player.width
+
+    // Platform collision
+    let onGround = false
+    ground.forEach(g=>{
+        if(
+            player.x < g.x+g.w &&
+            player.x+player.width > g.x &&
+            player.y+player.height > g.y &&
+            player.y+player.height < g.y+g.h+10 &&
+            player.vy >= 0
+        ){
+            player.y = g.y-player.height
+            player.vy = 0
+            onGround = true
+        }
+    })
+    
+    player.jump = !onGround
+
+    // Reset if fall off screen
+    if(player.y > canvas.height){
+        player.x = 100
+        player.y = 200
+        player.vy = 0
+    }
+}
+
+function drawScore(){
+    ctx.fillStyle="white"
+    ctx.font="bold 20px Arial"
+    ctx.fillText("Score: "+score,10,30)
+}
+
+function gameLoop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+    
+    drawClouds()
+    drawGround()
+    drawCoins()
+    drawPlayer()
+    drawScore()
+    
+    physics()
+    checkCoinCollision()
+    
+    requestAnimationFrame(gameLoop)
+}
+
+gameLoop()
+
+</script>
+
+</body>
+</html>

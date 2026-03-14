@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Monster Rogue</title>
+
+<style>
+body{
+background:#0f172a;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+canvas{
+background:#1e293b;
+border:3px solid white;
+margin-top:10px;
+}
+
+button{
+padding:10px 20px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+background:#3b82f6;
+color:white;
+border:none;
+border-radius:5px;
+}
+
+button:hover{
+background:#2563eb;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Monster Rogue</h1>
+
+<p id="wave">Wave 1</p>
+
+<canvas id="game" width="500" height="300"></canvas>
+
+<br>
+
+<button onclick="attack()">Attack</button>
+<button onclick="heal()">Heal</button>
+
+<p id="log">A wild Slime appears!</p>
+
+<script>
+
+const canvas = document.getElementById("game")
+const ctx = canvas.getContext("2d")
+
+let player = {
+hp:100,
+max:100,
+x:100,
+y:200,
+color:"#3b82f6"
+}
+
+let enemy = {}
+
+let wave = 1
+
+const monsters = [
+{name:"Slime",color:"#22c55e",hp:40,maxHp:40,dmg:8},
+{name:"Skeleton",color:"#94a3b8",hp:60,maxHp:60,dmg:12},
+{name:"Goblin",color:"#16a34a",hp:50,maxHp:50,dmg:10},
+{name:"Orc",color:"#166534",hp:80,maxHp:80,dmg:15},
+{name:"Demon",color:"#dc2626",hp:120,maxHp:120,dmg:20},
+{name:"Dragon",color:"#7c3aed",hp:200,maxHp:200,dmg:30}
+]
+
+function spawnEnemy(){
+    let monsterIndex = Math.min(Math.floor((wave-1)/2), monsters.length-1)
+    let m = monsters[monsterIndex]
+    enemy = {
+        name: m.name,
+        color: m.color,
+        hp: m.hp + Math.floor(Math.random()*20),
+        maxHp: m.maxHp,
+        dmg: m.dmg,
+        x: 350,
+        y: 200
+    }
+    log("A wild " + enemy.name + " appears!")
+    draw()
+}
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height)
+    
+    // Draw Player
+    ctx.fillStyle = player.color
+    ctx.beginPath()
+    ctx.arc(player.x,player.y,30,0,Math.PI*2)
+    ctx.fill()
+    
+    // Player HP Bar
+    ctx.fillStyle = "#334155"
+    ctx.fillRect(player.x-35,player.y+40,70,10)
+    ctx.fillStyle = "#22c55e"
+    ctx.fillRect(player.x-35,player.y+40,70*(player.hp/player.max),10)
+    ctx.fillStyle = "white"
+    ctx.font = "12px Arial"
+    ctx.fillText("You",player.x-10,player.y+75)
+    ctx.fillText(player.hp+"/"+player.max,player.x-15,player.y+52)
+    
+    // Draw Enemy
+    ctx.fillStyle = enemy.color
+    ctx.beginPath()
+    ctx.arc(enemy.x,enemy.y,35,0,Math.PI*2)
+    ctx.fill()
+    
+    // Enemy HP Bar
+    ctx.fillStyle = "#334155"
+    ctx.fillRect(enemy.x-40,enemy.y+45,80,10)
+    ctx.fillStyle = "#ef4444"
+    ctx.fillRect(enemy.x-40,enemy.y+45,80*(enemy.hp/enemy.maxHp),10)
+    ctx.fillStyle = "white"
+    ctx.font = "12px Arial"
+    ctx.fillText(enemy.name,enemy.x-20,enemy.y+80)
+    ctx.fillText(enemy.hp+"/"+enemy.maxHp,enemy.x-20,enemy.y+57)
+}
+
+function attack(){
+    let dmg = Math.floor(Math.random()*15)+10
+    enemy.hp -= dmg
+    log("You attacked for " + dmg + " damage!")
+    
+    if(enemy.hp <= 0){
+        winBattle()
+        return
+    }
+    
+    setTimeout(enemyTurn,500)
+    draw()
+}
+
+function heal(){
+    let healAmt = Math.floor(Math.random()*15)+10
+    player.hp = Math.min(player.hp + healAmt, player.max)
+    log("You healed " + healAmt + " HP!")
+    
+    setTimeout(enemyTurn,500)
+    draw()
+}
+
+function enemyTurn(){
+    let dmg = Math.floor(Math.random()*enemy.dmg)+5
+    player.hp -= dmg
+    log(enemy.name + " attacked for " + dmg + " damage!")
+    
+    if(player.hp <= 0){
+        gameOver()
+    }
+    draw()
+}
+
+function winBattle(){
+    wave++
+    player.hp = Math.min(player.hp + 20, player.max)
+    player.max += 10
+    document.getElementById("wave").innerText = "Wave " + wave
+    log("Victory! +20 HP, Max HP increased!")
+    setTimeout(spawnEnemy,1500)
+}
+
+function gameOver(){
+    alert("Game Over! You reached wave " + wave)
+    location.reload()
+}
+
+function log(text){
+    document.getElementById("log").innerText = text
+}
+
+spawnEnemy()
+
+</script>
+
+</body>
+</html>

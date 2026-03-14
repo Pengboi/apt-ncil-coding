@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mini Rogue Monster Game</title>
+<style>
+body{
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+#game{
+    width:500px;
+    margin:auto;
+    padding:20px;
+    border:2px solid white;
+}
+button{
+    padding:10px;
+    margin:5px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+<h1>Mini Rogue Battler</h1>
+
+<p id="wave">Wave: 1</p>
+
+<p id="player">Player HP: 100</p>
+<p id="enemy"></p>
+
+<div id="actions">
+<button onclick="attack()">Attack</button>
+<button onclick="heal()">Heal</button>
+</div>
+
+<p id="log"></p>
+
+</div>
+
+<script>
+
+let playerHP = 100
+let enemyHP = 40
+let wave = 1
+
+function newEnemy(){
+    enemyHP = 30 + Math.floor(Math.random()*40)
+    document.getElementById("enemy").innerText = "Enemy HP: " + enemyHP
+}
+
+newEnemy()
+
+function update(){
+    document.getElementById("player").innerText = "Player HP: " + playerHP
+    document.getElementById("enemy").innerText = "Enemy HP: " + enemyHP
+    document.getElementById("wave").innerText = "Wave: " + wave
+}
+
+function attack(){
+
+    let dmg = Math.floor(Math.random()*15)+5
+    enemyHP -= dmg
+
+    log("You hit enemy for " + dmg)
+
+    if(enemyHP <= 0){
+        winBattle()
+        return
+    }
+
+    enemyTurn()
+    update()
+}
+
+function heal(){
+
+    let heal = Math.floor(Math.random()*15)+10
+    playerHP += heal
+
+    log("You healed " + heal)
+
+    enemyTurn()
+    update()
+}
+
+function enemyTurn(){
+
+    let dmg = Math.floor(Math.random()*12)+4
+    playerHP -= dmg
+
+    log("Enemy hits you for " + dmg)
+
+    if(playerHP <= 0){
+        gameOver()
+    }
+}
+
+function winBattle(){
+
+    wave++
+    playerHP += 10
+
+    log("Enemy defeated! +10 HP")
+
+    newEnemy()
+    update()
+}
+
+function gameOver(){
+    alert("Game Over! You reached wave " + wave)
+    location.reload()
+}
+
+function log(text){
+    document.getElementById("log").innerText = text
+}
+
+update()
+
+</script>
+
+</body>
+</html>
