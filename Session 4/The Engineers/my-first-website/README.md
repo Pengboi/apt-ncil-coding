@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 StudyHub - Year 10 Revision Helper
 
-## Getting Started
+A personal revision companion app built with Next.js to help you organize and track your GCSE studies across all your subjects.
 
-First, run the development server:
+![StudyHub Screenshot](./screenshot.png)
+
+## ✨ Features
+
+- **📖 12 GCSE Subjects** - All your options organized in one place
+  - Maths, English, Science (Triple/Combined)
+  - Enterprise, Geography, DT
+  - Computer Science, Engineering, Built Environment
+  - Art & Design, Digital Media, Mechatronics & Robotics
+
+- **✅ Topic Tracking** - Mark topics as complete and track your progress
+- **📊 Progress Dashboard** - Visual progress bars for each subject
+- **🔥 Study Streak** - Keep motivated with a daily study streak counter
+- **💡 Study Tips** - Built-in revision techniques (Pomodoro, Active Recall, etc.)
+- **📱 Mobile Responsive** - Study on any device
+
+## 🚀 Getting Started
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📝 How to Use
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Dashboard** - See your overall progress and study tips
+2. **Select a Subject** - Click any subject from the sidebar or dashboard
+3. **Track Topics** - Check off topics as you revise them
+4. **View Progress** - Watch your progress bar fill up!
 
-## Learn More
+Your progress is automatically saved to your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Built With
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js](https://nextjs.org/) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type-safe code
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Lucide Icons](https://lucide.dev/) - Beautiful icons
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📦 Project Structure
 
-## Deploy on Vercel
+```
+app/
+├── page.tsx          # Main StudyHub application
+├── layout.tsx        # Root layout
+└── globals.css       # Global styles
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Future Ideas to Add
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Flashcards for each topic
+- [ ] Countdown to exams
+- [ ] Study timer with Pomodoro technique
+- [ ] Notes section for each subject
+- [ ] Share progress with friends
+
+---
+
+Built at **APT Coding Camp** 🚀
