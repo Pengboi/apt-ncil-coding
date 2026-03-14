@@ -1,5 +1,40 @@
-import PokemonCard from "../../PokemonCard";
+import PokemonFamilyCard from "../components/PokemonFamilyCard";
 import Link from "next/link";
+
+type PokemonForm = {
+  id: string;
+  name: string;
+  img: string;
+};
+
+type PokemonFamily = {
+  baseName: string;
+  forms: PokemonForm[];
+  defaultFormId: string;
+};
+
+function getBaseName(name: string): string {
+  const baseForms = ['galar', 'alola', 'hisui', 'paldea', 'base', 'standard', 'incarnate', 'therian', 'ordinary', 'aria', 'male', 'female'];
+  const parts = name.split('-');
+  
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const part = parts[i];
+    if (baseForms.includes(part) && i > 0) {
+      return parts.slice(0, i).join('-');
+    }
+  }
+  
+  const megaMatch = name.match(/^(.+)-mega$/);
+  if (megaMatch) return megaMatch[1];
+  
+  const gmaxMatch = name.match(/^(.+)-gmax$/);
+  if (gmaxMatch) return gmaxMatch[1];
+  
+  const primalMatch = name.match(/^(.+)-primal$/);
+  if (primalMatch) return primalMatch[1];
+  
+  return name;
+}
 
 type Props = { params: { gen: string } };
 
@@ -21,8 +56,28 @@ export default async function GenPage({ params }: Props) {
     const parts = s.url.split("/").filter(Boolean);
     const id = parts[parts.length - 1];
     const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-    return { id, name: s.name, img };
+    return { id, name: s.name, img, baseName: getBaseName(s.name) };
   }).sort((a: any, b: any) => Number(a.id) - Number(b.id));
+
+  const familyMap = new Map<string, PokemonFamily>();
+  
+  for (const item of items) {
+    const existing = familyMap.get(item.baseName);
+    if (existing) {
+      existing.forms.push(item);
+      if (Number(item.id) < Number(existing.defaultFormId)) {
+        existing.defaultFormId = item.id;
+      }
+    } else {
+      familyMap.set(item.baseName, {
+        baseName: item.baseName,
+        forms: [item],
+        defaultFormId: item.id
+      });
+    }
+  }
+
+  const families = Array.from(familyMap.values()).sort((a, b) => Number(a.defaultFormId) - Number(b.defaultFormId));
 
   return (
     <div className="min-h-screen bg-white">
@@ -36,8 +91,13 @@ export default async function GenPage({ params }: Props) {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {items.map((it: any) => (
-            <PokemonCard key={it.id} id={it.id} name={it.name} img={it.img} />
+          {families.map((family) => (
+            <PokemonFamilyCard 
+              key={family.baseName} 
+              baseName={family.baseName} 
+              forms={family.forms} 
+              defaultFormId={family.defaultFormId}
+            />
           ))}
         </div>
       </main>

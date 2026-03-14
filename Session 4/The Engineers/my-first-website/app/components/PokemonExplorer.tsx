@@ -1,8 +1,20 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import PokemonCard from "../PokemonCard";
+import { useEffect, useState } from "react";
+import PokemonFamilyCard from "./PokemonFamilyCard";
 
 type PokemonEntry = { name: string; url: string };
+
+type PokemonForm = {
+  id: string;
+  name: string;
+  img: string;
+};
+
+type PokemonFamily = {
+  baseName: string;
+  forms: PokemonForm[];
+  defaultFormId: string;
+};
 
 const GENERATIONS = [
   { key: 'all', label: 'All' },
@@ -17,6 +29,29 @@ const GENERATIONS = [
   { key: 'generation-ix', label: 'Generation IX', min: 906, max: 1010 },
 ];
 
+function getBaseName(name: string): string {
+  const baseForms = ['galar', 'alola', 'hisui', 'paldea', 'base', 'standard', 'incarnate', 'therian', 'ordinary', 'aria', 'male', 'female'];
+  const parts = name.split('-');
+  
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const part = parts[i];
+    if (baseForms.includes(part) && i > 0) {
+      return parts.slice(0, i).join('-');
+    }
+  }
+  
+  const megaMatch = name.match(/^(.+)-mega$/);
+  if (megaMatch) return megaMatch[1];
+  
+  const gmaxMatch = name.match(/^(.+)-gmax$/);
+  if (gmaxMatch) return gmaxMatch[1];
+  
+  const primalMatch = name.match(/^(.+)-primal$/);
+  if (primalMatch) return primalMatch[1];
+  
+  return name;
+}
+
 export default function PokemonExplorer() {
   const [items, setItems] = useState<PokemonEntry[]>([]);
   const [filterName, setFilterName] = useState('');
@@ -25,6 +60,8 @@ export default function PokemonExplorer() {
   const [filterType, setFilterType] = useState('all');
   const [typeSet, setTypeSet] = useState<Set<string> | null>(null);
   const [loadingType, setLoadingType] = useState(false);
+  const [families, setFamilies] = useState<PokemonFamily[]>([]);
+  const [loadingFamilies, setLoadingFamilies] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -74,28 +111,60 @@ export default function PokemonExplorer() {
     return () => { mounted = false; };
   }, [filterType]);
 
-  const filtered = useMemo(() => {
-    const q = filterName.trim().toLowerCase();
-    const gen = GENERATIONS.find((g) => g.key === filterGen);
+  useEffect(() => {
+    const filteredList = (() => {
+      const q = filterName.trim().toLowerCase();
+      const gen = GENERATIONS.find((g) => g.key === filterGen);
 
-    return items.filter((it) => {
-      if (q && !it.name.toLowerCase().includes(q)) return false;
-      const parts = it.url.split('/').filter(Boolean);
-      const id = parts[parts.length - 1];
-      const num = Number(id || 0);
-      if (gen && gen.key !== 'all') {
-        if (num < (gen.min || 0) || num > (gen.max || Infinity)) return false;
+      return items.filter((it) => {
+        if (q && !it.name.toLowerCase().includes(q)) return false;
+        const parts = it.url.split('/').filter(Boolean);
+        const id = parts[parts.length - 1];
+        const num = Number(id || 0);
+        if (gen && gen.key !== 'all') {
+          if (num < (gen.min || 0) || num > (gen.max || Infinity)) return false;
+        }
+        if (typeSet) {
+          if (!typeSet.has(id)) return false;
+        }
+        return true;
+      }).map((p) => {
+        const parts = p.url.split('/').filter(Boolean);
+        const id = parts[parts.length - 1];
+        const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+        return { id, name: p.name, img, baseName: getBaseName(p.name) };
+      });
+    })();
+
+    const uniqueBases = [...new Set(filteredList.map(p => p.baseName))];
+    
+    const buildFamilies = async () => {
+      setLoadingFamilies(true);
+      const newFamilies: PokemonFamily[] = [];
+      
+      for (const baseName of uniqueBases) {
+        const formsInFilter = filteredList.filter(p => p.baseName === baseName);
+        
+        if (formsInFilter.length > 1) {
+          newFamilies.push({
+            baseName,
+            forms: formsInFilter,
+            defaultFormId: formsInFilter[0].id
+          });
+        } else {
+          newFamilies.push({
+            baseName,
+            forms: formsInFilter,
+            defaultFormId: formsInFilter[0]?.id || baseName
+          });
+        }
       }
-      if (typeSet) {
-        if (!typeSet.has(id)) return false;
-      }
-      return true;
-    }).map((p) => {
-      const parts = p.url.split('/').filter(Boolean);
-      const id = parts[parts.length - 1];
-      const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-      return { id, name: p.name, img };
-    });
+      
+      setFamilies(newFamilies);
+      setLoadingFamilies(false);
+    };
+    
+    buildFamilies();
   }, [items, filterName, filterGen, typeSet]);
 
   return (
@@ -137,12 +206,17 @@ export default function PokemonExplorer() {
       </div>
 
       <div className="flex items-center justify-between mb-4">
-        <div className="text-sm font-medium text-slate-500">Showing <span className="text-slate-800 font-semibold">{filtered.length}</span> Pokémon {loadingType ? <span className="text-slate-400">(loading...)</span> : ''}</div>
+        <div className="text-sm font-medium text-slate-500">Showing <span className="text-slate-800 font-semibold">{families.length}</span> Pokémon {loadingFamilies || loadingType ? <span className="text-slate-400">(loading...)</span> : ''}</div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {filtered.map((it: any) => (
-          <PokemonCard key={it.id} id={it.id} name={it.name} img={it.img} />
+        {families.map((family) => (
+          <PokemonFamilyCard 
+            key={family.baseName} 
+            baseName={family.baseName} 
+            forms={family.forms} 
+            defaultFormId={family.defaultFormId}
+          />
         ))}
       </div>
     </div>

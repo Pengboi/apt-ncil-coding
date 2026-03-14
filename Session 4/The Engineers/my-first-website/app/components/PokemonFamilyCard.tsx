@@ -7,7 +7,6 @@ type PokemonForm = {
   id: string;
   name: string;
   img: string;
-  stats?: any[];
 };
 
 export default function PokemonFamilyCard({ 
@@ -88,6 +87,35 @@ export default function PokemonFamilyCard({
 
   const currentStats = selectedForm.stats;
 
+  const playCry = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const pokemonId = selectedForm.id;
+    
+    // Try multiple sources for the cry
+    const sources = [
+      `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${pokemonId}.ogg`,
+      `https://pokemoncries.com/cries/${pokemonId}.mp3`,
+      `https://veekun.com/dex/media/pokemon/cries/${pokemonId}.wav`,
+    ];
+    
+    let audio = new Audio();
+    let currentSource = 0;
+    
+    const tryPlay = () => {
+      if (currentSource >= sources.length) {
+        return;
+      }
+      audio.src = sources[currentSource];
+      audio.volume = 0.4;
+      audio.play().catch(() => {
+        currentSource++;
+        tryPlay();
+      });
+    };
+    
+    tryPlay();
+  };
+
   return (
     <div className="relative">
       {/* Main Card */}
@@ -98,8 +126,9 @@ export default function PokemonFamilyCard({
           <img 
             src={selectedForm.img} 
             alt={selectedForm.name} 
-            className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10" 
-            loading="lazy" 
+            className="w-24 h-24 object-contain grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:scale-110 relative z-10 cursor-pointer" 
+            loading="lazy"
+            onClick={playCry}
           />
         </Link>
 
