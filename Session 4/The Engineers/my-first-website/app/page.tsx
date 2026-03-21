@@ -1,6 +1,8 @@
 "use client";
 
 import PlayerCard from './components/PlayerCard';
+import FixturesList from './components/FixturesList';
+import NextMatchHighlight from './components/NextMatchHighlight';
 import { players } from '../data/players';
 import { useCart, type Product } from './context/CartContext';
 
@@ -86,19 +88,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Hero Image/Graphic */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="relative">
-                {/* Glowing orb background */}
-                <div className="absolute inset-0 bg-[#d4af37]/20 rounded-full blur-3xl scale-150"/>
-                <img 
-                  src="/images/football.png" 
-                  alt="Real Madrid Football" 
-                  className="relative w-48 h-48 md:w-72 md:h-72 drop-shadow-2xl animate-float"
-                />
-                {/* Decorative ring */}
-                <div className="absolute inset-0 border-2 border-[#d4af37]/30 rounded-full scale-125 animate-pulse"/>
-              </div>
+            {/* Hero Right Side - Next Match */}
+            <div className="flex-1 w-full max-w-md">
+              <NextMatchHighlight />
             </div>
           </div>
         </div>
@@ -201,59 +193,13 @@ export default function Home() {
       <section id="fixtures" className="w-full py-20 bg-[var(--surface)]">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h3 className="section-title">Upcoming Matches</h3>
+            <h3 className="section-title">Fixtures & Results</h3>
             <p className="text-[var(--text-muted)] mt-8">
-              Don&apos;t miss the next thrilling encounter
+              Live data from Sportmonks API
             </p>
           </div>
           
-          <div className="space-y-4 max-w-3xl mx-auto">
-            {[
-              { match: "Real Madrid vs Barcelona", venue: "Santiago Bernabéu", date: "Sun 14 Feb, 20:00", league: "LaLiga", isHome: true },
-              { match: "Atletico Madrid vs Real Madrid", venue: "Wanda Metropolitano", date: "Sat 21 Feb, 18:30", league: "LaLiga", isHome: false },
-              { match: "Real Madrid vs PSG", venue: "Santiago Bernabéu", date: "Wed 25 Feb, 20:00", league: "Champions League", isHome: true },
-            ].map((fixture) => (
-              <div 
-                key={fixture.match}
-                className="card-royal flex flex-col sm:flex-row sm:items-center justify-between gap-4 group cursor-pointer"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      fixture.isHome 
-                        ? 'bg-[#d4af37]/20 text-[#d4af37]' 
-                        : 'bg-[var(--text-muted)]/20 text-[var(--text-muted)]'
-                    }`}>
-                      {fixture.isHome ? 'Home' : 'Away'}
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                      {fixture.league}
-                    </span>
-                  </div>
-                  <div className="font-display text-lg font-bold text-[var(--foreground)] group-hover:text-[#d4af37] transition-colors">
-                    {fixture.match}
-                  </div>
-                  <div className="text-sm text-[var(--text-muted)] flex items-center gap-4 mt-1">
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                      </svg>
-                      {fixture.venue}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
-                      {fixture.date}
-                    </span>
-                  </div>
-                </div>
-                <div className="trophy-badge whitespace-nowrap">
-                  {fixture.league}
-                </div>
-              </div>
-            ))}
-          </div>
+          <FixturesList />
         </div>
       </section>
 
