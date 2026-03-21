@@ -1,131 +1,369 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --accent-gold: #c4a35a;
-  --accent-purple: #5c2d91;
-  --accent-real: #c4a35a;
-  --muted: rgba(26,26,26,0.7);
+  /* Real Madrid Royal Palette */
+  --rm-white: #ffffff;
+  --rm-cream: #f8f6f0;
+  --rm-gold: #d4af37;
+  --rm-gold-light: #e8c547;
+  --rm-purple: #2d1b4e;
+  --rm-purple-dark: #1a0f2e;
+  --rm-purple-light: #4a306d;
+  --rm-black: #0a0a0a;
+  --rm-gray: #6b6b6b;
+  --rm-gray-light: #e5e5e5;
+  
+  /* Theme mapping */
+  --background: var(--rm-cream);
+  --foreground: var(--rm-purple-dark);
+  --accent: var(--rm-gold);
+  --accent-light: var(--rm-gold-light);
+  --surface: var(--rm-white);
+  --surface-dark: var(--rm-purple);
+  --text-muted: var(--rm-gray);
+  --border: rgba(212, 175, 55, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1a1a2e;
-    --foreground: #f5f5f5;
-    --muted: rgba(245,245,245,0.7);
+    --background: var(--rm-purple-dark);
+    --foreground: var(--rm-cream);
+    --surface: var(--rm-purple);
+    --surface-dark: var(--rm-black);
+    --text-muted: rgba(248, 246, 240, 0.6);
+    --border: rgba(212, 175, 55, 0.2);
   }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
   line-height: 1.6;
 }
 
+/* Typography */
+.font-display {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Background */
 .bg-main {
   background-color: var(--background);
 }
 
+/* Header & Navigation */
 header {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid var(--rm-gold);
 }
 
 @media (prefers-color-scheme: dark) {
   header {
-    border-bottom-color: rgba(255,255,255,0.1);
+    background: rgba(26, 15, 46, 0.95);
+    border-bottom-color: var(--rm-gold);
   }
 }
 
+/* Navigation links */
 nav a {
   color: var(--foreground);
   text-decoration: none;
-  padding: 6px 12px;
-  transition: all 0.2s ease;
-  opacity: 0.8;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
   font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--rm-gold);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+nav a:hover::after {
+  width: 80%;
 }
 
 nav a:hover {
-  color: var(--accent-real);
-  opacity: 1;
-  text-shadow: 0 0 10px rgba(196, 163, 90, 0.5);
+  color: var(--rm-gold);
 }
 
-@media (prefers-color-scheme: dark) {
-  nav a:hover {
-    color: var(--accent-gold);
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-  }
+/* Active page indicator */
+nav a.active {
+  color: var(--rm-gold);
 }
 
-/* Buttons - Real Madrid Style */
+nav a.active::after {
+  width: 80%;
+}
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent-real) 0%, #e0c275 100%);
-  color: #1a1a1a;
-  padding: 0.6rem 1.4rem;
+/* Page Header Badge */
+.page-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--rm-purple) 0%, var(--rm-purple-dark) 100%);
+  border: 2px solid var(--rm-gold);
   border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+.page-header-text {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
   font-weight: 600;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(196, 163, 90, 0.4);
+  color: var(--rm-gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Buttons - Royal Style */
+.btn-primary {
+  background: linear-gradient(135deg, var(--rm-gold) 0%, var(--rm-gold-light) 100%);
+  color: var(--rm-purple-dark);
+  padding: 14px 28px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary:hover {
-  opacity: 0.95;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(196, 163, 90, 0.6);
-}
-
-@media (prefers-color-scheme: dark) {
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent-gold) 0%, #ffd700 100%);
-    color: #1a1a1a;
-    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
-  }
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
 }
 
 .btn-secondary {
   background: transparent;
-  border: 2px solid var(--accent-real);
-  color: var(--accent-real);
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  border: 2px solid var(--rm-gold);
+  color: var(--rm-gold);
+  padding: 12px 26px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-secondary:hover {
-  background: var(--accent-real);
-  color: #1a1a1a;
-  box-shadow: 0 2px 10px rgba(196, 163, 90, 0.4);
+  background: var(--rm-gold);
+  color: var(--rm-purple-dark);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  .btn-secondary {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+/* Cards - Royal Style */
+.card-royal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.card-royal:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* Section Headers */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--foreground);
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--rm-gold), transparent);
+}
+
+/* Gold accent line */
+.gold-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--rm-gold) 50%, transparent 100%);
+}
+
+/* Trophy badge */
+.trophy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--rm-gold) 0%, var(--rm-gold-light) 100%);
+  color: var(--rm-purple-dark);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--rm-purple-dark) 0%, var(--rm-purple) 50%, var(--rm-purple-dark) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* Formation Pitch Enhancements */
+.pitch-container {
+  background: linear-gradient(180deg, #1a5f1a 0%, #2d7a2d 50%, #1a5f1a 100%);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Player Card Enhancements */
+.player-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.player-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(212, 175, 55, 0.2);
+  border-color: var(--rm-gold);
+}
+
+.player-number {
+  background: linear-gradient(135deg, var(--rm-purple) 0%, var(--rm-purple-light) 100%);
+  color: var(--rm-gold);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+}
+
+/* Footer */
+footer {
+  background: linear-gradient(180deg, var(--rm-purple-dark) 0%, var(--rm-black) 100%);
+  border-top: 3px solid var(--rm-gold);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-header-text {
+    font-size: 1.2rem;
   }
   
-  .btn-secondary:hover {
-    background: var(--accent-gold);
-    color: #1a1a1a;
-    box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  nav a {
+    padding: 6px 10px;
+    font-size: 0.8rem;
   }
 }
 
-footer { 
-  border-top: 1px solid rgba(0,0,0,0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  footer {
-    border-top-color: rgba(255,255,255,0.1);
+/* Animation keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Text utilities */
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--rm-gold) 0%, var(--rm-gold-light) 50%, var(--rm-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--rm-purple-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rm-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rm-gold-light);
 }

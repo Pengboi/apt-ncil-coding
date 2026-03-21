@@ -20,14 +20,14 @@ export default function FormationPitch({ players }: FormationPitchProps) {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setTimeout(() => setSelectedPlayer(null), 200); // Clear after animation
+    setTimeout(() => setSelectedPlayer(null), 200);
   };
 
   return (
     <>
       <div className="relative w-full aspect-[3/4] max-w-2xl mx-auto">
         {/* Pitch Container */}
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-700 rounded-lg overflow-hidden shadow-2xl border-4 border-white/20">
+        <div className="pitch-container absolute inset-0 rounded-2xl overflow-hidden">
           {/* Grass pattern stripes */}
           <div className="absolute inset-0 opacity-20">
             <div className="h-full w-full" style={{
@@ -54,8 +54,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="90"
               height="123.33"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
 
             {/* Halfway line */}
@@ -64,8 +64,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               y1="66.67"
               x2="95"
               y2="66.67"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
 
             {/* Center circle */}
@@ -74,14 +74,14 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               cy="66.67"
               r="12"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             <circle
               cx="50"
               cy="66.67"
               r="0.8"
-              fill="rgba(255,255,255,0.8)"
+              fill="rgba(255,255,255,0.9)"
             />
 
             {/* Goal area (bottom - home team) */}
@@ -91,8 +91,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="30"
               height="10"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             {/* Penalty area (bottom) */}
             <rect
@@ -101,48 +101,48 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="55"
               height="25"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             {/* Penalty spot (bottom) */}
             <circle
               cx="50"
               cy="22"
               r="0.6"
-              fill="rgba(255,255,255,0.8)"
+              fill="rgba(255,255,255,0.9)"
             />
             {/* Penalty arc (bottom) */}
             <path
               d="M 38 30 A 12 12 0 0 1 62 30"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
 
             {/* Corner arcs */}
             <path
               d="M 5 10 Q 8 10 8 7"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             <path
               d="M 95 10 Q 92 10 92 7"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             <path
               d="M 5 123.33 Q 8 123.33 8 126.33"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
             <path
               d="M 95 123.33 Q 92 123.33 92 126.33"
               fill="none"
-              stroke="rgba(255,255,255,0.8)"
-              strokeWidth="0.5"
+              stroke="rgba(255,255,255,0.9)"
+              strokeWidth="0.8"
             />
           </svg>
 
@@ -156,6 +156,11 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               onClick={handlePlayerClick}
             />
           ))}
+        </div>
+
+        {/* Formation Label */}
+        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[var(--surface)] border border-[#d4af37]/30 px-6 py-2 rounded-full shadow-lg">
+          <span className="font-display text-[#d4af37] font-bold tracking-wider">4-3-3 Formation</span>
         </div>
       </div>
 
