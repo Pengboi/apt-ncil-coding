@@ -27,6 +27,8 @@ export class Player implements IPlayer {
   isGrounded: boolean;
   isCrouching: boolean;
   isFacingRight: boolean;
+  isShooting: boolean;
+  shootingTimer: number;
   
   // Health & Combat
   hp: number;
@@ -69,6 +71,8 @@ export class Player implements IPlayer {
     this.isGrounded = false;
     this.isCrouching = false;
     this.isFacingRight = true;
+    this.isShooting = false;
+    this.shootingTimer = 0;
     
     // Health
     this.hp = PLAYER_START_HP;
@@ -101,6 +105,33 @@ export class Player implements IPlayer {
     this.handleInput(input, dt);
     this.applyPhysics(dt);
     this.updateFacing(input);
+    this.updateAnimationState(input, dt);
+  }
+
+  // ----------------------------------------------------------
+  // Animation State
+  // ----------------------------------------------------------
+  private updateAnimationState(input: InputState, dt: number): void {
+    // Update shooting timer
+    if (this.shootingTimer > 0) {
+      this.shootingTimer -= dt;
+      if (this.shootingTimer <= 0) {
+        this.isShooting = false;
+      }
+    }
+
+    // Set shooting state when firing
+    if (input.shoot) {
+      this.isShooting = true;
+      this.shootingTimer = 0.15; // Show shooting sprite for 150ms
+    }
+  }
+
+  getAnimationState(): 'idle' | 'walk' | 'jump' | 'shoot' {
+    if (this.isShooting) return 'shoot';
+    if (!this.isGrounded) return 'jump';
+    if (Math.abs(this.vx) > 10) return 'walk';
+    return 'idle';
   }
   
   // ----------------------------------------------------------

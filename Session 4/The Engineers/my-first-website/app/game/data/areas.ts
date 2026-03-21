@@ -413,7 +413,7 @@ export const mountainArea: Area = {
     {
       toAreaId: 'hq',
       fromX: 3150,
-      fromY: 300,
+      fromY: 470,
       toSpawnX: 100,
       toSpawnY: 500,
     },

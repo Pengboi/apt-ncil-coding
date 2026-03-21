@@ -97,8 +97,21 @@ export default function GameCanvas() {
   }, []);
   
   // Focus canvas on click to capture keyboard input
-  const handleClick = useCallback(() => {
-    canvasRef.current?.focus();
+  // Also handle menu clicks
+  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const game = gameRef.current;
+    const canvas = canvasRef.current;
+    if (!game || !canvas) return;
+    
+    canvas.focus();
+    
+    // Get click position
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Handle menu clicks
+    game.handleMenuClick(x, y);
   }, []);
   
   return (

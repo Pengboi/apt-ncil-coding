@@ -61,7 +61,7 @@ export class GameEngine {
     this.camera.centerOn(this.player.x, this.player.y, this.player.width, this.player.height);
     
     // Initialize state
-    this.screen = 'playing';
+    this.screen = 'menu';
     this.lastSavePoint = {
       x: this.currentArea.playerSpawn.x,
       y: this.currentArea.playerSpawn.y,
@@ -89,6 +89,86 @@ export class GameEngine {
     // Set canvas size
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
+  }
+  
+  // ----------------------------------------------------------
+  // Menu / Save Game Logic
+  // ----------------------------------------------------------
+  
+  hasSavedGame(): boolean {
+    try {
+      return localStorage.getItem('tacticalOps_save') !== null;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  startNewGame(): void {
+    // Reset everything to default
+    this.currentArea = getStartingArea();
+    this.player = new Player(
+      this.currentArea.playerSpawn.x,
+      this.currentArea.playerSpawn.y
+    );
+    this.camera = new Camera(this.currentArea.width, this.currentArea.height);
+    this.camera.centerOn(this.player.x, this.player.y, this.player.width, this.player.height);
+    
+    this.lastSavePoint = {
+      x: this.currentArea.playerSpawn.x,
+      y: this.currentArea.playerSpawn.y,
+      areaId: this.currentArea.id,
+    };
+    this.enemiesKilled = 0;
+    this.areasDiscovered = [this.currentArea.id];
+    this.playTime = 0;
+    this.bullets = [];
+    this.enemyBullets = [];
+    this.damageMultiplier = 1;
+    this.damageBoostTimer = 0;
+    
+    this.screen = 'playing';
+  }
+  
+  loadSavedGame(): boolean {
+    const success = this.loadGame();
+    if (success) {
+      this.screen = 'playing';
+    }
+    return success;
+  }
+  
+  handleMenuClick(mouseX: number, mouseY: number): void {
+    if (this.screen !== 'menu') return;
+    
+    const centerX = CANVAS_WIDTH / 2;
+    const centerY = CANVAS_HEIGHT / 2;
+    
+    // Button dimensions
+    const btnWidth = 250;
+    const btnHeight = 50;
+    
+    // New Game button position
+    const newGameY = centerY - 20;
+    const newGameX = centerX - btnWidth / 2;
+    
+    // Load Game button position
+    const loadGameY = centerY + 50;
+    const loadGameX = centerX - btnWidth / 2;
+    
+    // Check New Game button click
+    if (mouseX >= newGameX && mouseX <= newGameX + btnWidth &&
+        mouseY >= newGameY && mouseY <= newGameY + btnHeight) {
+      this.startNewGame();
+      return;
+    }
+    
+    // Check Load Game button click
+    if (mouseX >= loadGameX && mouseX <= loadGameX + btnWidth &&
+        mouseY >= loadGameY && mouseY <= loadGameY + btnHeight) {
+      if (this.hasSavedGame()) {
+        this.loadSavedGame();
+      }
+    }
   }
   
   // ----------------------------------------------------------
@@ -720,29 +800,124 @@ export class GameEngine {
   private render(): void {
     const ctx = this.ctx;
     
-    // Clear canvas
-    ctx.fillStyle = this.currentArea.backgroundColor;
+    // Render different screens based on game state
+    if (this.screen === 'menu') {
+      this.renderMenu(ctx);
+    } else {
+      // Clear canvas
+      ctx.fillStyle = this.currentArea.backgroundColor;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      
+      // Apply camera transform
+      ctx.save();
+      ctx.translate(-this.camera.x, -this.camera.y);
+      
+      // Render world
+      this.renderPlatforms(ctx);
+      this.renderSavePoints(ctx);
+      this.renderPickups(ctx);
+      this.renderEnemies(ctx);
+      this.renderBullets(ctx);
+      this.renderEnemyBullets(ctx);
+      this.renderPlayer(ctx);
+      this.renderAreaConnections(ctx);
+      
+      // Restore transform
+      ctx.restore();
+      
+      // Render UI (screen space)
+      this.renderUI(ctx);
+    }
+  }
+  
+  private renderMenu(ctx: CanvasRenderingContext2D): void {
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#1a1a2e');
+    gradient.addColorStop(1, '#16213e');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
-    // Apply camera transform
-    ctx.save();
-    ctx.translate(-this.camera.x, -this.camera.y);
+    // Title
+    ctx.fillStyle = '#ecf0f1';
+    ctx.font = 'bold 64px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('TACTICAL OPS', CANVAS_WIDTH / 2, 120);
     
-    // Render world
-    this.renderPlatforms(ctx);
-    this.renderSavePoints(ctx);
-    this.renderPickups(ctx);
-    this.renderEnemies(ctx);
-    this.renderBullets(ctx);
-    this.renderEnemyBullets(ctx);
-    this.renderPlayer(ctx);
-    this.renderAreaConnections(ctx);
+    // Subtitle
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#95a5a6';
+    ctx.fillText('Military Adventure Platformer', CANVAS_WIDTH / 2, 170);
     
-    // Restore transform
-    ctx.restore();
+    // Button dimensions
+    const btnWidth = 250;
+    const btnHeight = 50;
+    const centerX = CANVAS_WIDTH / 2;
     
-    // Render UI (screen space)
-    this.renderUI(ctx);
+    // New Game Button
+    const newGameY = CANVAS_HEIGHT / 2 - 20;
+    this.renderButton(ctx, centerX - btnWidth / 2, newGameY, btnWidth, btnHeight, 'NEW GAME', '#2ecc71');
+    
+    // Load Game Button (disabled if no save)
+    const loadGameY = CANVAS_HEIGHT / 2 + 50;
+    const hasSave = this.hasSavedGame();
+    this.renderButton(ctx, centerX - btnWidth / 2, loadGameY, btnWidth, btnHeight, 'LOAD GAME', hasSave ? '#3498db' : '#7f8c8d', !hasSave);
+    
+    // Save info if exists
+    if (hasSave) {
+      try {
+        const saveString = localStorage.getItem('tacticalOps_save');
+        if (saveString) {
+          const saveData: SaveData = JSON.parse(saveString);
+          const date = new Date(saveData.timestamp);
+          const dateStr = date.toLocaleDateString();
+          const timeStr = date.toLocaleTimeString();
+          
+          ctx.font = '14px Arial';
+          ctx.fillStyle = '#7f8c8d';
+          ctx.fillText(`Last saved: ${dateStr} ${timeStr}`, centerX, loadGameY + btnHeight + 25);
+          ctx.fillText(`Level ${saveData.player.level} • ${Math.floor(saveData.playTime / 60)}m played`, centerX, loadGameY + btnHeight + 45);
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+    
+    // Controls hint at bottom
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#7f8c8d';
+    ctx.fillText('WASD / Arrow Keys to Move • Mouse to Aim • Click to Shoot', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 60);
+    ctx.fillText('Press 1-5 to Switch Weapons • E to Save', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 40);
+    
+    // Version
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#555';
+    ctx.fillText('v1.0', CANVAS_WIDTH - 30, CANVAS_HEIGHT - 20);
+  }
+  
+  private renderButton(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, text: string, color: string, disabled: boolean = false): void {
+    // Button shadow
+    if (!disabled) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      ctx.fillRect(x + 4, y + 4, width, height);
+    }
+    
+    // Button background
+    ctx.fillStyle = disabled ? '#2c3e50' : color;
+    ctx.fillRect(x, y, width, height);
+    
+    // Button border
+    ctx.strokeStyle = disabled ? '#34495e' : '#fff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, width, height);
+    
+    // Button text
+    ctx.fillStyle = disabled ? '#7f8c8d' : '#fff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x + width / 2, y + height / 2);
   }
   
   private renderPlatforms(ctx: CanvasRenderingContext2D): void {
@@ -931,26 +1106,99 @@ export class GameEngine {
     }
   }
   
-  private renderPlayer(ctx: CanvasRenderingContext2D): void {
-    // Draw player body
-    ctx.fillStyle = COLORS.player;
-    ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+  private playerSprites: Map<string, HTMLImageElement> = new Map();
+  private playerSpritesLoaded: Set<string> = new Set();
+  private walkAnimationTimer: number = 0;
+
+  private loadPlayerSprites(): void {
+    const spriteNames = ['idle', 'walk', 'jump', 'shoot'];
     
-    // Draw direction indicator
-    ctx.fillStyle = '#27ae60';
-    if (this.player.isFacingRight) {
-      ctx.fillRect(this.player.x + this.player.width - 5, this.player.y + 10, 5, 10);
-    } else {
-      ctx.fillRect(this.player.x, this.player.y + 10, 5, 10);
+    for (const name of spriteNames) {
+      if (this.playerSprites.has(name)) continue;
+      
+      const img = new Image();
+      img.src = `/images/player-${name}.svg`;
+      img.onload = () => {
+        this.playerSpritesLoaded.add(name);
+      };
+      this.playerSprites.set(name, img);
+    }
+  }
+
+  private getCurrentSprite(): HTMLImageElement | null {
+    const state = this.player.getAnimationState();
+    
+    // Walk animation alternates between idle and walk for simple animation
+    if (state === 'walk') {
+      this.walkAnimationTimer += 0.1;
+      const walkFrame = Math.floor(this.walkAnimationTimer) % 2;
+      const spriteName = walkFrame === 0 ? 'walk' : 'idle';
+      return this.playerSprites.get(spriteName) || null;
     }
     
-    // Draw gun
-    const weapon = this.player.getCurrentWeapon();
-    ctx.fillStyle = '#34495e';
-    const gunX = this.player.isFacingRight 
-      ? this.player.x + this.player.width 
-      : this.player.x - 20;
-    ctx.fillRect(gunX, this.player.y + 20, 20, 8);
+    return this.playerSprites.get(state) || null;
+  }
+
+  private renderPlayer(ctx: CanvasRenderingContext2D): void {
+    // Load sprites on first render
+    if (this.playerSprites.size === 0) {
+      this.loadPlayerSprites();
+    }
+
+    const sprite = this.getCurrentSprite();
+    const state = this.player.getAnimationState();
+    const spriteLoaded = this.playerSpritesLoaded.has(state === 'walk' ? 'walk' : state);
+
+    ctx.save();
+    
+    // Shooting sprite is wider (48px), needs special positioning
+    if (state === 'shoot') {
+      const spriteWidth = 48;
+      const spriteHeight = 48;
+      const offsetX = (spriteWidth - this.player.width) / 2; // Center the wider sprite
+      
+      if (!this.player.isFacingRight) {
+        // When facing left, flip and adjust position
+        ctx.translate(this.player.x + this.player.width + offsetX, this.player.y);
+        ctx.scale(-1, 1);
+        if (sprite && spriteLoaded) {
+          ctx.drawImage(sprite, 0, 0, spriteWidth, spriteHeight);
+        }
+      } else {
+        if (sprite && spriteLoaded) {
+          ctx.drawImage(sprite, this.player.x - offsetX, this.player.y, spriteWidth, spriteHeight);
+        }
+      }
+    } else {
+      // Normal sprites (32x48)
+      if (!this.player.isFacingRight) {
+        ctx.translate(this.player.x + this.player.width, this.player.y);
+        ctx.scale(-1, 1);
+        if (sprite && spriteLoaded) {
+          ctx.drawImage(sprite, 0, 0, this.player.width, this.player.height);
+        }
+      } else {
+        if (sprite && spriteLoaded) {
+          ctx.drawImage(sprite, this.player.x, this.player.y, this.player.width, this.player.height);
+        }
+      }
+    }
+    
+    ctx.restore();
+
+    // Fallback to green box if sprite not loaded yet
+    if (!sprite || !spriteLoaded) {
+      ctx.fillStyle = COLORS.player;
+      ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+      
+      // Draw direction indicator
+      ctx.fillStyle = '#27ae60';
+      if (this.player.isFacingRight) {
+        ctx.fillRect(this.player.x + this.player.width - 5, this.player.y + 10, 5, 10);
+      } else {
+        ctx.fillRect(this.player.x, this.player.y + 10, 5, 10);
+      }
+    }
   }
   
   private renderAreaConnections(ctx: CanvasRenderingContext2D): void {
