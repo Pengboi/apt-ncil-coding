@@ -4,7 +4,7 @@ export interface Product {
   description: string;
   price: number;
   category: 'birthday' | 'valentine' | 'bouquet' | 'box' | 'purse' | 'thank-you';
-  colors: string[];
+  colors: ('pink' | 'red' | 'royal-blue' | 'white' | 'peach' | 'emerald-green' | 'purple' | 'pink-gold')[];
   customizable: boolean;
   features: string[];
   image: string;
@@ -21,7 +21,7 @@ export const products: Product[] = [
     description: 'A beautiful pink bouquet with 12 sparkling roses, golden tiara, and custom age ribbon. Lasts 1+ years of beauty! The perfect gift to make her feel like royalty on her special day!',
     price: 30,
     category: 'birthday',
-    colors: ['soft-pink', 'royal-purple'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['12 Preserved Roses', 'Golden Tiara', 'Custom Age Ribbon', 'Crystal Centers', 'Designer Wrapping'],
     image: '/images/pink-birthday-bouquet.jpg',
@@ -34,7 +34,7 @@ export const products: Product[] = [
     description: 'Our grandest birthday arrangement with 24 deep red sparkling roses, premium crystal tiara, and luxury designer wrapping with custom ribbon. Lasts 1+ years of beauty!',
     price: 35,
     category: 'birthday',
-    colors: ['classic-red'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['24 Preserved Roses', 'Crystal Tiara', 'Custom Ribbon Text', 'Golden Butterflies', 'Luxury Designer Paper'],
     image: '/images/red-birthday-bouquet.jpg',
@@ -49,7 +49,7 @@ export const products: Product[] = [
     description: 'A beautiful tribute to Mum with our signature letter box arrangement. Features three sections of sparkling royal blue roses with a delicate butterfly accent. Lasts 1+ years of beauty!',
     price: 40,
     category: 'valentine',
-    colors: ['royal-blue'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['3-Section Letter Box', '18 Blue Roses', 'Butterfly Accent', 'Crystal Centers', 'Gift Ribbon'],
     image: '/images/blue-letter-box.jpg',
@@ -62,7 +62,7 @@ export const products: Product[] = [
     description: 'A romantic heart-shaped arrangement filled with vibrant red sparkling roses, pearl decorations, and a "Happy Valentine\'s Day" tag. Lasts 1+ years of beauty!',
     price: 25,
     category: 'valentine',
-    colors: ['classic-red'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['Heart Box Design', '20 Red Roses', 'Pearl Strand', 'Butterfly Accents', 'Valentine Tag'],
     image: '/images/red-valentine-heart.jpg',
@@ -75,7 +75,7 @@ export const products: Product[] = [
     description: 'Express your eternal love with this stunning blue rose bouquet featuring golden butterflies and crystal centers. Wrapped in elegant gold-trimmed paper. Lasts 1+ years of beauty!',
     price: 25,
     category: 'valentine',
-    colors: ['royal-blue'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['15 Blue Roses', 'Golden Butterflies', 'Crystal Centers', 'Premium Wrapping', 'Gift Card'],
     image: '/images/blue-bouquet-elegant.jpg',
@@ -89,7 +89,7 @@ export const products: Product[] = [
     description: 'Majestic royal blue preserved roses with sparkling glitter finish, crystal centers, and golden butterfly accents. A truly regal gift for any occasion. Lasts 1+ years of beauty!',
     price: 25,
     category: 'bouquet',
-    colors: ['royal-blue'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['12 Blue Roses', 'Crystal Centers', 'Golden Butterflies', 'Luxury Wrapping', 'Ribbon Bow'],
     image: '/images/blue-bouquet-elegant.jpg',
@@ -102,7 +102,7 @@ export const products: Product[] = [
     description: 'Soft pink roses with gold trim details and delicate golden butterflies. Perfect for thank you gifts, birthdays, or just because. Lasts 1+ years of beauty!',
     price: 25,
     category: 'bouquet',
-    colors: ['soft-pink'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['10 Pink Roses', 'Gold Trim', 'Butterfly Accents', 'Designer Paper', 'Thank You Card'],
     image: '/images/pink-thankyou-bouquet.jpg',
@@ -114,7 +114,7 @@ export const products: Product[] = [
     description: 'Rich red velvet-textured roses with sparkling glitter finish, crystal centers, and designer wrapping. The classic romantic choice. Lasts 1+ years of beauty!',
     price: 30,
     category: 'bouquet',
-    colors: ['classic-red'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['12 Red Roses', 'Velvet Texture', 'Crystal Centers', 'Premium Wrapping', 'Optional Tiara'],
     image: '/images/red-birthday-bouquet.jpg',
@@ -128,7 +128,7 @@ export const products: Product[] = [
     description: 'Gorgeous purple roses arranged in our signature letter box style with three sections. Features a beautiful butterfly accent. Lasts 1+ years of beauty!',
     price: 45,
     category: 'box',
-    colors: ['royal-purple'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['Letter Box Design', '18 Purple Roses', 'Butterfly Accent', 'Gift Ready', 'Crystal Details'],
     image: '/images/purple-letter-box.jpg',
@@ -140,7 +140,7 @@ export const products: Product[] = [
     description: 'Stunning blue roses in a sleek black letter box. Perfect for anniversaries, romantic gestures, or expressing gratitude. Lasts 1+ years of beauty!',
     price: 45,
     category: 'box',
-    colors: ['royal-blue'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['Sleek Black Box', '18 Blue Roses', 'Crystal Centers', 'Personalized Ribbon Option', 'Butterfly'],
     image: '/images/blue-letter-box.jpg',
@@ -154,7 +154,7 @@ export const products: Product[] = [
     description: 'Our signature flower purse! A stunning wearable accessory featuring 6 purple sparkling roses, golden crown accent, and a chic gold chain strap. Truly unique! Lasts 1+ years of beauty!',
     price: 15,
     category: 'purse',
-    colors: ['royal-purple'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: false,
     features: ['6 Preserved Roses', 'Golden Crown', 'Gold Chain Strap', 'Black Base', 'Purple Ribbon'],
     image: '/images/purple-flower-purse.jpg',
@@ -167,7 +167,7 @@ export const products: Product[] = [
     description: 'A charming pink version of our exclusive flower purse. Features soft pink roses with golden butterfly accents and chain strap. Lasts 1+ years of beauty!',
     price: 15,
     category: 'purse',
-    colors: ['soft-pink'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: false,
     features: ['6 Pink Roses', 'Butterfly Accents', 'Chain Strap', 'Elegant Design', 'Gift Box'],
     image: '/images/purple-flower-purse.jpg', // Use purple as placeholder until pink photo added
@@ -181,7 +181,7 @@ export const products: Product[] = [
     description: 'Show your appreciation with this beautiful pink bouquet featuring golden butterflies and a "Thank You" card. Perfect for gratitude and appreciation. Lasts 1+ years of beauty!',
     price: 20,
     category: 'thank-you',
-    colors: ['soft-pink'],
+    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['8 Pink Roses', 'Gold Butterflies', 'Thank You Card', 'Elegant Wrapping', 'Crystal Centers'],
     image: '/images/pink-thankyou-bouquet.jpg',
@@ -200,12 +200,14 @@ export const categories = [
 ];
 
 export const colors = [
+  { id: 'pink', name: 'Pink', hex: '#ec4899' },
+  { id: 'red', name: 'Red', hex: '#dc2626' },
   { id: 'royal-blue', name: 'Royal Blue', hex: '#1e3a8a' },
-  { id: 'classic-red', name: 'Classic Red', hex: '#dc2626' },
-  { id: 'soft-pink', name: 'Soft Pink', hex: '#ec4899' },
-  { id: 'royal-purple', name: 'Royal Purple', hex: '#7c3aed' },
-  { id: 'white', name: 'Pure White', hex: '#f3f4f6' },
-  { id: 'black', name: 'Midnight Black', hex: '#111827' },
+  { id: 'white', name: 'White', hex: '#f9fafb' },
+  { id: 'peach', name: 'Peach', hex: '#fdba74' },
+  { id: 'emerald-green', name: 'Emerald Green', hex: '#10b981' },
+  { id: 'purple', name: 'Purple', hex: '#7c3aed' },
+  { id: 'pink-gold', name: 'Pink with Gold', hex: '#ec4899' },
 ];
 
 // Hero images for reference

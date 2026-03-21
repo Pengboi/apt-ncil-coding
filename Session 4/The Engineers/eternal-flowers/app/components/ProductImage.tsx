@@ -23,7 +23,7 @@ export default function ProductImage({ src, alt, className = '' }: ProductImageP
   // If image fails to load, show fallback
   if (error) {
     return (
-      <div className={`bg-gradient-to-br from-violet-200 to-pink-200 flex flex-col items-center justify-center ${className}`}>
+      <div className={`bg-gradient-to-br from-emerald-200 via-purple-200 to-pink-200 flex flex-col items-center justify-center ${className}`}>
         <span className="text-6xl">🌹</span>
         <span className="text-sm text-gray-600 mt-2">{alt}</span>
       </div>
@@ -34,7 +34,7 @@ export default function ProductImage({ src, alt, className = '' }: ProductImageP
     <div className={`relative overflow-hidden ${className}`}>
       {/* Loading placeholder - only shows while loading */}
       {!loaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-100 to-pink-100 animate-pulse flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 via-purple-100 to-pink-100 animate-pulse flex items-center justify-center z-10">
           <span className="text-4xl">🌹</span>
         </div>
       )}

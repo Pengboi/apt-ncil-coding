@@ -140,19 +140,19 @@ body {
 
 .product-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.3);
 }
 
 /* Button Styles */
 .btn-primary {
-  @apply px-8 py-4 bg-gradient-to-r from-violet-600 to-pink-500 text-white font-semibold rounded-full
-         transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/30 hover:scale-105
+  @apply px-8 py-4 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white font-semibold rounded-full
+         transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105
          active:scale-95;
 }
 
 .btn-secondary {
-  @apply px-8 py-4 bg-white text-violet-600 font-semibold rounded-full border-2 border-violet-600
-         transition-all duration-300 hover:bg-violet-50 hover:scale-105 active:scale-95;
+  @apply px-8 py-4 bg-white text-emerald-600 font-semibold rounded-full border-2 border-emerald-600
+         transition-all duration-300 hover:bg-emerald-50 hover:scale-105 active:scale-95;
 }
 
 .btn-gold {
@@ -194,12 +194,14 @@ body {
   @apply border-gray-800 scale-110;
 }
 
-.color-swatch.blue { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
-.color-swatch.red { background: linear-gradient(135deg, #991b1b, #ef4444); }
 .color-swatch.pink { background: linear-gradient(135deg, #db2777, #f472b6); }
-.color-swatch.purple { background: linear-gradient(135deg, #6b21a8, #a855f7); }
+.color-swatch.red { background: linear-gradient(135deg, #991b1b, #ef4444); }
+.color-swatch.royal-blue { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
 .color-swatch.white { background: linear-gradient(135deg, #e5e7eb, #ffffff); }
-.color-swatch.black { background: linear-gradient(135deg, #000000, #374151); }
+.color-swatch.peach { background: linear-gradient(135deg, #fb923c, #fed7aa); }
+.color-swatch.emerald-green { background: linear-gradient(135deg, #047857, #34d399); }
+.color-swatch.purple { background: linear-gradient(135deg, #6b21a8, #a855f7); }
+.color-swatch.pink-gold { background: linear-gradient(135deg, #db2777 40%, #f4d03f 50%, #db2777 60%); }
 
 /* Collection Card */
 .collection-card {
@@ -228,13 +230,13 @@ body {
 
 /* Input Styles */
 .input-field {
-  @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-violet-500 
-         focus:ring-2 focus:ring-violet-200 outline-none transition-all duration-200;
+  @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-emerald-500 
+         focus:ring-2 focus:ring-emerald-200 outline-none transition-all duration-200;
 }
 
 /* Loading Spinner */
 .spinner {
-  @apply w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full;
+  @apply w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full;
   animation: spin 1s linear infinite;
 }
 
@@ -255,12 +257,12 @@ body {
 
 /* Navigation */
 .nav-link {
-  @apply relative text-gray-700 hover:text-violet-600 transition-colors duration-200;
+  @apply relative text-gray-700 hover:text-emerald-600 transition-colors duration-200;
 }
 
 .nav-link::after {
   content: '';
-  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-violet-600 transition-all duration-300;
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-600 transition-all duration-300;
 }
 
 .nav-link:hover::after {

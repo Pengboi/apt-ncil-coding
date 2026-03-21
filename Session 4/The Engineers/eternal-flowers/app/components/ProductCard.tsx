@@ -5,7 +5,7 @@ import ProductImage from './ProductImage';
 
 interface ProductCardProps {
   product: Product;
-  onQuickView: (product: Product) => void;
+  onQuickView: (product: Product, color?: string) => void;
 }
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
@@ -27,7 +27,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             </span>
           )}
           {product.new && (
-            <span className="px-3 py-1 bg-gradient-to-r from-violet-500 to-pink-500 text-white text-xs font-bold rounded-full shadow-lg">
+            <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 via-purple-500 to-pink-500 text-white text-xs font-bold rounded-full shadow-lg">
               ✨ New
             </span>
           )}
@@ -36,7 +36,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Customizable Badge */}
         {product.customizable && (
           <div className="absolute top-3 right-3 z-10">
-            <span className="px-3 py-1 bg-white/90 backdrop-blur text-violet-600 text-xs font-semibold rounded-full shadow-md">
+            <span className="px-3 py-1 bg-white/90 backdrop-blur text-emerald-600 text-xs font-semibold rounded-full shadow-md">
               🎨 Customizable
             </span>
           </div>
@@ -45,9 +45,9 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Quick View Button */}
         <button
           onClick={() => onQuickView(product)}
-          className="absolute bottom-4 left-4 right-4 py-3 bg-white/95 backdrop-blur text-violet-600 font-semibold rounded-xl shadow-lg 
+          className="absolute bottom-4 left-4 right-4 py-3 bg-white/95 backdrop-blur text-emerald-600 font-semibold rounded-xl shadow-lg 
                      opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0
-                     transition-all duration-300 hover:bg-violet-600 hover:text-white z-10"
+                     transition-all duration-300 hover:bg-emerald-600 hover:text-white z-10"
         >
           Quick View
         </button>
@@ -56,7 +56,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       {/* Content */}
       <div className="p-5">
         {/* Category Tag */}
-        <span className="text-xs font-medium text-violet-500 uppercase tracking-wider">
+        <span className="text-xs font-medium text-emerald-500 uppercase tracking-wider">
           {product.category}
         </span>
 
@@ -77,12 +77,13 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Colors */}
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xs text-gray-500">Colors:</span>
-          <div className="flex gap-1">
-            {product.colors.slice(0, 4).map((color) => (
-              <div
+          <div className="flex gap-1 flex-wrap max-w-[180px]">
+            {product.colors.map((color) => (
+              <button
                 key={color}
-                className={`color-swatch ${color}`}
-                title={color}
+                onClick={() => onQuickView(product, color)}
+                className={`color-swatch ${color} hover:scale-110 transition-transform cursor-pointer`}
+                title={color.replace('-', ' ')}
               />
             ))}
           </div>
@@ -91,12 +92,12 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Price & CTA */}
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-gray-900">
-            ${product.price}
+            £{product.price}
           </span>
           <button
             onClick={() => onQuickView(product)}
-            className="px-4 py-2 bg-gradient-to-r from-violet-600 to-pink-500 text-white text-sm font-semibold rounded-full
-                       hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-300"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white text-sm font-semibold rounded-full
+                       hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300"
           >
             Add to Cart
           </button>

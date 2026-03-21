@@ -20,6 +20,7 @@ export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>('');
 
   // Filter products
   const filteredProducts = activeCategory === 'all' 
@@ -67,8 +68,9 @@ export default function Home() {
   };
 
   // Open product modal
-  const openQuickView = (product: Product) => {
+  const openQuickView = (product: Product, color?: string) => {
     setSelectedProduct(product);
+    setSelectedColor(color || product.colors[0]);
     setIsModalOpen(true);
   };
 
@@ -84,7 +86,7 @@ export default function Home() {
       <section id="home" className="relative min-h-screen flex items-center pt-20 hero-pattern overflow-hidden">
         {/* Background Decorations */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-violet-300/30 rounded-full blur-3xl animate-float" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-300/30 rounded-full blur-3xl animate-float" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-200/20 rounded-full blur-3xl" />
         </div>
@@ -93,12 +95,12 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
             <div className="text-center lg:text-left">
-              <p className="text-violet-600 font-semibold text-lg mb-4 animate-fade-in-up">
+              <p className="text-emerald-600 font-semibold text-lg mb-4 animate-fade-in-up">
                 ✨ Handcrafted with Love
               </p>
               <h1 className="font-display text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 Eternal Beauty<br />
-                <span className="bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                   That Lasts Forever
                 </span>
               </h1>
@@ -117,15 +119,15 @@ export default function Home() {
               {/* Stats */}
               <div className="flex gap-8 mt-12 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-violet-600">3+</p>
+                  <p className="text-3xl font-bold text-emerald-600">1+</p>
                   <p className="text-sm text-gray-500">Years of Beauty</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-violet-600">100%</p>
+                  <p className="text-3xl font-bold text-emerald-600">100%</p>
                   <p className="text-sm text-gray-500">Handcrafted</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-violet-600">1000+</p>
+                  <p className="text-3xl font-bold text-emerald-600">100+</p>
                   <p className="text-sm text-gray-500">Happy Customers</p>
                 </div>
               </div>
@@ -135,7 +137,7 @@ export default function Home() {
             <div className="relative animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
                 <ProductImage 
-                  src="/images/birthday-girl-bouquet.jpg" 
+                  src="/images/home-page-image.JPG" 
                   alt="Girl holding beautiful pink eternal flower bouquet"
                   className="w-full h-full"
                 />
@@ -157,7 +159,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { icon: '∞', title: 'Lasts 3+ Years', desc: 'Premium preserved roses that maintain their beauty' },
+              { icon: '∞', title: 'Lasts 1+ Years', desc: 'Premium preserved roses that maintain their beauty' },
               { icon: '✋', title: 'Handcrafted', desc: 'Each arrangement made to order with care' },
               { icon: '🎁', title: 'Gift Ready', desc: 'Beautiful packaging with personalized messages' },
               { icon: '🚚', title: 'Fast Delivery', desc: 'Made to order and shipped within 3-5 days' },
@@ -176,7 +178,7 @@ export default function Home() {
       <section id="collections" className="section-padding">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-violet-600 font-semibold mb-2">Explore</p>
+            <p className="text-emerald-600 font-semibold mb-2">Explore</p>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">Our Collections</h2>
           </div>
           
@@ -251,7 +253,7 @@ export default function Home() {
       <section id="shop" className="section-padding bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-violet-600 font-semibold mb-2">Discover</p>
+            <p className="text-emerald-600 font-semibold mb-2">Discover</p>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">Shop All Products</h2>
           </div>
 
@@ -263,7 +265,7 @@ export default function Home() {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activeCategory === cat.id
-                    ? 'bg-gradient-to-r from-violet-600 to-pink-500 text-white shadow-lg shadow-violet-500/30'
+                    ? 'bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white shadow-lg shadow-emerald-500/30'
                     : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
@@ -298,7 +300,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-violet-600 font-semibold mb-2">Personalized</p>
+              <p className="text-emerald-600 font-semibold mb-2">Personalized</p>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 Create Your Custom Arrangement
               </h2>
@@ -375,7 +377,7 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="section-padding bg-gradient-to-br from-violet-50 to-pink-50">
+      <section id="about" className="section-padding bg-gradient-to-br from-emerald-50 via-purple-50 to-pink-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="relative order-2 lg:order-1">
@@ -389,7 +391,7 @@ export default function Home() {
             </div>
 
             <div className="order-1 lg:order-2">
-              <p className="text-violet-600 font-semibold mb-2">Our Story</p>
+              <p className="text-emerald-600 font-semibold mb-2">Our Story</p>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                 Crafted with Love & Sparkle
               </h2>
@@ -402,15 +404,15 @@ export default function Home() {
               
               <div className="grid grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-violet-600">3+</p>
+                  <p className="text-3xl font-bold text-emerald-600">1+</p>
                   <p className="text-sm text-gray-500">Years of Beauty</p>
                 </div>
                 <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-violet-600">100%</p>
+                  <p className="text-3xl font-bold text-emerald-600">100%</p>
                   <p className="text-sm text-gray-500">Handcrafted</p>
                 </div>
                 <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-violet-600">1000+</p>
+                  <p className="text-3xl font-bold text-emerald-600">100+</p>
                   <p className="text-sm text-gray-500">Happy Customers</p>
                 </div>
               </div>
@@ -423,7 +425,7 @@ export default function Home() {
       <section className="section-padding">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-violet-600 font-semibold mb-2">Reviews</p>
+            <p className="text-emerald-600 font-semibold mb-2">Reviews</p>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">What Our Customers Say</h2>
           </div>
 
@@ -457,7 +459,7 @@ export default function Home() {
                 <p className="text-gray-700 mb-6 italic">&ldquo;{review.text}&rdquo;</p>
                 <div>
                   <p className="font-bold text-gray-900">{review.author}</p>
-                  <p className="text-sm text-violet-600">{review.product}</p>
+                  <p className="text-sm text-emerald-600">{review.product}</p>
                 </div>
               </div>
             ))}
@@ -466,7 +468,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter */}
-      <section className="py-20 bg-gradient-to-r from-violet-600 to-pink-500">
+      <section className="py-20 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
             Join Our Blooming Community
@@ -559,6 +561,7 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddToCart={addToCart}
+        initialColor={selectedColor}
       />
     </main>
   );

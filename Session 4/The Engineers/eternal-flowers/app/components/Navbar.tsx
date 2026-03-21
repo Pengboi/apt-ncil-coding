@@ -26,7 +26,7 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <span className="text-3xl">💎</span>
-            <span className="font-display text-2xl font-bold bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent">
+            <span className="font-display text-2xl font-bold bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
               Eternal Blooms
             </span>
           </Link>
@@ -59,7 +59,7 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-violet-600 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                   {cartCount}
                 </span>
               )}

@@ -56,7 +56,7 @@ export default function ShoppingCart({
               <p className="text-gray-500 text-lg">Your cart is empty</p>
               <button 
                 onClick={onClose}
-                className="mt-4 text-violet-600 font-semibold hover:underline"
+                className="mt-4 text-emerald-600 font-semibold hover:underline"
               >
                 Continue Shopping
               </button>
@@ -66,7 +66,7 @@ export default function ShoppingCart({
               {cartItems.map((item) => (
                 <div key={item.id} className="flex gap-4 bg-gray-50 p-4 rounded-xl">
                   {/* Image */}
-                  <div className="w-20 h-20 bg-gradient-to-br from-violet-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 via-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">🌹</span>
                   </div>
                   
@@ -79,11 +79,11 @@ export default function ShoppingCart({
                       </p>
                     )}
                     {item.ribbonText && (
-                      <p className="text-sm text-violet-600 truncate">
+                      <p className="text-sm text-emerald-600 truncate">
                         Ribbon: "{item.ribbonText}"
                       </p>
                     )}
-                    <p className="font-bold text-gray-900 mt-1">${item.price}</p>
+                    <p className="font-bold text-gray-900 mt-1">£{item.price}</p>
                   </div>
 
                   {/* Quantity & Remove */}
@@ -123,7 +123,7 @@ export default function ShoppingCart({
           <div className="border-t p-6 space-y-4">
             <div className="flex items-center justify-between text-lg">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-bold text-2xl">${total.toFixed(2)}</span>
+              <span className="font-bold text-2xl">£{total.toFixed(2)}</span>
             </div>
             <p className="text-sm text-gray-500">Shipping calculated at checkout</p>
             <button className="btn-primary w-full text-center">
@@ -131,7 +131,7 @@ export default function ShoppingCart({
             </button>
             <button 
               onClick={onClose}
-              className="w-full py-3 text-violet-600 font-semibold hover:underline"
+              className="w-full py-3 text-emerald-600 font-semibold hover:underline"
             >
               Continue Shopping
             </button>

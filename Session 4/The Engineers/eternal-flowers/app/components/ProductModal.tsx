@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Product, colors } from '../data/products';
 import ProductImage from './ProductImage';
 
@@ -9,12 +9,20 @@ interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (product: Product, color: string, ribbonText: string) => void;
+  initialColor?: string;
 }
 
-export default function ProductModal({ product, isOpen, onClose, onAddToCart }: ProductModalProps) {
-  const [selectedColor, setSelectedColor] = useState(product?.colors[0] || '');
+export default function ProductModal({ product, isOpen, onClose, onAddToCart, initialColor }: ProductModalProps) {
+  const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors[0] || '');
   const [ribbonText, setRibbonText] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Update selected color when modal opens with new initialColor
+  useEffect(() => {
+    if (isOpen && initialColor) {
+      setSelectedColor(initialColor);
+    }
+  }, [isOpen, initialColor]);
 
   if (!product) return null;
 
@@ -64,7 +72,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
                     className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      currentImageIndex === idx ? 'border-violet-500' : 'border-white'
+                      currentImageIndex === idx ? 'border-emerald-500' : 'border-white'
                     }`}
                   >
                     <ProductImage src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full" />
@@ -77,7 +85,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
           {/* Content Section */}
           <div className="p-8">
             {/* Category */}
-            <span className="inline-block px-3 py-1 bg-violet-100 text-violet-600 text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
+            <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-600 text-xs font-semibold uppercase tracking-wider rounded-full mb-4">
               {product.category}
             </span>
 
@@ -85,7 +93,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
             <h2 className="font-display text-3xl font-bold text-gray-900 mb-2">{product.name}</h2>
             
             {/* Price */}
-            <p className="text-3xl font-bold text-violet-600 mb-4">${product.price}</p>
+            <p className="text-3xl font-bold text-emerald-600 mb-4">£{product.price}</p>
 
             {/* Description */}
             <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
@@ -96,7 +104,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
               <ul className="space-y-1">
                 {product.features.map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-gray-600 text-sm">
-                    <span className="text-violet-500">✓</span> {feature}
+                    <span className="text-emerald-500">✓</span> {feature}
                   </li>
                 ))}
               </ul>
@@ -114,7 +122,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`color-swatch ${color} ${selectedColor === color ? 'active ring-2 ring-offset-2 ring-violet-500' : ''}`}
+                      className={`color-swatch ${color} ${selectedColor === color ? 'active ring-2 ring-offset-2 ring-emerald-500' : ''}`}
                       title={colorInfo?.name}
                     />
                   );
@@ -147,14 +155,14 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
               onClick={handleAddToCart}
               className="btn-primary w-full text-center"
             >
-              Add to Cart - ${product.price}
+              Add to Cart - £{product.price}
             </button>
 
             {/* Additional Info */}
             <div className="mt-6 pt-6 border-t border-gray-100">
               <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
-                  <span>🚚</span> Free shipping over $100
+                  <span>🚚</span> Free shipping over £100
                 </div>
                 <div className="flex items-center gap-2">
                   <span>✨</span> Handcrafted to order
