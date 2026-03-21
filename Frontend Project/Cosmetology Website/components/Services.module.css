@@ -47,6 +47,7 @@
   overflow: hidden;
   opacity: 0;
   transform: translateY(30px);
+  cursor: pointer;
 }
 
 .card.visible {
@@ -155,8 +156,313 @@
   height: 14px;
 }
 
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: white;
+  border-radius: var(--radius-md);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.closeButton:hover {
+  background: var(--primary-color);
+  transform: rotate(90deg);
+}
+
+.closeIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--secondary-color);
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover .closeIcon {
+  color: white;
+}
+
+.modalHeader {
+  padding: 40px 40px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--bg-light), white);
+  border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.modalIconWrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(212, 165, 116, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.modalIcon {
+  width: 35px;
+  height: 35px;
+  color: var(--primary-color);
+}
+
+.modalTitle {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.modalDescription {
+  color: var(--text-light);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Options List - Clickable */
+.optionsList {
+  padding: 10px 40px;
+}
+
+.optionItem {
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.optionItem:hover {
+  background: rgba(212, 165, 116, 0.05);
+  margin: 0 -40px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.optionItem:last-child {
+  border-bottom: none;
+}
+
+.optionMain {
+  width: 100%;
+}
+
+.optionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 15px;
+}
+
+.optionName {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  color: var(--secondary-color);
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.optionRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.optionPrice {
+  font-size: 15px;
+  color: var(--primary-color);
+  font-weight: 700;
+  background: rgba(212, 165, 116, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.bookOptionButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.optionItem:hover .bookOptionButton {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.bookOptionButton:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.calendarIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.optionMeta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.optionDuration {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.durationIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--primary-color);
+}
+
+.optionDescription {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.bookButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: calc(100% - 80px);
+  margin: 0 40px 40px;
+  padding: 18px 32px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bookButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(212, 165, 116, 0.4);
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal {
+    max-height: 95vh;
+    margin: 10px;
+  }
+
+  .modalHeader {
+    padding: 30px 20px 15px;
+  }
+
+  .modalTitle {
+    font-size: 22px;
+  }
+
+  .optionsList {
+    padding: 10px 20px;
+  }
+
+  .optionItem:hover {
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .optionName {
+    font-size: 16px;
+  }
+
+  .optionDescription {
+    font-size: 13px;
+  }
+
+  .bookOptionButton {
+    opacity: 1;
+    transform: none;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .bookButton {
+    width: calc(100% - 40px);
+    margin: 0 20px 20px;
   }
 }
