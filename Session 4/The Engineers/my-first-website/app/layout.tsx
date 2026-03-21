@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const playfair = Playfair_Display({ 
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const montserrat = Montserrat({ 
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Mercedes-Benz | The Best or Nothing",
-  description: "Explore Mercedes-Benz luxury vehicles, from the C-Class to the S-Class, and discover the rich Formula 1 history of Mercedes-AMG Petronas.",
-  keywords: "Mercedes-Benz, luxury cars, F1, Formula 1, Mercedes-AMG, C-Class, E-Class, S-Class",
+  description: "Experience luxury, performance, and innovation. Explore Mercedes-Benz luxury vehicles, from the C-Class to the S-Class, and discover the rich Formula 1 history of Mercedes-AMG Petronas.",
+  keywords: "Mercedes-Benz, luxury cars, F1, Formula 1, Mercedes-AMG, C-Class, E-Class, S-Class, automotive excellence",
 };
 
 export default function RootLayout({
@@ -19,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} bg-black text-white`}>
+      <body className={`${playfair.variable} ${montserrat.variable} font-sans antialiased bg-white text-gray-900`}>
         <Navigation />
         <main className="min-h-screen">
           {children}

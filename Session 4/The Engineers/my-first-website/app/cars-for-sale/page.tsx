@@ -25,26 +25,26 @@ interface Car {
 const cars: Car[] = [
   {
     id: 1,
-    name: 'Mercedes-Benz C-Class',
+    name: 'Mercedes-Benz C-Class Saloon',
     class: 'C-Class',
     price: 42000,
     priceDisplay: '£42,000',
     category: ['cheap', 'performance'],
     bodyType: 'saloon',
-    image: '/images/C-class.webp',
+    image: '/images/Mercedes C-Class saloon.webp',
     features: ['MBUX Infotainment', 'AMG Line Styling', 'LED Performance Lights', 'Active Brake Assist'],
     badge: 'C-CLASS',
     specs: { power: '255 HP', acceleration: '5.8s', topSpeed: '155 mph' },
   },
   {
     id: 2,
-    name: 'C-Class Saloon Premium',
+    name: 'C-Class Premium Plus',
     class: 'C-Class',
-    price: 45000,
-    priceDisplay: '£45,000',
+    price: 48000,
+    priceDisplay: '£48,000',
     category: ['cheap', 'luxury'],
     bodyType: 'saloon',
-    image: '/images/Mercedes C-Class saloon.webp',
+    image: '/images/C-class.webp',
     features: ['Burmester Sound', 'Air Suspension', '360° Camera', 'Heads-Up Display'],
     badge: 'LUXURY',
     specs: { power: '272 HP', acceleration: '5.5s', topSpeed: '162 mph' },
@@ -85,7 +85,7 @@ const cars: Car[] = [
     priceDisplay: '£180,000',
     category: ['expensive', 'luxury', 'performance'],
     bodyType: 'saloon',
-    image: '/images/S-class.webp',
+    image: '/images/s class maybach.webp',
     features: ['V12 Biturbo', 'Refrigerator', 'Silver Champagne Flutes', 'Magic Sky Control'],
     badge: 'MAYBACH',
     badgeType: 'premium',
@@ -99,9 +99,9 @@ const cars: Car[] = [
     priceDisplay: '£65,000',
     category: ['performance', 'luxury'],
     bodyType: 'suv',
-    image: '/images/C-class.webp',
+    image: '/images/gle suv.jpg',
     features: ['7-Seater', '4MATIC AWD', 'Off-Road Package', 'Trailer Assist'],
-    badge: 'SUV',
+    badge: 'GLE',
     specs: { power: '375 HP', acceleration: '5.3s', topSpeed: '155 mph' },
   },
   {
@@ -112,7 +112,7 @@ const cars: Car[] = [
     priceDisplay: '£32,000',
     category: ['cheap', 'performance'],
     bodyType: 'hatchback',
-    image: '/images/Mercedes C-Class saloon.webp',
+    image: '/images/a class hatch back.webp',
     features: ['Compact Design', 'Sporty Handling', 'Urban Drive', 'Efficient Engine'],
     badge: 'HATCHBACK',
     specs: { power: '188 HP', acceleration: '6.8s', topSpeed: '146 mph' },
@@ -125,7 +125,7 @@ const cars: Car[] = [
     priceDisplay: '£48,000',
     category: ['performance', 'luxury'],
     bodyType: 'coupe',
-    image: '/images/e class.jpg',
+    image: '/images/c class cope.jpg',
     features: ['Sleek 2-Door', 'Sport Suspension', 'Panoramic Roof', 'Dynamic Select'],
     badge: 'COUPE',
     specs: { power: '255 HP', acceleration: '5.6s', topSpeed: '155 mph' },
@@ -138,7 +138,7 @@ const cars: Car[] = [
     priceDisplay: '£120,000',
     category: ['expensive', 'performance', 'luxury'],
     bodyType: 'performance',
-    image: '/images/S-class.jpg',
+    image: '/images/mercdes GT.webp',
     features: ['Handcrafted Engine', 'Track Mode', 'Active Aero', 'Launch Control'],
     badge: 'AMG',
     badgeType: 'premium',
@@ -152,7 +152,7 @@ const cars: Car[] = [
     priceDisplay: '£52,000',
     category: ['cheap', 'luxury'],
     bodyType: 'suv',
-    image: '/images/Mercedes C-Class saloon.webp',
+    image: '/images/glc suv.webp',
     features: ['Mild Hybrid Tech', 'MBUX Navigation', 'Power Tailgate', 'Privacy Glass'],
     badge: 'GLC',
     specs: { power: '255 HP', acceleration: '6.2s', topSpeed: '149 mph' },
@@ -165,7 +165,7 @@ const cars: Car[] = [
     priceDisplay: '£165,000',
     category: ['expensive', 'luxury'],
     bodyType: 'suv',
-    image: '/images/S-class.jpg',
+    image: '/images/gls 63.webp',
     features: ['Executive Rear Seats', 'Air Balance', 'Burmester 3D', 'Magic Body Control'],
     badge: 'GLS MAYBACH',
     badgeType: 'premium',
@@ -179,7 +179,7 @@ const cars: Car[] = [
     priceDisplay: '£62,000',
     category: ['performance', 'luxury'],
     bodyType: 'coupe',
-    image: '/images/e class.jpg',
+    image: '/images/s class.webp',
     features: ['Four-Door Coupe', 'Diamond Grille', 'Multibeam LED', 'Night Package'],
     badge: 'CLS',
     specs: { power: '362 HP', acceleration: '4.8s', topSpeed: '155 mph' },
@@ -192,7 +192,7 @@ const cars: Car[] = [
     priceDisplay: '£58,000',
     category: ['luxury'],
     bodyType: 'suv',
-    image: '/images/C-class.webp',
+    image: '/images/e class estate.webp',
     features: ['640L Boot Space', 'Easy-Pack Tailgate', 'Split-Folding Seats', 'Load Sill Guard'],
     badge: 'ESTATE',
     specs: { power: '268 HP', acceleration: '6.0s', topSpeed: '149 mph' },
@@ -205,7 +205,7 @@ const cars: Car[] = [
     priceDisplay: '£145,000',
     category: ['expensive', 'performance', 'luxury'],
     bodyType: 'suv',
-    image: '/images/S-class.webp',
+    image: '/images/g63.webp',
     features: ['Iconic Design', 'Triple Diff Locks', 'Side-Exit Exhausts', 'Nappa Leather'],
     badge: 'G63 AMG',
     badgeType: 'premium',
@@ -219,7 +219,7 @@ const cars: Car[] = [
     priceDisplay: '£38,000',
     category: ['cheap', 'performance'],
     bodyType: 'suv',
-    image: '/images/C-class.webp',
+    image: '/images/gla urban.webp',
     features: ['Compact SUV', 'City Brake Assist', 'Reversing Camera', 'Keyless Go'],
     badge: 'GLA',
     specs: { power: '221 HP', acceleration: '6.8s', topSpeed: '143 mph' },
@@ -232,7 +232,7 @@ const cars: Car[] = [
     priceDisplay: '£105,000',
     category: ['expensive', 'performance', 'luxury'],
     bodyType: 'coupe',
-    image: '/images/e class.jpg',
+    image: '/images/sl roadstar.jpg',
     features: ['Retractable Roof', '2+2 Seating', 'AirScarf Neck Warmer', 'Sports Exhaust'],
     badge: 'SL 55',
     badgeType: 'premium',
@@ -246,7 +246,7 @@ const cars: Car[] = [
     priceDisplay: '£58,000',
     category: ['performance', 'luxury'],
     bodyType: 'saloon',
-    image: '/images/C-class.webp',
+    image: '/images/c43 amg.jpg',
     features: ['AMG 4MATIC', 'Performance Exhaust', 'Drift Mode', 'Bucket Seats'],
     badge: 'C43 AMG',
     badgeType: 'popular',
@@ -260,7 +260,7 @@ const cars: Car[] = [
     priceDisplay: '£78,000',
     category: ['expensive', 'performance'],
     bodyType: 'saloon',
-    image: '/images/e class.jpg',
+    image: '/images/e 53 amg.jpg',
     features: ['EQ Boost Hybrid', 'Sport+ Mode', 'Performance Steering', 'Carbon Trim'],
     badge: 'E53 AMG',
     badgeType: 'popular',
@@ -274,7 +274,7 @@ const cars: Car[] = [
     priceDisplay: '£135,000',
     category: ['expensive', 'performance', 'luxury'],
     bodyType: 'saloon',
-    image: '/images/S-class.jpg',
+    image: '/images/s63 mag.webp',
     features: ['V8 Hybrid Powertrain', 'Rear-Axle Steering', 'Active Noise Cancel', 'VIP Lounge'],
     badge: 'S63 AMG',
     badgeType: 'premium',
@@ -282,152 +282,16 @@ const cars: Car[] = [
   },
   {
     id: 20,
-    name: 'Mercedes-Benz EQE Electric',
-    class: 'EQ',
-    price: 72000,
-    priceDisplay: '£72,000',
+    name: 'Mercedes-Benz GLC Coupe',
+    class: 'SUV',
+    price: 54000,
+    priceDisplay: '£54,000',
     category: ['expensive', 'performance'],
-    bodyType: 'saloon',
-    image: '/images/e class.jpg',
-    features: ['590km Range', '170kW Charging', 'Hyperscreen', 'Zero Emissions'],
-    badge: 'EQE',
-    badgeType: 'popular',
+    bodyType: 'suv',
+    image: '/images/glc suc.avif',
+    features: ['Coupe Styling', 'MBUX', '4MATIC', 'Sports Suspension'],
+    badge: 'GLC COUPE',
     specs: { power: '288 HP', acceleration: '6.5s', topSpeed: '130 mph' },
-  },
-  {
-    id: 21,
-    name: 'Mercedes-Benz EQS SUV',
-    class: 'EQ',
-    price: 125000,
-    priceDisplay: '£125,000',
-    category: ['expensive', 'luxury'],
-    bodyType: 'suv',
-    image: '/images/S-class.jpg',
-    features: ['660km Range', 'Rear-Wheel Steer', 'Hyperscreen', 'Burmester 4D'],
-    badge: 'EQS SUV',
-    badgeType: 'premium',
-    specs: { power: '536 HP', acceleration: '4.5s', topSpeed: '130 mph' },
-  },
-  {
-    id: 22,
-    name: 'Mercedes-Benz C300e Hybrid',
-    class: 'C-Class',
-    price: 52000,
-    priceDisplay: '£52,000',
-    category: ['cheap', 'performance'],
-    bodyType: 'saloon',
-    image: '/images/C-class.webp',
-    features: ['Plug-in Hybrid', 'Pure Electric Mode', 'Home Charging', 'Tax Benefits'],
-    badge: 'HYBRID',
-    specs: { power: '313 HP', acceleration: '5.4s', topSpeed: '155 mph' },
-  },
-  {
-    id: 23,
-    name: 'Mercedes-Benz GLB 7-Seater',
-    class: 'SUV',
-    price: 42000,
-    priceDisplay: '£42,000',
-    category: ['cheap', 'luxury'],
-    bodyType: 'suv',
-    image: '/images/Mercedes C-Class saloon.webp',
-    features: ['7 Seats', 'Family Friendly', 'Roof Rails', 'Off-Road Mode'],
-    badge: 'GLB',
-    specs: { power: '221 HP', acceleration: '6.9s', topSpeed: '143 mph' },
-  },
-  {
-    id: 24,
-    name: 'Mercedes-AMG A45 S',
-    class: 'A-Class',
-    price: 56000,
-    priceDisplay: '£56,000',
-    category: ['expensive', 'performance'],
-    bodyType: 'hatchback',
-    image: '/images/C-class.webp',
-    features: ['Drift Mode', 'Most Powerful 4-Cyl', 'Race Mode', 'Sports Seats'],
-    badge: 'A45 S',
-    badgeType: 'popular',
-    specs: { power: '415 HP', acceleration: '3.9s', topSpeed: '168 mph' },
-  },
-  {
-    id: 25,
-    name: 'Mercedes-Benz S580e Hybrid',
-    class: 'S-Class',
-    price: 115000,
-    priceDisplay: '£115,000',
-    category: ['expensive', 'luxury'],
-    bodyType: 'saloon',
-    image: '/images/S-class.webp',
-    features: ['Plug-in Hybrid', '100km Electric Range', 'Silent Mode', 'Luxury Rear Seats'],
-    badge: 'S580e',
-    badgeType: 'premium',
-    specs: { power: '510 HP', acceleration: '5.1s', topSpeed: '155 mph' },
-  },
-  {
-    id: 26,
-    name: 'Mercedes-Benz E-Class All-Terrain',
-    class: 'E-Class',
-    price: 68000,
-    priceDisplay: '£68,000',
-    category: ['luxury', 'performance'],
-    bodyType: 'suv',
-    image: '/images/e class.jpg',
-    features: ['Raised Suspension', '4MATIC AWD', 'All-Terrain Mode', 'Skid Plates'],
-    badge: 'ALL-TERRAIN',
-    specs: { power: '268 HP', acceleration: '6.1s', topSpeed: '143 mph' },
-  },
-  {
-    id: 27,
-    name: 'Mercedes-AMG GLE 63 S',
-    class: 'SUV',
-    price: 128000,
-    priceDisplay: '£128,000',
-    category: ['expensive', 'performance', 'luxury'],
-    bodyType: 'suv',
-    image: '/images/S-class.jpg',
-    features: ['V8 Biturbo', 'Active Roll Stabilization', 'Performance Brakes', 'Sport Exhaust'],
-    badge: 'GLE 63 S',
-    badgeType: 'premium',
-    specs: { power: '603 HP', acceleration: '3.7s', topSpeed: '174 mph' },
-  },
-  {
-    id: 28,
-    name: 'Mercedes-Benz CLA Coupe',
-    class: 'CLA',
-    price: 36000,
-    priceDisplay: '£36,000',
-    category: ['cheap', 'performance'],
-    bodyType: 'coupe',
-    image: '/images/Mercedes C-Class saloon.webp',
-    features: ['Frameless Doors', 'Aerodynamic Design', 'MBUX Voice', 'Wireless CarPlay'],
-    badge: 'CLA',
-    specs: { power: '221 HP', acceleration: '6.2s', topSpeed: '149 mph' },
-  },
-  {
-    id: 29,
-    name: 'Mercedes-AMG CLA 45',
-    class: 'CLA',
-    price: 52000,
-    priceDisplay: '£52,000',
-    category: ['expensive', 'performance'],
-    bodyType: 'coupe',
-    image: '/images/e class.jpg',
-    features: ['Drift Mode', 'Launch Control', 'Racing Seats', 'Aero Package'],
-    badge: 'CLA 45',
-    badgeType: 'popular',
-    specs: { power: '382 HP', acceleration: '4.1s', topSpeed: '168 mph' },
-  },
-  {
-    id: 30,
-    name: 'Mercedes-Benz EQB Electric',
-    class: 'EQ',
-    price: 52000,
-    priceDisplay: '£52,000',
-    category: ['cheap', 'luxury'],
-    bodyType: 'suv',
-    image: '/images/C-class.webp',
-    features: ['7-Seat Electric', '400km Range', 'Fast Charging', 'Zero Emissions'],
-    badge: 'EQB',
-    specs: { power: '288 HP', acceleration: '6.0s', topSpeed: '99 mph' },
   },
 ];
 
@@ -472,6 +336,11 @@ const featureIcons: Record<string, string> = {
   'Track Mode': '🏆',
   'Active Aero': '💨',
   'Launch Control': '🚀',
+  'Iconic Design': '⭐',
+  'Triple Diff Locks': '🔒',
+  'Side-Exit Exhausts': '💨',
+  'Nappa Leather': '🪑',
+  'Coupe Styling': '🎯',
 };
 
 // 3D Tilt Card Component
@@ -489,8 +358,8 @@ function CarCard3D({ car, index }: { car: Car; index: number }) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const rotateX = (y - centerY) / 15;
-    const rotateY = (centerX - x) / 15;
+    const rotateX = (y - centerY) / 20;
+    const rotateY = (centerX - x) / 20;
     
     setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
   }, []);
@@ -607,80 +476,9 @@ function CarCard3D({ car, index }: { car: Car; index: number }) {
   );
 }
 
-// Custom Cursor Component
-function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    if (!cursor) return;
-
-    let rafId: number;
-    let mouseX = 0;
-    let mouseY = 0;
-    let currentX = 0;
-    let currentY = 0;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const animate = () => {
-      const ease = 0.15;
-      currentX += (mouseX - currentX) * ease;
-      currentY += (mouseY - currentY) * ease;
-      
-      if (cursor) {
-        cursor.style.left = `${currentX - 10}px`;
-        cursor.style.top = `${currentY - 10}px`;
-      }
-      
-      rafId = requestAnimationFrame(animate);
-    };
-
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('.car-card-3d, .filter-tab, .car-cta-3d, .action-btn')) {
-        setIsHovering(true);
-      }
-    };
-
-    const handleMouseOut = () => {
-      setIsHovering(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseover', handleMouseOver, { passive: true });
-    document.addEventListener('mouseout', handleMouseOut, { passive: true });
-    rafId = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseout', handleMouseOut);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  // Hide on mobile
-  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-    return null;
-  }
-
-  return (
-    <div 
-      ref={cursorRef} 
-      className={`custom-cursor ${isHovering ? 'hovering' : ''}`}
-      style={{ position: 'fixed', pointerEvents: 'none', zIndex: 9999 }}
-    />
-  );
-}
-
 // Particle Background
 function ParticleBackground() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
+  const particles = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     animationDelay: `${Math.random() * 20}s`,
@@ -730,7 +528,7 @@ export default function CarsForSale() {
     { id: 'luxury', label: 'Luxury' },
   ];
 
-  const carClasses = ['all', 'A-Class', 'C-Class', 'CLA', 'CLS', 'E-Class', 'S-Class', 'G-Class', 'SL', 'SUV', 'EQ', 'AMG'];
+  const carClasses = ['all', 'A-Class', 'C-Class', 'CLA', 'CLS', 'E-Class', 'S-Class', 'G-Class', 'SL', 'SUV', 'AMG'];
   const bodyTypes: { id: BodyType; label: string }[] = [
     { id: 'all', label: 'All Body Types' },
     { id: 'saloon', label: 'Saloon' },
@@ -750,17 +548,15 @@ export default function CarsForSale() {
 
   return (
     <div className="cars-page">
-      <CustomCursor />
-      
       {/* Hero Section */}
       <section className="cars-hero">
         <ParticleBackground />
         <div className="cars-hero-content">
           <span className="cars-hero-label">Premium Selection</span>
-          <h1 className="cars-hero-title">Find Your Mercedes</h1>
+          <h1 className="cars-hero-title">The Collection</h1>
           <p className="cars-hero-description">
-            Discover our curated collection of exceptional Mercedes-Benz vehicles. 
-            Each car represents the pinnacle of automotive excellence.
+            Discover our curated selection of exceptional Mercedes-Benz vehicles. 
+            Each car represents the pinnacle of automotive engineering and luxury craftsmanship.
           </p>
           <div className="hero-stats">
             <div className="hero-stat">

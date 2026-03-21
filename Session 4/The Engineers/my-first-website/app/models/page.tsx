@@ -1,4 +1,4 @@
-            import Image from 'next/image';
+import Image from 'next/image';
 
 export default function Models() {
   const cClassGenerations = [
@@ -32,7 +32,7 @@ export default function Models() {
     {
       name: 'W211 (2002-2009)',
       description: 'Elegant design with quad headlights. Known for exceptional build quality and introduced air suspension to the E-Class.',
-      features: ['AIRMATIC air suspension', '4MATIC all-wheel drive', 'COMAND APS navigation', 'Bi-xeon headlamps'],
+      features: ['AIRMATIC air suspension', '4MATIC all-wheel drive', 'COMAND APS navigation', 'Bi-xenon headlamps'],
       engines: ['2.0L - 5.0L petrol engines', '2.2L - 3.2L diesel engines', 'E55 AMG and E63 AMG variants'],
     },
     {
@@ -83,20 +83,20 @@ export default function Models() {
   ];
 
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen pt-16 bg-white">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-[#0A0A0A] via-[#1A1A1A] to-[#0A0A0A]">
+      <section className="relative py-20 px-4 bg-gradient-to-br from-gray-50 via-white to-gray-50">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="inline-block px-4 py-2 bg-[#00ADEF]/10 border border-[#00ADEF] rounded-full mb-6">
-            <span className="text-[#00ADEF] font-semibold text-sm">VEHICLES</span>
+          <div className="inline-block px-4 py-2 bg-blue-50 border border-blue-100 rounded-full mb-6">
+            <span className="text-blue-600 font-semibold text-sm tracking-wide">VEHICLE LINEUP</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
             Mercedes-Benz Models
           </h1>
-          <p className="text-xl text-gray-300 mb-4">
+          <p className="text-xl text-gray-500 mb-4">
             From the 2000s to Today
           </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed">
             Explore the evolution of Mercedes-Benz luxury vehicles, from the sporty C-Class to the flagship S-Class, 
             spanning over two decades of automotive excellence.
           </p>
@@ -104,41 +104,41 @@ export default function Models() {
       </section>
 
       {/* C-Class Section */}
-      <section id="c-class" className="py-16 px-4 bg-[#0A0A0A]">
+      <section id="c-class" className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="text-white font-bold text-4xl">C</span>
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-200">
+              <span className="text-white font-bold text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>C</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
               C-Class
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
               The compact executive sedan that combines sporty performance with everyday practicality.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {cClassGenerations.map((gen, index) => (
-              <div key={index} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-[#00ADEF] transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-[#00ADEF]/20 to-[#00ADEF]/5 flex items-center justify-center">
+              <div key={index} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-blue-200 transition-all duration-300 shadow-sm hover:shadow-xl">
+                <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <span className="text-white font-bold text-3xl">C</span>
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                      <span className="text-white font-bold text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>C</span>
                     </div>
-                    <p className="text-[#00ADEF] font-semibold">{gen.name}</p>
+                    <p className="text-blue-600 font-semibold">{gen.name}</p>
                   </div>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-white mb-4">{gen.name}</h3>
-                  <p className="text-gray-400 mb-6">{gen.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>{gen.name}</h3>
+                  <p className="text-gray-500 mb-6 leading-relaxed">{gen.description}</p>
                   
                   <div className="mb-4">
-                    <h4 className="text-white font-semibold mb-2">Key Features</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Key Features</h4>
+                    <ul className="space-y-2">
                       {gen.features.map((feature, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3"></span>
                           {feature}
                         </li>
                       ))}
@@ -146,11 +146,11 @@ export default function Models() {
                   </div>
                   
                   <div>
-                    <h4 className="text-white font-semibold mb-2">Engine Options</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Engine Options</h4>
+                    <ul className="space-y-2">
                       {gen.engines.map((engine, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3"></span>
                           {engine}
                         </li>
                       ))}
@@ -164,41 +164,41 @@ export default function Models() {
       </section>
 
       {/* E-Class Section */}
-      <section id="e-class" className="py-16 px-4 bg-gradient-to-r from-[#0A0A0A] via-[#1A1A1A] to-[#0A0A0A]">
+      <section id="e-class" className="py-16 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="text-white font-bold text-4xl">E</span>
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-200">
+              <span className="text-white font-bold text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>E</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
               E-Class
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
               The mid-size luxury sedan perfect for business executives and comfort-seeking drivers.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {eClassGenerations.map((gen, index) => (
-              <div key={index} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-[#00ADEF] transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-[#00ADEF]/20 to-[#00ADEF]/5 flex items-center justify-center">
+              <div key={index} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-blue-200 transition-all duration-300 shadow-sm hover:shadow-xl">
+                <div className="h-48 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <span className="text-white font-bold text-3xl">E</span>
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                      <span className="text-white font-bold text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>E</span>
                     </div>
-                    <p className="text-[#00ADEF] font-semibold">{gen.name}</p>
+                    <p className="text-blue-600 font-semibold">{gen.name}</p>
                   </div>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-white mb-4">{gen.name}</h3>
-                  <p className="text-gray-400 mb-6">{gen.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>{gen.name}</h3>
+                  <p className="text-gray-500 mb-6 leading-relaxed">{gen.description}</p>
                   
                   <div className="mb-4">
-                    <h4 className="text-white font-semibold mb-2">Key Features</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Key Features</h4>
+                    <ul className="space-y-2">
                       {gen.features.map((feature, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3"></span>
                           {feature}
                         </li>
                       ))}
@@ -206,11 +206,11 @@ export default function Models() {
                   </div>
                   
                   <div>
-                    <h4 className="text-white font-semibold mb-2">Engine Options</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Engine Options</h4>
+                    <ul className="space-y-2">
                       {gen.engines.map((engine, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-3"></span>
                           {engine}
                         </li>
                       ))}
@@ -224,41 +224,41 @@ export default function Models() {
       </section>
 
       {/* S-Class Section */}
-      <section id="s-class" className="py-16 px-4 bg-[#0A0A0A]">
+      <section id="s-class" className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="text-white font-bold text-4xl">S</span>
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-white font-bold text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>S</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
               S-Class
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
               The flagship luxury sedan that defines automotive excellence and innovation.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {sClassGenerations.map((gen, index) => (
-              <div key={index} className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-[#00ADEF] transition-all duration-300">
-                <div className="h-48 bg-gradient-to-br from-[#00ADEF]/20 to-[#00ADEF]/5 flex items-center justify-center">
+              <div key={index} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-xl">
+                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-[#00ADEF] rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <span className="text-white font-bold text-3xl">S</span>
+                    <div className="w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                      <span className="text-white font-bold text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>S</span>
                     </div>
-                    <p className="text-[#00ADEF] font-semibold">{gen.name}</p>
+                    <p className="text-gray-700 font-semibold">{gen.name}</p>
                   </div>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-white mb-4">{gen.name}</h3>
-                  <p className="text-gray-400 mb-6">{gen.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>{gen.name}</h3>
+                  <p className="text-gray-500 mb-6 leading-relaxed">{gen.description}</p>
                   
                   <div className="mb-4">
-                    <h4 className="text-white font-semibold mb-2">Key Features</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Key Features</h4>
+                    <ul className="space-y-2">
                       {gen.features.map((feature, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-gray-800 rounded-full mr-3"></span>
                           {feature}
                         </li>
                       ))}
@@ -266,11 +266,11 @@ export default function Models() {
                   </div>
                   
                   <div>
-                    <h4 className="text-white font-semibold mb-2">Engine Options</h4>
-                    <ul className="space-y-1">
+                    <h4 className="text-gray-900 font-semibold mb-3 text-sm uppercase tracking-wider">Engine Options</h4>
+                    <ul className="space-y-2">
                       {gen.engines.map((engine, idx) => (
                         <li key={idx} className="text-gray-500 text-sm flex items-center">
-                          <span className="w-1.5 h-1.5 bg-[#00ADEF] rounded-full mr-2"></span>
+                          <span className="w-1.5 h-1.5 bg-gray-800 rounded-full mr-3"></span>
                           {engine}
                         </li>
                       ))}
@@ -284,45 +284,45 @@ export default function Models() {
       </section>
 
       {/* Comparison Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-[#0A0A0A] via-[#1A1A1A] to-[#0A0A0A]">
+      <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12" style={{ fontFamily: 'Playfair Display, serif' }}>
             Model Comparison
           </h2>
           <div className="overflow-x-auto">
-            <table className="w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl overflow-hidden">
+            <table className="w-full bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
               <thead>
-                <tr className="border-b border-[#2A2A2A]">
-                  <th className="px-6 py-4 text-left text-white font-semibold">Feature</th>
-                  <th className="px-6 py-4 text-center text-[#00ADEF] font-semibold">C-Class</th>
-                  <th className="px-6 py-4 text-center text-[#00ADEF] font-semibold">E-Class</th>
-                  <th className="px-6 py-4 text-center text-[#00ADEF] font-semibold">S-Class</th>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="px-6 py-5 text-left text-gray-900 font-semibold text-sm uppercase tracking-wider">Feature</th>
+                  <th className="px-6 py-5 text-center text-blue-600 font-semibold text-sm uppercase tracking-wider">C-Class</th>
+                  <th className="px-6 py-5 text-center text-blue-600 font-semibold text-sm uppercase tracking-wider">E-Class</th>
+                  <th className="px-6 py-5 text-center text-gray-800 font-semibold text-sm uppercase tracking-wider">S-Class</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-[#2A2A2A]">
-                  <td className="px-6 py-4 text-gray-400">Position</td>
-                  <td className="px-6 py-4 text-center text-white">Compact Executive</td>
-                  <td className="px-6 py-4 text-center text-white">Mid-Size Luxury</td>
-                  <td className="px-6 py-4 text-center text-white">Full-Size Luxury</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-5 text-gray-600 font-medium">Position</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Compact Executive</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Mid-Size Luxury</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Full-Size Luxury</td>
                 </tr>
-                <tr className="border-b border-[#2A2A2A]">
-                  <td className="px-6 py-4 text-gray-400">Best For</td>
-                  <td className="px-6 py-4 text-center text-white">Sporty driving, daily use</td>
-                  <td className="px-6 py-4 text-center text-white">Business, comfort, luxury</td>
-                  <td className="px-6 py-4 text-center text-white">Ultimate luxury, innovation</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-5 text-gray-600 font-medium">Best For</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Sporty driving, daily use</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Business, comfort, luxury</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Ultimate luxury, innovation</td>
                 </tr>
-                <tr className="border-b border-[#2A2A2A]">
-                  <td className="px-6 py-4 text-gray-400">Starting Price</td>
-                  <td className="px-6 py-4 text-center text-white">$$</td>
-                  <td className="px-6 py-4 text-center text-white">$$$</td>
-                  <td className="px-6 py-4 text-center text-white">$$$$</td>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-5 text-gray-600 font-medium">Starting Price</td>
+                  <td className="px-6 py-5 text-center text-gray-900">£32,000</td>
+                  <td className="px-6 py-5 text-center text-gray-900">£55,000</td>
+                  <td className="px-6 py-5 text-center text-gray-900">£95,000</td>
                 </tr>
-                <tr>
-                  <td className="px-6 py-4 text-gray-400">Technology</td>
-                  <td className="px-6 py-4 text-center text-white">MBUX, Driver Assist</td>
-                  <td className="px-6 py-4 text-center text-white">MBUX, Level 3 Autonomy</td>
-                  <td className="px-6 py-4 text-center text-white">Hyperscreen, Level 3 Autonomy</td>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-5 text-gray-600 font-medium">Technology</td>
+                  <td className="px-6 py-5 text-center text-gray-900">MBUX, Driver Assist</td>
+                  <td className="px-6 py-5 text-center text-gray-900">MBUX, Level 2 Autonomy</td>
+                  <td className="px-6 py-5 text-center text-gray-900">Hyperscreen, Level 3</td>
                 </tr>
               </tbody>
             </table>

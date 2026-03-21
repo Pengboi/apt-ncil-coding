@@ -26,7 +26,7 @@ export default function Home() {
     // Add intersection observer for fade-in animations
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
+      rootMargin: '0px 0px -50px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -54,36 +54,26 @@ export default function Home() {
 
   return (
     <>
-      {/* Navigation */}
-      <nav className="nav">
-        <div className="nav-container">
-          <div className="logo">MERCEDES-BENZ</div>
-          <ul className="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="/cars-for-sale">Cars for Sale</a></li>
-            <li><a href="#models">Models</a></li>
-            <li><a href="#f1">F1 History</a></li>
-          </ul>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="hero" id="home">
         <div className="hero-grid"></div>
         <div className="hero-content">
-          <p className="hero-subtitle">AUTOMOTIVE EXCELLENCE SINCE 1926</p>
-          <h1 className="hero-title">MERCEDES-BENZ</h1>
+          <p className="hero-subtitle">Automotive Excellence Since 1926</p>
+          <h1 className="hero-title">
+            Mercedes<span className="hero-title-accent">-</span>Benz
+          </h1>
           <p className="hero-tagline">The Best or Nothing</p>
           <p className="hero-description">
-            Experience luxury, performance, and innovation. From the C-Class to the S-Class, and the dominance of Mercedes-AMG Petronas in Formula 1.
+            Experience the pinnacle of luxury, performance, and innovation. From the refined C-Class to the exquisite S-Class, 
+            discover a driving experience crafted without compromise.
           </p>
           <div className="hero-cta">
-            <a href="/cars-for-sale" className="btn btn-primary">Browse Cars for Sale</a>
+            <a href="/cars-for-sale" className="btn btn-primary">Browse Collection</a>
             <a href="#models" className="btn btn-secondary">Explore Models</a>
           </div>
         </div>
         <div className="scroll-indicator">
-          <span>SCROLL</span>
+          <span>Scroll</span>
           <div className="scroll-line"></div>
         </div>
       </section>
@@ -91,10 +81,10 @@ export default function Home() {
       {/* Models Section */}
       <section id="models" className="models-section">
         <div className="section-header">
-          <p className="section-label">LUXURY COLLECTION</p>
-          <h2 className="section-title">Featured Models</h2>
+          <p className="section-label">The Collection</p>
+          <h2 className="section-title">Signature Models</h2>
           <p className="section-description">
-            Discover our range of luxury vehicles, from sporty sedans to the pinnacle of automotive excellence.
+            Each Mercedes-Benz represents the perfect synthesis of innovative technology and timeless elegance.
           </p>
         </div>
 
@@ -104,9 +94,10 @@ export default function Home() {
             <div className="model-content">
               <h3 className="model-name">C-Class</h3>
               <p className="model-description">
-                Compact executive sedan with sporty design and advanced technology.
+                The compact executive sedan that delivers dynamic performance with refined sophistication. 
+                Where sporty handling meets intelligent luxury.
               </p>
-              <a href="#" className="model-link">Learn More →</a>
+              <a href="/cars-for-sale" className="model-link">Discover C-Class →</a>
             </div>
           </div>
 
@@ -115,9 +106,10 @@ export default function Home() {
             <div className="model-content">
               <h3 className="model-name">E-Class</h3>
               <p className="model-description">
-                Mid-size luxury sedan perfect for business and comfort.
+                The executive choice for those who demand excellence. Intelligent technology 
+                wrapped in unmistakable elegance for the discerning driver.
               </p>
-              <a href="#" className="model-link">Learn More →</a>
+              <a href="/cars-for-sale" className="model-link">Discover E-Class →</a>
             </div>
           </div>
 
@@ -126,9 +118,10 @@ export default function Home() {
             <div className="model-content">
               <h3 className="model-name">S-Class</h3>
               <p className="model-description">
-                The flagship luxury sedan with cutting-edge innovation.
+                The pinnacle of automotive excellence. Experience first-class comfort, 
+                groundbreaking innovation, and the art of arriving.
               </p>
-              <a href="#" className="model-link">Learn More →</a>
+              <a href="/cars-for-sale" className="model-link">Discover S-Class →</a>
             </div>
           </div>
         </div>
@@ -138,25 +131,26 @@ export default function Home() {
       <section className="f1-section" id="f1">
         <div className="f1-content">
           <div className="section-header">
-            <p className="section-label">FORMULA 1</p>
+            <p className="section-label">Formula One</p>
             <h2 className="section-title">Mercedes-AMG Petronas</h2>
           </div>
 
           <div className="f1-grid">
             <div className="f1-text">
-              <h2 className="f1-heading">Silver Arrows<br />Legacy of Excellence</h2>
+              <h2 className="f1-heading">Legacy of<br />Excellence</h2>
               <p>
-                Experience the dominance of Mercedes-AMG Petronas in Formula 1. From 2014 to 2020, we achieved 7 consecutive Constructors&apos; Championships, establishing ourselves as one of the most successful teams in F1 history.
+                From the dominance of the hybrid era to continuous innovation on the world's most demanding circuits, 
+                Mercedes-AMG Petronas represents the relentless pursuit of perfection that defines our brand.
               </p>
 
               <div className="f1-stats">
                 <div className="stat-item">
-                  <div className="stat-number">7</div>
+                  <div className="stat-number">8</div>
                   <div className="stat-label">Constructors&apos; Titles</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-number">100+</div>
-                  <div className="stat-label">Race Wins</div>
+                  <div className="stat-number">125+</div>
+                  <div className="stat-label">Race Victories</div>
                 </div>
                 <div className="stat-item">
                   <div className="stat-number">2010</div>
@@ -164,7 +158,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <a href="/f1-history" className="btn btn-primary">Explore F1 History</a>
+              <a href="/f1-history" className="btn btn-primary">Explore F1 Heritage</a>
             </div>
 
             <div className="f1-visual">
@@ -177,54 +171,17 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="cta-section">
-        <p className="section-label cta-label">GET STARTED</p>
+        <p className="section-label cta-label">Begin Your Journey</p>
         <h2 className="cta-heading">Ready to Experience Excellence?</h2>
         <p className="cta-description">
-          Whether you&apos;re interested in our luxury vehicles or our racing heritage, there&apos;s something for everyone.
+          Whether you seek the comfort of our luxury sedans or wish to explore our racing heritage, 
+          your journey begins here.
         </p>
         <div className="cta-buttons">
-          <a href="#models" className="btn btn-primary">View All Models</a>
-          <a href="#f1" className="btn btn-secondary">F1 History</a>
+          <a href="/cars-for-sale" className="btn btn-light">View All Models</a>
+          <a href="/f1-history" className="btn btn-outline-light">F1 History</a>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div>
-            <div className="footer-brand">MERCEDES-BENZ</div>
-            <p className="footer-tagline">The best or nothing. Experience luxury, performance, and innovation.</p>
-          </div>
-
-          <div className="footer-section">
-            <h4>Quick Links</h4>
-            <ul className="footer-links">
-              <li><a href="#home">Home</a></li>
-              <li><a href="/cars-for-sale">Cars for Sale</a></li>
-              <li><a href="#models">Models</a></li>
-              <li><a href="#f1">F1 History</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h4>Model Series</h4>
-            <ul className="footer-links">
-              <li><a href="#">C-Class</a></li>
-              <li><a href="#">E-Class</a></li>
-              <li><a href="#">S-Class</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="footer-bottom">
-          <p>© 2026 Mercedes-Benz Fan Website. Not affiliated with Daimler AG.</p>
-          <p className="footer-links-bottom">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Contact</a>
-          </p>
-        </div>
-      </footer>
     </>
   );
 }

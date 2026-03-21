@@ -1,61 +1,45 @@
 /* =====================================================
-   CARS FOR SALE - REDESIGNED WITH 3D EFFECTS
+   CARS FOR SALE - MERCEDES LIGHT THEME
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
-/* CSS Variables */
+/* CSS Variables - Mercedes Light Theme */
 :root {
-  --mercedes-silver: #C0C0C0;
-  --mercedes-dark: #0a0a0a;
-  --mercedes-charcoal: #1a1a1a;
-  --mercedes-gold: #d4af37;
-  --mercedes-white: #ffffff;
-  --mercedes-accent: #00adef;
-  --mercedes-purple: #6b21a8;
-  --mercedes-red: #dc2626;
-  --mercedes-green: #16a34a;
-  --card-bg: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(15, 15, 15, 0.9));
+  --mb-white: #FFFFFF;
+  --mb-alpine: #F8F8F8;
+  --mb-warm: #F5F5F3;
+  --mb-platinum: #E8E8E8;
+  --mb-silver: #C0C0C0;
+  --mb-grey: #9A9A9A;
+  --mb-graphite: #4A4A4A;
+  --mb-black: #1A1A1A;
+  --mb-blue: #0078D4;
+  --mb-teal: #00A9A9;
+  --mb-gold: #B8860B;
+  --card-bg: linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%);
 }
 
-/* Custom Cursor */
+/* Page Container */
 .cars-page {
   min-height: 100vh;
-  background: var(--mercedes-dark);
-  cursor: none;
+  background: var(--mb-white);
 }
 
-.custom-cursor {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--mercedes-gold);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
-  mix-blend-mode: difference;
-}
-
-.custom-cursor.hovering {
-  width: 60px;
-  height: 60px;
-  border-color: var(--mercedes-white);
-  background: rgba(212, 175, 55, 0.1);
-}
-
-/* Hero Section - Dramatic Entrance */
+/* =====================================================
+   HERO SECTION - ELEGANT LIGHT
+   ===================================================== */
 .cars-hero {
   position: relative;
-  min-height: 70vh;
+  min-height: 65vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background: 
-    radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 50%, rgba(0, 173, 239, 0.1) 0%, transparent 50%),
-    linear-gradient(180deg, #0a0a0a 0%, #141414 50%, #0a0a0a 100%);
+    radial-gradient(ellipse at 20% 50%, rgba(0, 120, 212, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(0, 169, 169, 0.03) 0%, transparent 50%),
+    linear-gradient(180deg, var(--mb-warm) 0%, var(--mb-white) 50%, var(--mb-alpine) 100%);
 }
 
 .cars-hero::before {
@@ -67,90 +51,58 @@
       90deg,
       transparent,
       transparent 100px,
-      rgba(192, 192, 192, 0.03) 100px,
-      rgba(192, 192, 192, 0.03) 101px
+      rgba(0, 0, 0, 0.015) 100px,
+      rgba(0, 0, 0, 0.015) 101px
     );
-  animation: scanline 15s linear infinite;
-}
-
-@keyframes scanline {
-  0% { transform: translateX(-100px); }
-  100% { transform: translateX(100px); }
 }
 
 .cars-hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 900px;
+  max-width: 800px;
   padding: 2rem;
-  animation: heroEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: heroEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes heroEntrance {
   0% {
     opacity: 0;
-    transform: translateY(60px) scale(0.95);
-    filter: blur(10px);
+    transform: translateY(40px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
+    transform: translateY(0);
   }
 }
 
 .cars-hero-label {
   display: inline-block;
-  font-size: 0.75rem;
-  letter-spacing: 0.5em;
+  font-size: 0.7rem;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--mercedes-gold);
+  color: var(--mb-blue);
   font-weight: 600;
   margin-bottom: 1.5rem;
-  padding: 0.5rem 1.5rem;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  background: rgba(212, 175, 55, 0.05);
-  animation: labelPulse 3s ease-in-out infinite;
-}
-
-@keyframes labelPulse {
-  0%, 100% { border-color: rgba(212, 175, 55, 0.3); }
-  50% { border-color: rgba(212, 175, 55, 0.6); }
+  padding: 0.5rem 1.2rem;
+  border: 1px solid rgba(0, 120, 212, 0.2);
+  background: rgba(0, 120, 212, 0.03);
 }
 
 .cars-hero-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3rem, 10vw, 7rem);
-  font-weight: 300;
-  color: var(--mercedes-white);
-  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 400;
+  color: var(--mb-black);
+  margin-bottom: 1rem;
   letter-spacing: -0.02em;
   line-height: 1;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #c0c0c0 25%,
-    #ffffff 50%,
-    #c0c0c0 75%,
-    #ffffff 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmerText 5s linear infinite;
-}
-
-@keyframes shimmerText {
-  0% { background-position: 200% center; }
-  100% { background-position: -200% center; }
 }
 
 .cars-hero-description {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.6);
-  max-width: 600px;
+  font-size: 1.05rem;
+  color: var(--mb-graphite);
+  max-width: 550px;
   margin: 0 auto 2rem;
   line-height: 1.8;
   font-weight: 300;
@@ -159,8 +111,8 @@
 .hero-stats {
   display: flex;
   justify-content: center;
-  gap: 4rem;
-  margin-top: 3rem;
+  gap: 3rem;
+  margin-top: 2.5rem;
 }
 
 .hero-stat {
@@ -168,18 +120,18 @@
 }
 
 .hero-stat-number {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 3rem;
-  font-weight: 300;
-  color: var(--mercedes-gold);
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--mb-blue);
   line-height: 1;
 }
 
 .hero-stat-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--mb-grey);
   margin-top: 0.5rem;
 }
 
@@ -193,11 +145,11 @@
 
 .particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--mercedes-gold);
+  width: 3px;
+  height: 3px;
+  background: var(--mb-blue);
   border-radius: 50%;
-  opacity: 0.3;
+  opacity: 0.2;
   animation: float 20s infinite;
 }
 
@@ -206,23 +158,25 @@
     transform: translateY(100vh) rotate(0deg);
     opacity: 0;
   }
-  10% { opacity: 0.3; }
-  90% { opacity: 0.3; }
+  10% { opacity: 0.2; }
+  90% { opacity: 0.2; }
   100% {
     transform: translateY(-100vh) rotate(720deg);
     opacity: 0;
   }
 }
 
-/* Filters Section - Glassmorphism */
+/* =====================================================
+   FILTERS SECTION - CLEAN LIGHT
+   ===================================================== */
 .filters-section {
   position: sticky;
-  top: 0;
+  top: 64px;
   z-index: 100;
-  padding: 2rem 3rem;
-  background: rgba(10, 10, 10, 0.8);
+  padding: 1.5rem 3rem;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+  border-bottom: 1px solid var(--mb-platinum);
 }
 
 .filters-container {
@@ -240,13 +194,13 @@
 
 .filter-tab {
   position: relative;
-  padding: 0.8rem 1.5rem;
+  padding: 0.7rem 1.3rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--mb-graphite);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -261,17 +215,17 @@
   left: 50%;
   width: 0;
   height: 2px;
-  background: var(--mercedes-gold);
+  background: var(--mb-blue);
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
 
 .filter-tab:hover {
-  color: var(--mercedes-white);
+  color: var(--mb-black);
 }
 
 .filter-tab.active {
-  color: var(--mercedes-gold);
+  color: var(--mb-blue);
 }
 
 .filter-tab.active::before {
@@ -282,7 +236,7 @@
 .filter-row {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -290,84 +244,63 @@
   position: relative;
 }
 
-/* Enhanced Dropdown Styling for Better Visibility */
 .filter-dropdown {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  padding: 1rem 3.5rem 1rem 1.5rem;
+  padding: 0.9rem 3rem 0.9rem 1.2rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--mercedes-white);
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(15, 15, 15, 0.95));
-  border: 2px solid rgba(212, 175, 55, 0.4);
-  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--mb-black);
+  background: var(--mb-white);
+  border: 1.5px solid var(--mb-platinum);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 220px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  min-width: 200px;
 }
 
 .filter-dropdown:hover,
 .filter-dropdown:focus {
-  background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(25, 25, 25, 1));
-  border-color: var(--mercedes-gold);
-  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.2);
+  background: var(--mb-white);
+  border-color: var(--mb-blue);
+  box-shadow: 0 4px 15px rgba(0, 120, 212, 0.1);
   outline: none;
-  transform: translateY(-2px);
 }
 
-/* Dropdown Options Styling */
 .filter-dropdown option {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--mercedes-white);
-  background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
-  padding: 1rem;
-  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+  color: var(--mb-black);
+  background: var(--mb-white);
+  padding: 0.8rem;
 }
 
-.filter-dropdown option:hover,
-.filter-dropdown option:focus {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1));
-  color: var(--mercedes-gold);
-}
-
-.filter-dropdown option:checked {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.2));
-  color: var(--mercedes-white);
-  font-weight: 700;
-}
-
-/* Dropdown Arrow */
 .filter-dropdown-wrapper::after {
   content: '▼';
   position: absolute;
-  right: 1.2rem;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.8rem;
-  color: var(--mercedes-gold);
+  font-size: 0.7rem;
+  color: var(--mb-blue);
   pointer-events: none;
-  font-weight: bold;
 }
 
-/* Dropdown Label Enhancement */
 .filter-dropdown-wrapper::before {
   content: attr(data-label);
   position: absolute;
-  top: -10px;
-  left: 15px;
-  background: var(--mercedes-dark);
-  padding: 0 8px;
-  font-size: 0.7rem;
+  top: -8px;
+  left: 12px;
+  background: var(--mb-white);
+  padding: 0 6px;
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--mercedes-gold);
+  color: var(--mb-blue);
   z-index: 1;
 }
 
@@ -375,21 +308,22 @@
 .results-bar {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem 3rem;
+  padding: 1.2rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+  border-bottom: 1px solid var(--mb-platinum);
+  background: var(--mb-white);
 }
 
 .results-text {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--mb-grey);
 }
 
 .results-text strong {
-  color: var(--mercedes-gold);
-  font-size: 1.5rem;
+  color: var(--mb-blue);
+  font-size: 1.3rem;
   font-weight: 600;
 }
 
@@ -402,19 +336,20 @@
 .filter-chip {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   padding: 0.4rem 0.8rem;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(0, 120, 212, 0.08);
+  border: 1px solid rgba(0, 120, 212, 0.2);
   border-radius: 20px;
   font-size: 0.75rem;
-  color: var(--mercedes-gold);
+  color: var(--mb-blue);
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .filter-chip:hover {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(0, 120, 212, 0.15);
 }
 
 .filter-chip .remove {
@@ -422,18 +357,21 @@
   line-height: 1;
 }
 
-/* Cars Grid - 3D Perspective */
+/* =====================================================
+   CARS GRID - 3D PERSPECTIVE
+   ===================================================== */
 .cars-listing {
-  padding: 4rem 3rem;
+  padding: 3rem;
   max-width: 1600px;
   margin: 0 auto;
   perspective: 2000px;
+  background: var(--mb-white);
 }
 
 .cars-grid-3d {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2.5rem;
   transform-style: preserve-3d;
 }
 
@@ -448,19 +386,19 @@
 .car-card-inner {
   position: relative;
   background: var(--card-bg);
-  border: 1px solid rgba(192, 192, 192, 0.1);
-  border-radius: 20px;
+  border: 1px solid var(--mb-platinum);
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform-style: preserve-3d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .car-card-3d:hover .car-card-inner {
-  border-color: rgba(212, 175, 55, 0.4);
+  border-color: var(--mb-blue);
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(212, 175, 55, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 25px 50px rgba(0, 0, 0, 0.1),
+    0 0 40px rgba(0, 120, 212, 0.08);
 }
 
 /* Card Glow Effect */
@@ -469,12 +407,12 @@
   inset: -2px;
   background: linear-gradient(
     135deg,
-    rgba(212, 175, 55, 0.5),
+    rgba(0, 120, 212, 0.3),
     transparent 40%,
     transparent 60%,
-    rgba(0, 173, 239, 0.3)
+    rgba(0, 169, 169, 0.2)
   );
-  border-radius: 22px;
+  border-radius: 14px;
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: -1;
@@ -488,7 +426,7 @@
 /* Car Image Section */
 .car-image-section {
   position: relative;
-  height: 280px;
+  height: 260px;
   overflow: hidden;
   transform: translateZ(30px);
 }
@@ -501,7 +439,7 @@
 }
 
 .car-card-3d:hover .car-image-3d {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .image-overlay {
@@ -509,27 +447,27 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(10, 10, 10, 0.9) 0%,
-    rgba(10, 10, 10, 0.3) 40%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.3) 40%,
     transparent 100%
   );
-  opacity: 0.6;
+  opacity: 0.7;
   transition: opacity 0.4s ease;
 }
 
 .car-card-3d:hover .image-overlay {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* Floating Badge */
 .car-badge-float {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  padding: 0.6rem 1.2rem;
+  top: 1.2rem;
+  right: 1.2rem;
+  padding: 0.5rem 1rem;
   font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   border-radius: 30px;
   transform: translateZ(50px);
@@ -538,20 +476,21 @@
 }
 
 .car-badge-float.popular {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.9), rgba(240, 216, 120, 0.9));
-  color: #1a1a1a;
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.9), rgba(0, 169, 169, 0.9));
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 120, 212, 0.25);
 }
 
 .car-badge-float.premium {
-  background: linear-gradient(135deg, rgba(107, 33, 168, 0.9), rgba(168, 85, 247, 0.9));
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(74, 74, 74, 0.95));
   color: white;
-  box-shadow: 0 10px 30px rgba(107, 33, 168, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .car-badge-float.standard {
-  background: rgba(192, 192, 192, 0.9);
-  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--mb-black);
+  border: 1px solid var(--mb-platinum);
 }
 
 .car-card-3d:hover .car-badge-float {
@@ -561,32 +500,31 @@
 /* Price Tag */
 .price-tag {
   position: absolute;
-  bottom: 1.5rem;
-  left: 1.5rem;
+  bottom: 1.2rem;
+  left: 1.2rem;
   transform: translateZ(40px);
 }
 
 .price-tag-label {
   font-size: 0.65rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 0.25rem;
+  color: var(--mb-grey);
+  margin-bottom: 0.2rem;
 }
 
 .price-tag-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
   font-weight: 600;
-  color: var(--mercedes-gold);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: var(--mb-black);
 }
 
 /* Quick Actions */
 .quick-actions {
   position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
+  top: 1.2rem;
+  left: 1.2rem;
   display: flex;
   gap: 0.5rem;
   transform: translateZ(45px);
@@ -601,15 +539,15 @@
 }
 
 .action-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 10, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--mb-platinum);
   border-radius: 50%;
-  color: white;
+  color: var(--mb-black);
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -617,38 +555,39 @@
 }
 
 .action-btn:hover {
-  background: var(--mercedes-gold);
-  border-color: var(--mercedes-gold);
+  background: var(--mb-blue);
+  border-color: var(--mb-blue);
+  color: white;
   transform: scale(1.1);
 }
 
 /* Car Content */
 .car-content-3d {
-  padding: 2rem;
+  padding: 1.8rem;
   transform: translateZ(20px);
 }
 
 .car-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .car-name-3d {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--mercedes-white);
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--mb-black);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
 }
 
 .car-class-tag {
   display: inline-block;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(192, 192, 192, 0.1);
+  color: var(--mb-grey);
+  background: var(--mb-alpine);
   border-radius: 4px;
 }
 
@@ -656,89 +595,89 @@
 .car-features-3d {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 0.4rem;
+  margin-bottom: 1.2rem;
 }
 
 .feature-pill {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  font-size: 0.75rem;
-  background: rgba(192, 192, 192, 0.08);
-  border: 1px solid rgba(192, 192, 192, 0.15);
+  gap: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.7rem;
+  background: var(--mb-alpine);
+  border: 1px solid var(--mb-platinum);
   border-radius: 20px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--mb-graphite);
   transition: all 0.2s ease;
 }
 
 .feature-pill:hover {
-  background: rgba(192, 192, 192, 0.15);
-  border-color: rgba(192, 192, 192, 0.3);
-  transform: translateY(-2px);
+  background: var(--mb-white);
+  border-color: var(--mb-blue);
+  color: var(--mb-blue);
 }
 
 .feature-pill .icon {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* Category Tags */
 .car-categories-3d {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
 }
 
 .category-pill {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.7rem;
+  gap: 0.25rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   border-radius: 20px;
 }
 
 .category-pill.cheap {
-  background: rgba(22, 163, 74, 0.2);
-  color: #4ade80;
-  border: 1px solid rgba(22, 163, 74, 0.3);
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .category-pill.expensive {
-  background: rgba(107, 33, 168, 0.2);
-  color: #c084fc;
-  border: 1px solid rgba(107, 33, 168, 0.3);
+  background: rgba(168, 85, 247, 0.1);
+  color: #9333ea;
+  border: 1px solid rgba(168, 85, 247, 0.2);
 }
 
 .category-pill.performance {
-  background: rgba(220, 38, 38, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .category-pill.luxury {
-  background: rgba(212, 175, 55, 0.2);
-  color: #facc15;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(0, 120, 212, 0.1);
+  color: var(--mb-blue);
+  border: 1px solid rgba(0, 120, 212, 0.2);
 }
 
 /* CTA Button */
 .car-cta-3d {
   width: 100%;
-  padding: 1rem 2rem;
+  padding: 0.9rem 1.5rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--mercedes-dark);
-  background: linear-gradient(135deg, var(--mercedes-white), #e0e0e0);
+  color: var(--mb-white);
+  background: var(--mb-black);
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -753,7 +692,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--mercedes-gold), #f0d878);
+  background: var(--mb-blue);
   transition: left 0.4s ease;
   z-index: 0;
 }
@@ -769,7 +708,7 @@
 
 .car-cta-3d:hover {
   transform: translateZ(35px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 120, 212, 0.25);
 }
 
 /* Specs Row */
@@ -778,8 +717,8 @@
   justify-content: space-between;
   padding: 1rem 0;
   margin: 1rem 0;
-  border-top: 1px solid rgba(192, 192, 192, 0.1);
-  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+  border-top: 1px solid var(--mb-platinum);
+  border-bottom: 1px solid var(--mb-platinum);
 }
 
 .spec-item {
@@ -787,144 +726,136 @@
 }
 
 .spec-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.3rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--mercedes-white);
+  color: var(--mb-black);
 }
 
 .spec-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 0.25rem;
+  color: var(--mb-grey);
+  margin-top: 0.2rem;
 }
 
 /* No Results - Artistic */
 .no-results-artistic {
   text-align: center;
-  padding: 6rem 2rem;
+  padding: 5rem 2rem;
   max-width: 500px;
   margin: 0 auto;
 }
 
 .no-results-icon {
-  font-size: 5rem;
-  margin-bottom: 2rem;
-  opacity: 0.5;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.4;
   animation: floatIcon 3s ease-in-out infinite;
 }
 
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-10px); }
 }
 
 .no-results-artistic h3 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.5rem;
-  font-weight: 300;
-  color: var(--mercedes-white);
-  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--mb-black);
+  margin-bottom: 0.8rem;
 }
 
 .no-results-artistic p {
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
+  color: var(--mb-grey);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
 }
 
 .reset-btn {
-  padding: 1rem 2.5rem;
+  padding: 0.9rem 2rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--mercedes-white);
-  background: transparent;
-  border: 2px solid var(--mercedes-gold);
+  color: var(--mb-white);
+  background: var(--mb-blue);
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .reset-btn:hover {
-  background: var(--mercedes-gold);
-  color: var(--mercedes-dark);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  background: #0062a8;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 120, 212, 0.3);
 }
 
 /* CTA Section */
 .cta-section-new {
   position: relative;
-  padding: 8rem 3rem;
+  padding: 6rem 3rem;
   text-align: center;
   overflow: hidden;
   background: 
-    radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%),
-    linear-gradient(180deg, #0a0a0a 0%, #141414 100%);
-}
-
-.cta-section-new::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  opacity: 0.5;
+    radial-gradient(ellipse at center, rgba(0, 120, 212, 0.05) 0%, transparent 70%),
+    linear-gradient(180deg, var(--mb-warm) 0%, var(--mb-alpine) 100%);
 }
 
 .cta-content {
   position: relative;
   z-index: 2;
-  max-width: 700px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
 .cta-label-new {
   display: inline-block;
-  font-size: 0.75rem;
-  letter-spacing: 0.4em;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--mercedes-gold);
-  margin-bottom: 1.5rem;
+  color: var(--mb-blue);
+  margin-bottom: 1.2rem;
   font-weight: 600;
 }
 
 .cta-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 300;
-  color: var(--mercedes-white);
-  margin-bottom: 1.5rem;
-  line-height: 1.1;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  color: var(--mb-black);
+  margin-bottom: 1.2rem;
+  line-height: 1.2;
 }
 
 .cta-description {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 2.5rem;
+  font-size: 1rem;
+  color: var(--mb-graphite);
+  margin-bottom: 2rem;
   line-height: 1.7;
+  font-weight: 300;
 }
 
 .cta-buttons-new {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .btn-primary-new {
-  padding: 1.2rem 2.5rem;
+  padding: 1rem 2rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--mercedes-dark);
-  background: linear-gradient(135deg, var(--mercedes-gold), #f0d878);
+  color: var(--mb-white);
+  background: var(--mb-blue);
   border: none;
   border-radius: 8px;
   text-decoration: none;
@@ -932,24 +863,25 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 120, 212, 0.25);
 }
 
 .btn-primary-new:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 120, 212, 0.35);
+  background: #0062a8;
 }
 
 .btn-secondary-new {
-  padding: 1.2rem 2.5rem;
+  padding: 1rem 2rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--mercedes-white);
+  color: var(--mb-black);
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1.5px solid var(--mb-platinum);
   border-radius: 8px;
   text-decoration: none;
   display: inline-flex;
@@ -959,16 +891,16 @@
 }
 
 .btn-secondary-new:hover {
-  border-color: var(--mercedes-white);
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-3px);
+  border-color: var(--mb-blue);
+  color: var(--mb-blue);
+  background: rgba(0, 120, 212, 0.05);
 }
 
 /* Loading Animation */
 @keyframes cardEntrance {
   0% {
     opacity: 0;
-    transform: translateY(60px) rotateX(10deg);
+    transform: translateY(40px) rotateX(5deg);
   }
   100% {
     opacity: 1;
@@ -977,25 +909,25 @@
 }
 
 .car-card-3d {
-  animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
 }
 
 /* Staggered animation delays */
-.car-card-3d:nth-child(1) { animation-delay: 0.1s; }
-.car-card-3d:nth-child(2) { animation-delay: 0.15s; }
-.car-card-3d:nth-child(3) { animation-delay: 0.2s; }
-.car-card-3d:nth-child(4) { animation-delay: 0.25s; }
-.car-card-3d:nth-child(5) { animation-delay: 0.3s; }
-.car-card-3d:nth-child(6) { animation-delay: 0.35s; }
-.car-card-3d:nth-child(7) { animation-delay: 0.4s; }
-.car-card-3d:nth-child(8) { animation-delay: 0.45s; }
-.car-card-3d:nth-child(9) { animation-delay: 0.5s; }
+.car-card-3d:nth-child(1) { animation-delay: 0.05s; }
+.car-card-3d:nth-child(2) { animation-delay: 0.1s; }
+.car-card-3d:nth-child(3) { animation-delay: 0.15s; }
+.car-card-3d:nth-child(4) { animation-delay: 0.2s; }
+.car-card-3d:nth-child(5) { animation-delay: 0.25s; }
+.car-card-3d:nth-child(6) { animation-delay: 0.3s; }
+.car-card-3d:nth-child(7) { animation-delay: 0.35s; }
+.car-card-3d:nth-child(8) { animation-delay: 0.4s; }
+.car-card-3d:nth-child(9) { animation-delay: 0.45s; }
 
 /* Responsive */
 @media (max-width: 1200px) {
   .cars-grid-3d {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 2rem;
   }
 }
@@ -1003,78 +935,72 @@
 @media (max-width: 768px) {
   .cars-hero {
     min-height: 50vh;
-    padding: 6rem 1.5rem;
+    padding: 2rem 1rem;
   }
   
   .hero-stats {
-    gap: 2rem;
+    gap: 1.5rem;
   }
   
   .hero-stat-number {
     font-size: 2rem;
   }
-  
+
   .filters-section {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
+    top: 56px;
   }
-  
+
   .filter-tabs {
-    gap: 0.25rem;
+    gap: 0.3rem;
   }
-  
+
   .filter-tab {
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.9rem;
     font-size: 0.7rem;
   }
-  
+
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
   .results-bar {
     flex-direction: column;
     gap: 1rem;
-    text-align: center;
+    padding: 1rem 1.5rem;
   }
-  
+
   .cars-listing {
     padding: 2rem 1.5rem;
   }
-  
+
   .cars-grid-3d {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
   }
-  
+
   .car-image-section {
     height: 220px;
   }
-  
-  .car-content-3d {
-    padding: 1.5rem;
-  }
-  
-  .car-name-3d {
-    font-size: 1.5rem;
-  }
-  
-  .cta-buttons-new {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .custom-cursor {
-    display: none;
-  }
-  
-  .cars-page {
-    cursor: auto;
+
+  .cta-section-new {
+    padding: 4rem 1.5rem;
   }
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@media (max-width: 480px) {
+  .car-badge-float {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.6rem;
+  }
+
+  .price-tag-value {
+    font-size: 1.3rem;
+  }
+
+  .car-name-3d {
+    font-size: 1.2rem;
   }
 }
