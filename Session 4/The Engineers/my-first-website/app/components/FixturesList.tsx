@@ -14,7 +14,7 @@ export default function FixturesList() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getRealMadridFixtures(activeTab, 5);
+        const data = await getRealMadridFixtures(activeTab, 10);
         setFixtures(data);
       } catch (err) {
         setError('Failed to load fixtures. Please try again later.');
