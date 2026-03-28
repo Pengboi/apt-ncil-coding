@@ -35,25 +35,25 @@ export default function Navigation() {
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/"
-            className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
+            className="text-[#B0B0B0] hover:text-[#F5F5F5] hover:text-shadow transition-all duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
             The Showroom
           </Link>
           <Link
             href="/cars-for-sale"
-            className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
+            className="text-[#B0B0B0] hover:text-[#F5F5F5] hover:text-shadow transition-all duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
             Our Vehicles
           </Link>
           <Link
             href="/models"
-            className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
+            className="text-[#B0B0B0] hover:text-[#F5F5F5] hover:text-shadow transition-all duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
             Model History
           </Link>
           <Link
             href="/f1-history"
-            className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
+            className="text-[#B0B0B0] hover:text-[#F5F5F5] hover:text-shadow transition-all duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
             Racing Legacy
           </Link>
@@ -62,7 +62,7 @@ export default function Navigation() {
         {/* Mobile menu button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none"
+          className="md:hidden text-[#B0B0B0] hover:text-[#F5F5F5] focus:outline-none"
           aria-label="Toggle menu"
         >
           <svg
@@ -85,32 +85,32 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100">
+        <div className="md:hidden bg-[#0A0A0B]/95 backdrop-blur-md border-t border-white/10">
           <div className="px-4 py-4 space-y-2">
             <Link
               href="/"
-              className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              className="block px-3 py-3 text-[#B0B0B0] hover:text-[#F5F5F5] hover:bg-white/5 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               The Showroom
             </Link>
             <Link
               href="/cars-for-sale"
-              className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              className="block px-3 py-3 text-[#B0B0B0] hover:text-[#F5F5F5] hover:bg-white/5 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               Our Vehicles
             </Link>
             <Link
               href="/models"
-              className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              className="block px-3 py-3 text-[#B0B0B0] hover:text-[#F5F5F5] hover:bg-white/5 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               Model History
             </Link>
             <Link
               href="/f1-history"
-              className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              className="block px-3 py-3 text-[#B0B0B0] hover:text-[#F5F5F5] hover:bg-white/5 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
               Racing Legacy

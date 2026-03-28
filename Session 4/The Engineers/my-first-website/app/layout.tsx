@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${playfair.variable} ${montserrat.variable} font-sans antialiased bg-white text-gray-900`}>
+      <body className={`${playfair.variable} ${montserrat.variable} font-sans antialiased bg-[#0A0A0B] text-[#F5F5F5]`}>
         <Navigation />
         <main className="min-h-screen">
           {children}
