@@ -16,10 +16,10 @@ function Header() {
           <span className="navbar-logo">PigeonBot</span>
         </Link>
         <ul className="navbar-menu">
-          <li><Link href="#features" className="nav-link">Features</Link></li>
-          <li><Link href="#about" className="nav-link">About</Link></li>
-          <li><Link href="#reviews" className="nav-link">Reviews</Link></li>
-          <li><Link href="#contact" className="nav-link">Contact</Link></li>
+          <li><Link href="/about" className="nav-link">About Us</Link></li>
+          <li><Link href="/videos" className="nav-link">Videos 🎬</Link></li>
+          <li><Link href="/customize" className="nav-link">Customize</Link></li>
+          <li><Link href="/#contact" className="nav-link">Contact</Link></li>
         </ul>
         <Link href="#contact" className="navbar-cta">
           Get Started
@@ -48,19 +48,19 @@ function Footer() {
         <div>
           <h4 className="font-semibold text-white mb-3">Product</h4>
           <ul className="space-y-2">
-            <li><Link href="#features" className="footer-link">Features</Link></li>
-            <li><Link href="#about" className="footer-link">About</Link></li>
-            <li><Link href="#pricing" className="footer-link">Pricing</Link></li>
-            <li><Link href="#docs" className="footer-link">Documentation</Link></li>
+            <li><Link href="/about" className="footer-link">About</Link></li>
+            <li><Link href="/videos" className="footer-link">Videos</Link></li>
+            <li><Link href="/customize" className="footer-link">Customize</Link></li>
+            <li><Link href="/#prices" className="footer-link">Pricing</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="font-semibold text-white mb-3">Company</h4>
           <ul className="space-y-2">
-            <li><Link href="#" className="footer-link">About Us</Link></li>
+            <li><Link href="/about" className="footer-link">About Us</Link></li>
             <li><Link href="#" className="footer-link">Careers</Link></li>
             <li><Link href="#" className="footer-link">Blog</Link></li>
-            <li><Link href="#contact" className="footer-link">Contact</Link></li>
+            <li><Link href="/#contact" className="footer-link">Contact</Link></li>
           </ul>
         </div>
       </div>
