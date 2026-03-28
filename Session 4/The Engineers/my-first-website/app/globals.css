@@ -99,12 +99,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.75rem;
 }
 
-.logo::before {
-  content: '';
-  width: 32px;
-  height: 32px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='none' stroke='%231A1A1A' stroke-width='2'/%3E%3Cpath d='M50 8 L50 92 M8 50 L92 50' stroke='%231A1A1A' stroke-width='1.5'/%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%231A1A1A' stroke-width='1.5'/%3E%3C/svg%3E") center/contain no-repeat;
-}
+
 
 .nav-links {
   display: flex;
@@ -153,7 +148,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-primary) 50%, var(--bg-secondary) 100%);
+  background: url('/images/s-class-maybach.webp') center center/cover no-repeat;
 }
 
 .hero::before {
@@ -163,23 +158,10 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 120, 212, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(0, 169, 169, 0.02) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.6) 100%);
 }
 
-.hero-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(var(--border-light) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
-  background-size: 80px 80px;
-  opacity: 0.4;
-}
+/* Hero grid removed for Maybach background */
 
 .hero-content {
   position: relative;
@@ -205,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.8rem;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 1.5rem;
   font-weight: 500;
 }
@@ -216,7 +198,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
   letter-spacing: -0.03em;
   margin-bottom: 1rem;
-  color: var(--text-primary);
+  color: #ffffff;
   line-height: 1;
 }
 
@@ -231,7 +213,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.6rem;
   font-weight: 400;
   font-style: italic;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2rem;
   letter-spacing: 0.02em;
 }
@@ -240,7 +222,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.1rem;
   font-weight: 300;
   line-height: 1.9;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.85);
   max-width: 650px;
   margin: 0 auto 3rem;
 }
@@ -287,14 +269,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-secondary {
   background: transparent;
-  color: var(--text-primary);
-  border-color: var(--border-medium);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .btn-secondary:hover {
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  border-color: var(--text-primary);
+  background: #ffffff;
+  color: #1a1a1a;
+  border-color: #ffffff;
   transform: translateY(-2px);
 }
 
@@ -313,13 +295,13 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 1rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .scroll-line {
   width: 1px;
   height: 50px;
-  background: linear-gradient(to bottom, var(--text-muted), transparent);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), transparent);
   margin: 0 auto;
   animation: scrollDown 2s ease-in-out infinite;
 }

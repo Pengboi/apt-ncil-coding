@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function Navigation() {
@@ -19,8 +20,15 @@ export default function Navigation() {
     <nav className={`nav ${isScrolled ? 'nav-scrolled' : ''}`}>
       <div className="nav-container">
         {/* Logo */}
-        <Link href="/" className="logo">
-          Mercedes-Benz
+        <Link href="/" className="logo flex items-center gap-3">
+          <Image
+            src="/mercedes-logo.png"
+            alt="Mercedes-Benz"
+            width={40}
+            height={40}
+            className="h-10 w-auto"
+          />
+          <span className="font-semibold tracking-widest text-lg uppercase">Mercedes Benz</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -29,25 +37,25 @@ export default function Navigation() {
             href="/"
             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
-            Home
+            The Showroom
           </Link>
           <Link
             href="/cars-for-sale"
             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
-            Collection
+            Our Vehicles
           </Link>
           <Link
             href="/models"
             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
-            Models
+            Model History
           </Link>
           <Link
             href="/f1-history"
             className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium px-2 py-1 text-sm tracking-wide"
           >
-            F1 Heritage
+            Racing Legacy
           </Link>
         </div>
 
@@ -84,28 +92,28 @@ export default function Navigation() {
               className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
-              Home
+              The Showroom
             </Link>
             <Link
               href="/cars-for-sale"
               className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
-              Collection
+              Our Vehicles
             </Link>
             <Link
               href="/models"
               className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
-              Models
+              Model History
             </Link>
             <Link
               href="/f1-history"
               className="block px-3 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors duration-200"
               onClick={() => setIsOpen(false)}
             >
-              F1 Heritage
+              Racing Legacy
             </Link>
           </div>
         </div>
