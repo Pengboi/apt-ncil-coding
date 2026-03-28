@@ -10,8 +10,8 @@ import bluePigeon from '../images/blue-pigeon.jpg.webp';
 import blackPigeon from '../images/black-pigeon.jpg.webp';
 import crimsonRed from '../images/crimson-red.webp';
 import purplePigeon from '../images/purple-pigeon.webp';
-import rainbowPigeon from '../images/rainbow-pigeon.jpg.avif';
-import tealPigeon from '../images/teal-life-pigeons-secret-mechanisms-exposed_1274913-36027.jpg.avif';
+import rainbowPigeon from '../images/rainbow-pigeon.jpg';
+import tealPigeon from '../images/teal-pigeon.jpg';
 import specialCustom from '../images/specialcustom.jpeg';
 
 type Pigeon = {
