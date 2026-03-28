@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getNextMatch, type FormattedMatch } from '../lib/sportmonks';
+import { getNextMatch, type FormattedMatch } from '../lib/thesportsdb';
 
 export default function NextMatchHighlight() {
   const [nextMatch, setNextMatch] = useState<FormattedMatch | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState('');
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 });
+  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     async function loadNextMatch() {
@@ -33,7 +34,8 @@ export default function NextMatchHighlight() {
       const distance = matchDate - now;
 
       if (distance < 0) {
-        setCountdown('Match Started!');
+        setIsLive(true);
+        setCountdown({ days: 0, hours: 0, minutes: 0 });
         return;
       }
 
@@ -41,8 +43,9 @@ export default function NextMatchHighlight() {
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
-      setCountdown(`${days}d ${hours}h ${minutes}m`);
-    }, 60000); // Update every minute
+      setCountdown({ days, hours, minutes });
+      setIsLive(false);
+    }, 1000);
 
     // Initial call
     const now = new Date().getTime();
@@ -52,7 +55,9 @@ export default function NextMatchHighlight() {
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      setCountdown(`${days}d ${hours}h ${minutes}m`);
+      setCountdown({ days, hours, minutes });
+    } else {
+      setIsLive(true);
     }
 
     return () => clearInterval(timer);
@@ -60,10 +65,10 @@ export default function NextMatchHighlight() {
 
   if (loading) {
     return (
-      <div className="bg-[#1a0f2e]/60 backdrop-blur-md rounded-xl p-6 border border-[#d4af37]/30">
-        <div className="flex items-center justify-center gap-2 text-[#d4af37]">
-          <div className="w-4 h-4 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin"/>
-          Loading next match...
+      <div className="card-royal flex items-center justify-center py-10">
+        <div className="flex items-center gap-3">
+          <div className="spinner-rm" />
+          <span className="text-[var(--text-muted)] font-medium">Loading next match...</span>
         </div>
       </div>
     );
@@ -74,69 +79,152 @@ export default function NextMatchHighlight() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#2d1b4e]/80 to-[#1a0f2e]/80 backdrop-blur-md rounded-xl p-6 border border-[#d4af37]/30">
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#d4af37]">
-          Next Match
-        </span>
-        <span className="text-xs text-[var(--text-muted)]">
-          {nextMatch.league}
-        </span>
-      </div>
-
-      {/* Teams */}
-      <div className="flex items-center justify-between gap-4 mb-4">
-        <div className={`flex-1 text-center ${!nextMatch.isHome ? 'opacity-70' : ''}`}>
-          <p className={`font-display text-sm font-bold ${!nextMatch.isHome ? 'text-[var(--foreground)]' : 'text-[#d4af37]'}`}>
-            {nextMatch.homeTeam}
-          </p>
-          <span className="text-xs text-[var(--text-muted)]">Home</span>
+    <div className="card-royal relative overflow-hidden">
+      {/* Gold accent line at top */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--rm-gold)]" />
+      
+      <div className="relative pt-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 px-6">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-[var(--rm-gold)] animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-gold">
+              Next Match
+            </span>
+          </div>
+          <span className="gold-badge">
+            {nextMatch.league}
+          </span>
         </div>
 
-        <div className="px-4 py-2 bg-[#d4af37]/10 rounded-lg border border-[#d4af37]/30">
-          <span className="font-display text-xl font-bold text-[#d4af37]">VS</span>
+        {/* Teams Display */}
+        <div className="flex items-center justify-center gap-6 sm:gap-10 mb-8 px-6">
+          {/* Home Team */}
+          <div className="flex-1 flex flex-col items-center gap-4">
+            <div className="relative">
+              {nextMatch.homeTeamBadge ? (
+                <img 
+                  src={nextMatch.homeTeamBadge} 
+                  alt={nextMatch.homeTeam}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[var(--rm-cream)] border border-[var(--border-subtle)] flex items-center justify-center">
+                  <span className="font-display text-4xl sm:text-5xl text-gold">
+                    {nextMatch.homeTeam.charAt(0)}
+                  </span>
+                </div>
+              )}
+              <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-xl bg-[var(--rm-white)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">
+                H
+              </div>
+            </div>
+            <div className="text-center">
+              <p className={`team-name-rm ${!nextMatch.isHome ? 'team-name-highlight' : ''}`}>
+                {nextMatch.homeTeam}
+              </p>
+              <span className="text-xs font-medium text-[var(--text-muted)]">Home</span>
+            </div>
+          </div>
+
+          {/* VS or Live */}
+          <div className="flex-shrink-0">
+            {isLive ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 border border-red-200">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="font-display text-lg text-red-600 tracking-wider">LIVE</span>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-[var(--rm-gold)] opacity-20 blur-xl" />
+                <div className="relative px-6 py-3 rounded-2xl bg-[var(--rm-cream)] border-2 border-[var(--rm-gold)]">
+                  <span className="font-display text-2xl sm:text-3xl text-gold tracking-wider">VS</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Away Team */}
+          <div className="flex-1 flex flex-col items-center gap-4">
+            <div className="relative">
+              {nextMatch.awayTeamBadge ? (
+                <img 
+                  src={nextMatch.awayTeamBadge} 
+                  alt={nextMatch.awayTeam}
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[var(--rm-cream)] border border-[var(--border-subtle)] flex items-center justify-center">
+                  <span className="font-display text-4xl sm:text-5xl text-[var(--text-secondary)]">
+                    {nextMatch.awayTeam.charAt(0)}
+                  </span>
+                </div>
+              )}
+              <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-xl bg-[var(--rm-white)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">
+                A
+              </div>
+            </div>
+            <div className="text-center">
+              <p className={`team-name-rm ${nextMatch.isHome ? 'team-name-highlight' : ''}`}>
+                {nextMatch.awayTeam}
+              </p>
+              <span className="text-xs font-medium text-[var(--text-muted)]">Away</span>
+            </div>
+          </div>
         </div>
 
-        <div className={`flex-1 text-center ${nextMatch.isHome ? 'opacity-70' : ''}`}>
-          <p className={`font-display text-sm font-bold ${nextMatch.isHome ? 'text-[var(--foreground)]' : 'text-[#d4af37]'}`}>
-            {nextMatch.awayTeam}
-          </p>
-          <span className="text-xs text-[var(--text-muted)]">Away</span>
+        {/* Match Info */}
+        <div className="flex items-center justify-center gap-10 mb-6 px-6">
+          <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <svg className="w-4 h-4 text-[var(--rm-gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span className="font-medium">{nextMatch.date}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+            <svg className="w-4 h-4 text-[var(--rm-gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span className="font-medium">{nextMatch.time}</span>
+          </div>
         </div>
-      </div>
 
-      {/* Match Details */}
-      <div className="flex items-center justify-center gap-6 text-sm text-[var(--text-muted)] mb-4">
-        <span className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        {/* Venue */}
+        <div className="flex items-center justify-center gap-2 text-sm text-[var(--text-muted)] mb-6 px-6">
+          <svg className="w-4 h-4 text-[var(--rm-gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          {nextMatch.date}
-        </span>
-        <span className="flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          {nextMatch.time}
-        </span>
-      </div>
-
-      {/* Venue */}
-      <p className="text-center text-xs text-[var(--text-muted)] mb-4">
-        📍 {nextMatch.venue}
-      </p>
-
-      {/* Countdown */}
-      {countdown && (
-        <div className="text-center pt-4 border-t border-[#d4af37]/20">
-          <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider mb-1">
-            Kick-off in
-          </p>
-          <p className="font-display text-2xl font-bold text-[#d4af37]">
-            {countdown}
-          </p>
+          <span className="font-medium">{nextMatch.venue}</span>
         </div>
-      )}
+
+        {/* Countdown */}
+        {!isLive && (
+          <div className="pt-6 border-t border-[var(--border-subtle)] bg-[var(--rm-cream)] px-6 pb-6">
+            <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] mb-4">
+              Kick-off in
+            </p>
+            <div className="flex items-center justify-center gap-6 sm:gap-8">
+              <div className="text-center">
+                <div className="countdown-digit-rm">{String(countdown.days).padStart(2, '0')}</div>
+                <div className="text-xs font-medium text-[var(--text-muted)] mt-1 uppercase tracking-wider">Days</div>
+              </div>
+              <div className="text-gold font-display text-2xl sm:text-3xl">:</div>
+              <div className="text-center">
+                <div className="countdown-digit-rm">{String(countdown.hours).padStart(2, '0')}</div>
+                <div className="text-xs font-medium text-[var(--text-muted)] mt-1 uppercase tracking-wider">Hours</div>
+              </div>
+              <div className="text-gold font-display text-2xl sm:text-3xl">:</div>
+              <div className="text-center">
+                <div className="countdown-digit-rm">{String(countdown.minutes).padStart(2, '0')}</div>
+                <div className="text-xs font-medium text-[var(--text-muted)] mt-1 uppercase tracking-wider">Mins</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
