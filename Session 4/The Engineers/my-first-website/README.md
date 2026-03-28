@@ -1,17 +1,16 @@
-# 📚 StudyHub - Year 10 Revision Helper
+# 📚 StudyHub - Year 9 & Year 10 Revision Helper
 
-A personal revision companion app built with Next.js to help you organize and track your GCSE studies across all your subjects.
+A personal revision companion app built with Next.js to help you organize and track your studies across all your subjects. Perfect for Key Stage 3 (Year 9) and GCSE (Year 10) students!
 
 ![StudyHub Screenshot](./screenshot.png)
 
 ## ✨ Features
 
-- **📖 12 GCSE Subjects** - All your options organized in one place
-  - Maths, English, Science (Triple/Combined)
-  - Enterprise, Geography, DT
-  - Computer Science, Engineering, Built Environment
-  - Art & Design, Digital Media, Mechatronics & Robotics
+- **📖 22 Subjects Total** - Covering both Year 9 and Year 10:
+  - **Year 9 (KS3):** Maths, English, Science, History, Geography, Computing, French, PE & Health, Art & Design, Music
+  - **Year 10 (GCSE):** Maths, English, Science, Enterprise, Geography, DT, Computer Science, Engineering, Built Environment, Art & Design, Digital Media, Mechatronics & Robotics
 
+- **🔄 Year Group Switcher** - Easily switch between Year 9 and Year 10 content
 - **✅ Topic Tracking** - Mark topics as complete and track your progress
 - **📊 Progress Dashboard** - Visual progress bars for each subject
 - **🔥 Study Streak** - Keep motivated with a daily study streak counter
@@ -30,10 +29,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## 📝 How to Use
 
-1. **Dashboard** - See your overall progress and study tips
-2. **Select a Subject** - Click any subject from the sidebar or dashboard
-3. **Track Topics** - Check off topics as you revise them
-4. **View Progress** - Watch your progress bar fill up!
+1. **Choose Your Year** - Select Year 9 or Year 10 from the sidebar
+2. **Dashboard** - See your overall progress and study tips
+3. **Select a Subject** - Click any subject from the sidebar or dashboard
+4. **Track Topics** - Check off topics as you revise them
+5. **View Progress** - Watch your progress bar fill up!
 
 Your progress is automatically saved to your browser.
 
@@ -55,6 +55,8 @@ app/
 
 ## 🎯 Future Ideas to Add
 
+- [x] Year 9 revision content (KS3 subjects)
+- [x] Year selector for switching between year groups
 - [ ] Flashcards for each topic
 - [ ] Countdown to exams
 - [ ] Study timer with Pomodoro technique
