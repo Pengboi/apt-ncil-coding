@@ -79,17 +79,15 @@ export default function HoloCard({ children, className = "", intensity = 1 }: Ho
         className="absolute inset-0 rounded-xl pointer-events-none z-20 opacity-0 transition-opacity duration-300"
         style={{
           opacity: isHovering ? 0.4 : 0,
-          background: `
-            linear-gradient(
-              ${135 + transform.rotateY * 2}deg,
-              transparent 0%,
-              rgba(0, 212, 255, 0.3) 20%,
-              rgba(255, 0, 160, 0.3) 40%,
-              rgba(255, 215, 0, 0.3) 60%,
-              rgba(163, 230, 53, 0.2) 80%,
-              transparent 100%
-            )
-          `,
+          backgroundImage: `linear-gradient(
+            ${135 + transform.rotateY * 2}deg,
+            transparent 0%,
+            rgba(0, 212, 255, 0.3) 20%,
+            rgba(255, 0, 160, 0.3) 40%,
+            rgba(255, 215, 0, 0.3) 60%,
+            rgba(163, 230, 53, 0.2) 80%,
+            transparent 100%
+          )`,
           backgroundSize: "200% 200%",
         }}
       />

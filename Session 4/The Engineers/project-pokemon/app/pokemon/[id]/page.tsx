@@ -2,6 +2,7 @@ import Link from "next/link";
 import TypeBadge from "../../components/TypeBadge";
 import StatBar from "../../components/StatBar";
 import CardGalleryButton from "./CardGalleryButton";
+import FormSelector from "./FormSelector";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -28,6 +29,29 @@ const typeEffectiveness: Record<string, { strong: string[]; weak: string[] }> = 
   steel: { strong: ["ice", "rock", "fairy"], weak: ["fire", "water", "electric", "steel"] },
   fairy: { strong: ["fighting", "dragon", "dark"], weak: ["fire", "poison", "steel"] },
 };
+
+interface PokemonForm {
+  id: string;
+  name: string;
+  img: string;
+  isCurrent: boolean;
+}
+
+async function fetchFormData(url: string): Promise<PokemonForm | null> {
+  try {
+    const res = await fetch(url, { next: { revalidate: 60 * 60 } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      id: data.id.toString(),
+      name: data.name,
+      img: data.sprites.other["official-artwork"].front_default || data.sprites.front_default,
+      isCurrent: false,
+    };
+  } catch {
+    return null;
+  }
+}
 
 export default async function PokemonPage({ params }: Params) {
   const { id } = await params;
@@ -69,8 +93,8 @@ export default async function PokemonPage({ params }: Params) {
 
   const data = await res.json();
 
-  // Fetch species data for flavor text
-  const spRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`, {
+  // Fetch species data for flavor text and varieties
+  const spRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${data.species.name}`, {
     next: { revalidate: 60 * 60 },
   });
   const species = spRes.ok ? await spRes.json() : null;
@@ -78,6 +102,16 @@ export default async function PokemonPage({ params }: Params) {
     species?.flavor_text_entries
       ?.find((e: any) => e.language.name === "en")
       ?.flavor_text?.replace(/\n|\f/g, " ") || "";
+
+  // Fetch all form data for the selector
+  let allForms: PokemonForm[] = [];
+  if (species?.varieties && species.varieties.length > 1) {
+    const formPromises = species.varieties.map((v: any) => fetchFormData(v.pokemon.url));
+    const forms = await Promise.all(formPromises);
+    allForms = forms
+      .filter((f): f is PokemonForm => f !== null)
+      .map((f) => ({ ...f, isCurrent: f.id === id }));
+  }
 
   const mainType = data.types[0]?.type?.name || "normal";
   const typeColor = `var(--type-${mainType})`;
@@ -90,6 +124,25 @@ export default async function PokemonPage({ params }: Params) {
 
   const allStrong = [...new Set<string>(matchups.flatMap((m: { strong: string[] }) => m.strong))];
   const allWeak = [...new Set<string>(matchups.flatMap((m: { weak: string[] }) => m.weak))];
+
+  const getBaseName = (name: string) => {
+    const baseForms = ["galar", "alola", "hisui", "paldea", "base", "standard", "incarnate", "therian", "ordinary", "aria", "male", "female"];
+    const parts = name.split("-");
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (baseForms.includes(parts[i]) && i > 0) {
+        return parts.slice(0, i).join("-");
+      }
+    }
+    const megaMatch = name.match(/^(.+)-mega$/);
+    if (megaMatch) return megaMatch[1];
+    const gmaxMatch = name.match(/^(.+)-gmax$/);
+    if (gmaxMatch) return gmaxMatch[1];
+    const primalMatch = name.match(/^(.+)-primal$/);
+    if (primalMatch) return primalMatch[1];
+    return name;
+  };
+
+  const baseName = getBaseName(data.name);
 
   return (
     <div className="min-h-screen pb-20">
@@ -161,6 +214,15 @@ export default async function PokemonPage({ params }: Params) {
               {/* Grid overlay */}
               <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none" />
             </div>
+
+            {/* Form Selector */}
+            {allForms.length > 1 && (
+              <FormSelector 
+                forms={allForms} 
+                baseName={baseName}
+                currentId={id}
+              />
+            )}
 
             {/* Quick Stats Row */}
             <div className="grid grid-cols-3 gap-4 mt-4">

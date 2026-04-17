@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import PokemonFamilyCard from "./PokemonFamilyCard";
 import TypeBadge from "./TypeBadge";
 
@@ -33,6 +33,10 @@ const GENERATIONS = [
   { key: "generation-viii", label: "Gen VIII", min: 810, max: 898 },
   { key: "generation-ix", label: "Gen IX", min: 906, max: 1010 },
 ];
+
+const CACHE_KEY = "pokemon_data_cache";
+const CACHE_TIMESTAMP_KEY = "pokemon_cache_timestamp";
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 function getBaseName(name: string): string {
   const baseForms = [
@@ -70,6 +74,25 @@ function getBaseName(name: string): string {
   return name;
 }
 
+// Loading Spinner Component
+function LoadingGrid() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {Array.from({ length: 24 }).map((_, index) => (
+        <div
+          key={index}
+          className="card h-[280px] flex flex-col items-center p-4 relative overflow-hidden animate-pulse"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <div className="absolute top-3 left-3 w-12 h-5 bg-slate-700/50 rounded-full" />
+          <div className="relative w-28 h-28 mt-8 mb-3 bg-slate-700/30 rounded-full" />
+          <div className="w-20 h-4 bg-slate-700/50 rounded mt-3" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function PokemonExplorer() {
   const [items, setItems] = useState<PokemonEntry[]>([]);
   const [filterName, setFilterName] = useState("");
@@ -78,37 +101,71 @@ export default function PokemonExplorer() {
   const [filterType, setFilterType] = useState("all");
   const [typeSet, setTypeSet] = useState<Set<string> | null>(null);
   const [loadingType, setLoadingType] = useState(false);
-  const [families, setFamilies] = useState<PokemonFamily[]>([]);
-  const [loadingFamilies, setLoadingFamilies] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
+  // Initial data fetch with caching
   useEffect(() => {
     let mounted = true;
-    fetch("https://pokeapi.co/api/v2/pokemon?limit=2000")
-      .then((r) => r.json())
-      .then((d) => {
+    
+    // Check localStorage first
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+    const now = Date.now();
+    
+    // Use cache if it exists and is less than 24 hours old
+    if (cachedData && cachedTimestamp) {
+      const age = now - parseInt(cachedTimestamp);
+      if (age < CACHE_DURATION) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (mounted) {
+            setItems(parsed.items || []);
+            setTypes(parsed.types || []);
+            setIsLoaded(true);
+          }
+        } catch (e) {
+          // Invalid cache, will fetch fresh
+        }
+      }
+    }
+    
+    // Always fetch fresh data in background (to update cache)
+    setIsFetching(true);
+    
+    Promise.all([
+      fetch("https://pokeapi.co/api/v2/pokemon?limit=2000").then(r => r.json()),
+      fetch("https://pokeapi.co/api/v2/type").then(r => r.json())
+    ])
+      .then(([pokemonData, typeData]) => {
         if (!mounted) return;
-        setItems(d.results || []);
-        setTimeout(() => setIsLoaded(true), 100);
-      })
-      .catch(() => {});
-
-    fetch("https://pokeapi.co/api/v2/type")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!mounted) return;
-        const t = (d.results || [])
+        
+        const items = pokemonData.results || [];
+        const types = (typeData.results || [])
           .map((x: any) => x.name)
           .filter((n: string) => n !== "unknown" && n !== "shadow");
-        setTypes(t);
+        
+        setItems(items);
+        setTypes(types);
+        setIsLoaded(true);
+        setIsFetching(false);
+        
+        // Save to localStorage
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ items, types }));
+        localStorage.setItem(CACHE_TIMESTAMP_KEY, now.toString());
       })
-      .catch(() => {});
+      .catch(() => {
+        if (mounted) {
+          setIsFetching(false);
+        }
+      });
 
     return () => {
       mounted = false;
     };
   }, []);
 
+  // Fetch type filter data
   useEffect(() => {
     if (!filterType || filterType === "all") {
       setTypeSet(null);
@@ -137,118 +194,65 @@ export default function PokemonExplorer() {
     };
   }, [filterType]);
 
-  useEffect(() => {
-    const filteredList = (() => {
-      const q = filterName.trim().toLowerCase();
-      const gen = GENERATIONS.find((g) => g.key === filterGen);
+  // Memoized filtered list computation
+  const filteredPokemon = useMemo(() => {
+    const q = filterName.trim().toLowerCase();
+    const gen = GENERATIONS.find((g) => g.key === filterGen);
 
-      return items
-        .filter((it) => {
-          if (q && !it.name.toLowerCase().includes(q)) return false;
-          const parts = it.url.split("/").filter(Boolean);
-          const id = parts[parts.length - 1];
-          const num = Number(id || 0);
-          if (gen && gen.key !== "all") {
-            if (num < (gen.min || 0) || num > (gen.max || Infinity))
-              return false;
-          }
-          if (typeSet) {
-            if (!typeSet.has(id)) return false;
-          }
-          return true;
-        })
-        .map((p) => {
-          const parts = p.url.split("/").filter(Boolean);
-          const id = parts[parts.length - 1];
-          const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-          return { id, name: p.name, img, baseName: getBaseName(p.name) };
-        });
-    })();
-
-    const uniqueBases = [...new Set(filteredList.map((p) => p.baseName))];
-
-    const buildFamilies = async () => {
-      setLoadingFamilies(true);
-      const newFamilies: PokemonFamily[] = [];
-
-      for (const baseName of uniqueBases) {
-        const formsInFilter = filteredList.filter(
-          (p) => p.baseName === baseName
-        );
-
-        if (formsInFilter.length > 1) {
-          newFamilies.push({
-            baseName,
-            forms: formsInFilter,
-            defaultFormId: formsInFilter[0].id,
-          });
-        } else {
-          newFamilies.push({
-            baseName,
-            forms: formsInFilter,
-            defaultFormId: formsInFilter[0]?.id || baseName,
-          });
+    return items
+      .filter((it) => {
+        if (q && !it.name.toLowerCase().includes(q)) return false;
+        const parts = it.url.split("/").filter(Boolean);
+        const id = parts[parts.length - 1];
+        const num = Number(id || 0);
+        if (gen && gen.key !== "all") {
+          if (num < (gen.min || 0) || num > (gen.max || Infinity))
+            return false;
         }
-      }
-
-      setFamilies(newFamilies);
-      setLoadingFamilies(false);
-    };
-
-    buildFamilies();
+        if (typeSet) {
+          if (!typeSet.has(id)) return false;
+        }
+        return true;
+      })
+      .map((p) => {
+        const parts = p.url.split("/").filter(Boolean);
+        const id = parts[parts.length - 1];
+        const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+        return { id, name: p.name, img, baseName: getBaseName(p.name) };
+      });
   }, [items, filterName, filterGen, typeSet]);
+
+  // Memoized family building
+  const families = useMemo<PokemonFamily[]>(() => {
+    const uniqueBases = [...new Set(filteredPokemon.map((p) => p.baseName))];
+    
+    return uniqueBases.map((baseName) => {
+      const formsInFilter = filteredPokemon.filter(
+        (p) => p.baseName === baseName
+      );
+
+      return {
+        baseName,
+        forms: formsInFilter,
+        defaultFormId: formsInFilter[0]?.id || baseName,
+      };
+    });
+  }, [filteredPokemon]);
+
+  // Check if currently loading (no cache available yet)
+  const isLoading = items.length === 0 && isFetching;
+  const isTypeLoading = loadingType;
 
   return (
     <div>
-      {/* Search and Filters */}
-      <div className="mb-8 space-y-4">
-        {/* Search Bar */}
-        <div className="relative max-w-md mx-auto">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg
-              className="w-5 h-5 text-cyan-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <input
-            type="text"
-            value={filterName}
-            onChange={(e) => setFilterName(e.target.value)}
-            placeholder="Search Pokémon..."
-            className="input pl-12 pr-4 py-3 text-center"
-          />
-          <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          </div>
-        </div>
-
-        {/* Filters Row */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {/* Generation Filter */}
-          <div className="relative">
-            <select
-              value={filterGen}
-              onChange={(e) => setFilterGen(e.target.value)}
-              className="input py-2 pl-4 pr-10 appearance-none cursor-pointer text-sm"
-            >
-              {GENERATIONS.map((g) => (
-                <option key={g.key} value={g.key}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+      {/* Search and Filters - Inline Layout */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          {/* Search Bar */}
+          <div className="relative w-full sm:w-auto sm:min-w-[240px]">
+            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
               <svg
-                className="w-4 h-4 text-slate-400"
+                className="w-4 h-4 text-cyan-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -257,83 +261,123 @@ export default function PokemonExplorer() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
             </div>
-          </div>
-
-          {/* Type Filter */}
-          <div className="relative">
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="input py-2 pl-4 pr-10 appearance-none cursor-pointer text-sm"
-            >
-              <option value="all">All Types</option>
-              {types.map((t) => (
-                <option key={t} value={t}>
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Active Type Badge */}
-          {filterType !== "all" && (
-            <TypeBadge type={filterType} size="sm" />
-          )}
-        </div>
-
-        {/* Results Count */}
-        <div className="text-center">
-          <span className="font-data text-sm text-slate-400">
-            Showing{" "}
-            <span className="text-cyan-400 font-semibold">{families.length}</span>{" "}
-            Pokémon
-            {(loadingFamilies || loadingType) && (
-              <span className="ml-2 text-slate-500 animate-pulse">
-                scanning...
-              </span>
-            )}
-          </span>
-        </div>
-      </div>
-
-      {/* Pokemon Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {families.map((family, index) => (
-          <div
-            key={family.baseName}
-            className={`${isLoaded ? "animate-fade-in-up" : "opacity-0"}`}
-            style={{ animationDelay: `${Math.min(index * 20, 500)}ms` }}
-          >
-            <PokemonFamilyCard
-              baseName={family.baseName}
-              forms={family.forms}
-              defaultFormId={family.defaultFormId}
+            <input
+              type="text"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              placeholder="Search..."
+              className="input w-full !py-1.5 !pr-2.5 !pl-8 text-sm"
             />
           </div>
-        ))}
+
+          {/* Filters */}
+          <div className="flex items-center gap-2">
+            {/* Generation Filter */}
+            <div className="relative">
+              <select
+                value={filterGen}
+                onChange={(e) => setFilterGen(e.target.value)}
+                className="input !py-1.5 !pl-2.5 !pr-7 appearance-none cursor-pointer text-sm bg-slate-800/50"
+              >
+                {GENERATIONS.map((g) => (
+                  <option key={g.key} value={g.key}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg
+                  className="w-3 h-3 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Type Filter */}
+            <div className="relative">
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="input !py-1.5 !pl-2.5 !pr-7 appearance-none cursor-pointer text-sm bg-slate-800/50"
+              >
+                <option value="all">All Types</option>
+                {types.map((t) => (
+                  <option key={t} value={t}>
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg
+                  className="w-3 h-3 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Active Type Badge */}
+            {filterType !== "all" && (
+              <TypeBadge type={filterType} size="sm" />
+            )}
+          </div>
+
+          {/* Results Count */}
+          <div className="font-data text-xs text-slate-400 whitespace-nowrap">
+            <span className="text-cyan-400 font-semibold">{families.length}</span>
+            <span className="ml-1">found</span>
+            {isTypeLoading && (
+              <span className="ml-2 text-slate-500 animate-pulse">...</span>
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* Show loading spinner if no cached data available */}
+      {isLoading ? (
+        <LoadingGrid />
+      ) : (
+        /* Pokemon Grid */
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {families.map((family, index) => (
+            <div
+              key={family.baseName}
+              className={`${isLoaded ? "animate-fade-in-up" : "opacity-0"}`}
+              style={{ animationDelay: `${Math.min(index * 20, 500)}ms` }}
+            >
+              <PokemonFamilyCard
+                baseName={family.baseName}
+                forms={family.forms}
+                defaultFormId={family.defaultFormId}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Empty State */}
-      {families.length === 0 && !loadingFamilies && (
+      {families.length === 0 && !isLoading && !isTypeLoading && (
         <div className="text-center py-16">
           <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center">
             <svg

@@ -78,13 +78,6 @@ export default async function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none" />
         
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-950/50 border border-cyan-800/50 mb-6">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="font-data text-sm text-cyan-400 tracking-wider uppercase">
-              Database Online
-            </span>
-          </div>
-          
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Explore the World of{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-magenta-400 to-yellow-400">
