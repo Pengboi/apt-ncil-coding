@@ -284,23 +284,26 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* Solutions Section - CarmoWood Grid Style */}
-      <section id="services" className="py-24 bg-[#ECEBE3]">
+      {/* Solutions Section - Enhanced with better visual hierarchy */}
+      <section id="services" className="py-32 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
+            className="max-w-6xl mx-auto"
           >
-            <motion.h2 
-              variants={fadeInUp}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-16"
-            >
-              Solutions
-            </motion.h2>
+            <motion.div variants={fadeInUp} className="mb-20">
+              <h2 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-4"
+              >
+                Solutions
+              </h2>
+              <div className="w-24 h-1 bg-[#2563eb] rounded-full" />
+            </motion.div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {solutions.map((solution, index) => (
                 <motion.div
                   key={index}
@@ -308,22 +311,22 @@ export default function HomePage() {
                   className="group cursor-pointer"
                   onClick={() => scrollToSection('contact')}
                 >
-                  <Card className="overflow-hidden border-0 shadow-none bg-transparent">
-                    <div className="relative aspect-[4/3] overflow-hidden mb-4">
+                  <div className="relative overflow-hidden mb-5 rounded-lg">
+                    <div className="aspect-[4/3] relative">
                       <Image
                         src={solution.image}
                         alt={solution.title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
                     </div>
-                    <CardContent className="p-0">
-                      <p className="text-sm text-[#AD9677] font-medium mb-1">{solution.subtitle}</p>
-                      <h3 className="text-xl font-heading font-bold text-[#31261D] mb-2">{solution.title}</h3>
-                      <p className="text-[#31261D]/60 text-sm line-clamp-2">{solution.description}</p>
-                    </CardContent>
-                  </Card>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#2563eb] font-semibold uppercase tracking-wider mb-2">{solution.subtitle}</p>
+                    <h3 className="text-xl font-heading font-bold text-[#31261D] mb-3 group-hover:text-[#2563eb] transition-colors duration-300">{solution.title}</h3>
+                    <p className="text-[#31261D]/60 text-sm leading-relaxed">{solution.description}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -331,20 +334,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why Vision Electric Section - CarmoWood Style */}
-      <section id="about" className="py-24 bg-[#31261D]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Why Vision Electric Section - Enhanced with better spacing */}
+      <section id="about" className="py-32 bg-[#31261D] relative overflow-hidden">
+        {/* Decorative element */}
+        <div className="absolute top-0 right-0 w-1/3 h-full opacity-5">
+          <div className="w-full h-full bg-gradient-to-l from-white/10 to-transparent" />
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid lg:grid-cols-2 gap-16 items-center"
+            className="grid lg:grid-cols-2 gap-20 items-center max-w-6xl mx-auto"
           >
-            <motion.div variants={fadeInUp} className="space-y-6">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white leading-[0.95]">
-                Why Vision Electric
-              </h2>
+            <motion.div variants={fadeInUp} className="space-y-8">
+              <div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white leading-[1.05] mb-4">
+                  Why Vision Electric
+                </h2>
+                <div className="w-24 h-1 bg-[#2563eb] rounded-full" />
+              </div>
               
               <p className="text-lg text-white/80 leading-relaxed">
                 Vision Electric is a NICEIC approved electrical contractor specializing in intercom 
@@ -364,94 +375,110 @@ export default function HomePage() {
                 video entry systems to multi-block access control networks.
               </p>
 
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="grid grid-cols-2 gap-3 pt-4">
                 {certifications.map((cert, index) => (
-                  <Badge key={index} variant="secondary" className="px-4 py-2 text-sm bg-white/10 text-white border-0">
-                    <CheckCircle className="h-3 w-3 mr-1 text-[#2563eb]" />
-                    {cert}
-                  </Badge>
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-[#2563eb]/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-3 w-3 text-[#2563eb]" />
+                    </div>
+                    <span className="text-sm text-white/90">{cert}</span>
+                  </div>
                 ))}
               </div>
             </motion.div>
 
             <motion.div 
               variants={scaleIn}
-              className="relative aspect-[4/3] lg:aspect-square overflow-hidden"
+              className="relative rounded-2xl overflow-hidden shadow-2xl"
             >
-              <Image
-                src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80"
-                alt="Intercom installation work"
-                fill
-                className="object-cover"
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Projects Section - CarmoWood Carousel Style */}
-      <section id="projects" className="py-24 bg-[#ECEBE3]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
-              <motion.h2 
-                variants={fadeInUp}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D]"
-              >
-                Projects
-              </motion.h2>
-              <motion.div variants={fadeInUp}>
-                <Button 
-                  variant="outline" 
-                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full"
-                >
-                  know more
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </motion.div>
-            </div>
-
-            <motion.div variants={fadeInUp} className="relative">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {projects.map((project, index) => (
-                  <Card 
-                    key={index} 
-                    className="group overflow-hidden border-0 shadow-none bg-transparent cursor-pointer"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden mb-4">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-[#ECEBE3]/90 text-[#31261D] hover:bg-[#ECEBE3] font-medium">
-                          {project.category}
-                        </Badge>
-                      </div>
-                    </div>
-                    <CardContent className="p-0">
-                      <p className="text-sm text-[#AD9677] mb-1">{project.location}</p>
-                      <h3 className="text-lg font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors">
-                        {project.title}
-                      </h3>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="aspect-[4/3] relative">
+                <Image
+                  src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80"
+                  alt="Intercom installation work"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#2563eb]/20 to-transparent" />
               </div>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Check Portfolio Banner */}
-      <section className="relative py-20 overflow-hidden">
+      {/* Projects Section - Enhanced with better card design */}
+      <section id="projects" className="py-32 bg-[#ECEBE3]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="max-w-6xl mx-auto"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-16 gap-4">
+              <motion.div variants={fadeInUp}>
+                <h2 
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-4"
+                >
+                  Projects
+                </h2>
+                <div className="w-24 h-1 bg-[#2563eb] rounded-full" />
+              </motion.div>
+              <motion.div variants={fadeInUp}>
+                <Button 
+                  variant="outline" 
+                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full px-6 py-3 font-medium transition-all duration-300"
+                >
+                  View all projects
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </motion.div>
+            </div>
+
+            <motion.div variants={fadeInUp} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {projects.map((project, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="group cursor-pointer"
+                >
+                  <Card 
+                    className="overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-white"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Badge className="bg-white/95 text-[#31261D] hover:bg-white font-medium shadow-sm">
+                          {project.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MapPin className="h-3 w-3 text-[#2563eb]" />
+                        <p className="text-xs text-[#AD9677] font-medium">{project.location}</p>
+                      </div>
+                      <h3 className="text-lg font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors duration-300 leading-tight">
+                        {project.title}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Portfolio Banner - Enhanced with better visual impact */}
+      <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
@@ -459,132 +486,181 @@ export default function HomePage() {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-[#31261D]/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#31261D]/90 via-[#31261D]/70 to-[#31261D]/90" />
         </div>
         
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white mb-6">
-            Check Out Our Portfolio of Installations
-          </h2>
-          <Button 
-            size="lg"
-            className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-8 py-6 text-base font-medium rounded-full"
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+            className="max-w-3xl mx-auto text-center"
           >
-            Check our portfolio
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+            <motion.div variants={fadeInUp}>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight">
+                Check Out Our Portfolio of Installations
+              </h2>
+              <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
+                From residential intercom systems to enterprise data center installations, 
+                see our complete range of completed projects.
+              </p>
+              <Button 
+                size="lg"
+                className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-10 py-7 text-base font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                View Full Portfolio
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Testimonials Section - CarmoWood Carousel */}
-      <section className="py-24 bg-[#ECEBE3]">
+      {/* Testimonials Section - Enhanced with better layout */}
+      <section className="py-32 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.h2 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-16"
+            className="max-w-6xl mx-auto"
           >
-            Testimonials
-          </motion.h2>
-
-          <div className="max-w-4xl mx-auto">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTestimonial}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.5 }}
-                className="text-center"
+            <div className="mb-16">
+              <h2 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-4"
               >
-                <div className="relative w-24 h-24 mx-auto mb-8 rounded-full overflow-hidden">
-                  <Image
-                    src={testimonials[currentTestimonial].image}
-                    alt={testimonials[currentTestimonial].name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                
-                <blockquote className="text-xl md:text-2xl text-[#31261D] leading-relaxed mb-8 font-heading font-medium">
-                  &ldquo;{testimonials[currentTestimonial].text}&rdquo;
-                </blockquote>
-                
-                <div className="space-y-1">
-                  <p className="font-bold text-[#31261D] text-lg">
-                    {testimonials[currentTestimonial].name}
-                  </p>
-                  <p className="text-[#AD9677]">
-                    {testimonials[currentTestimonial].role}
-                  </p>
-                  <p className="text-sm text-[#2563eb]">
-                    Project: {testimonials[currentTestimonial].project}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                Testimonials
+              </h2>
+              <div className="w-24 h-1 bg-[#2563eb] rounded-full" />
+            </div>
 
-            {/* Navigation Dots */}
-            <div className="flex justify-center gap-2 mt-8">
-              {testimonials.map((_, index) => (
-                <button
+            <div className="relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTestimonial}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="bg-white rounded-2xl p-10 shadow-xl"
+                >
+                  <div className="grid md:grid-cols-[auto_1fr] gap-8 items-center">
+                    <div className="text-center">
+                      <div className="relative w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden ring-4 ring-[#2563eb]/20">
+                        <Image
+                          src={testimonials[currentTestimonial].image}
+                          alt={testimonials[currentTestimonial].name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex justify-center gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-[#2563eb] text-[#2563eb]" />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <blockquote className="text-xl md:text-2xl text-[#31261D] leading-relaxed mb-6 font-heading font-medium italic">
+                        &ldquo;{testimonials[currentTestimonial].text}&rdquo;
+                      </blockquote>
+                      
+                      <div className="space-y-1">
+                        <p className="font-bold text-[#31261D] text-lg">
+                          {testimonials[currentTestimonial].name}
+                        </p>
+                        <p className="text-[#AD9677]">
+                          {testimonials[currentTestimonial].role}
+                        </p>
+                        <div className="flex items-center gap-2 pt-2">
+                          <div className="w-8 h-px bg-[#2563eb]" />
+                          <p className="text-sm text-[#2563eb] font-medium">
+                            {testimonials[currentTestimonial].project}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation */}
+              <div className="flex justify-center items-center gap-3 mt-8">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentTestimonial(index)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      index === currentTestimonial 
+                        ? 'bg-[#2563eb] w-8' 
+                        : 'bg-[#AD9677]/30 w-2 hover:bg-[#AD9677]/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Partners Section - Enhanced with better styling */}
+      <section className="py-20 bg-[#ECEBE3] border-y border-[#DBC8B6]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+          >
+            <p className="text-center text-[#AD9677] text-sm uppercase tracking-[0.2em] mb-10">
+              Trusted By Leading Property Partners
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+              {partners.map((partner, index) => (
+                <motion.div 
                   key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial 
-                      ? 'bg-[#2563eb] w-8' 
-                      : 'bg-[#AD9677]/30 w-2'
-                  }`}
-                />
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-center"
+                >
+                  <div className="text-lg md:text-xl font-heading font-bold text-[#31261D]/40 hover:text-[#2563eb] transition-colors duration-300">
+                    {partner}
+                  </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Partners Section */}
-      <section className="py-16 bg-[#ECEBE3] border-y border-[#DBC8B6]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-[#AD9677] text-sm uppercase tracking-[0.2em] mb-8">
-            Trusted By Leading Property Partners
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-            {partners.map((partner, index) => (
-              <div 
-                key={index}
-                className="text-xl font-heading font-bold text-[#31261D]/30 hover:text-[#2563eb] transition-colors"
-              >
-                {partner}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Articles/Blog Section - CarmoWood Style */}
-      <section className="py-24 bg-[#ECEBE3]">
+      {/* Articles Section - Enhanced with better card design */}
+      <section className="py-32 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
+            className="max-w-6xl mx-auto"
           >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
-              <motion.h2 
-                variants={fadeInUp}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D]"
-              >
-                Articles
-              </motion.h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-16 gap-4">
+              <motion.div variants={fadeInUp}>
+                <h2 
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-4"
+                >
+                  Articles
+                </h2>
+                <div className="w-24 h-1 bg-[#2563eb] rounded-full" />
+              </motion.div>
               <motion.div variants={fadeInUp}>
                 <Button 
                   variant="outline" 
-                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full"
+                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full px-6 py-3 font-medium transition-all duration-300"
                 >
-                  know more
+                  View all articles
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </motion.div>
@@ -592,28 +668,32 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {articles.map((article, index) => (
-                <motion.div key={index} variants={fadeInUp}>
-                  <Card className="group overflow-hidden border-0 shadow-none bg-transparent cursor-pointer h-full">
-                    <div className="relative aspect-[16/10] overflow-hidden mb-4">
+                <motion.div 
+                  key={index} 
+                  variants={fadeInUp}
+                  whileHover={{ y: -8 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 bg-white h-full">
+                    <div className="relative aspect-[16/10] overflow-hidden">
                       <Image
                         src={article.image}
                         alt={article.title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
                     </div>
-                    <CardContent className="p-0">
-                      <div className="flex items-center gap-3 mb-3 text-sm text-[#AD9677]">
-                        <span>{article.date}</span>
-                        <span>•</span>
-                        <Badge variant="secondary" className="text-[#2563eb] bg-[#2563eb]/10 border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4 text-sm">
+                        <Badge variant="secondary" className="text-[#2563eb] bg-[#2563eb]/10 border-0 font-medium">
                           {article.category}
                         </Badge>
+                        <span className="text-[#AD9677]">{article.date}</span>
                       </div>
-                      <h3 className="text-xl font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors mb-3">
+                      <h3 className="text-xl font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors mb-3 leading-tight">
                         {article.title}
                       </h3>
-                      <p className="text-[#31261D]/60 text-sm line-clamp-2">
+                      <p className="text-[#31261D]/60 text-sm leading-relaxed line-clamp-2">
                         {article.excerpt}
                       </p>
                     </CardContent>
@@ -625,32 +705,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer Contact CTA */}
-      <section id="contact" className="py-24 bg-[#31261D]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Contact CTA Section - Enhanced with better visual hierarchy */}
+      <section id="contact" className="py-32 bg-[#31261D] relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
+            className="max-w-4xl mx-auto text-center"
           >
-            <motion.h2 
-              variants={fadeInUp}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6"
-            >
-              Ready to Secure Your Property?
-            </motion.h2>
+            <motion.div variants={fadeInUp}>
+              <h2 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight"
+              >
+                Ready to Secure Your Property?
+              </h2>
+              <div className="w-24 h-1 bg-[#2563eb] rounded-full mx-auto mb-8" />
+            </motion.div>
+            
             <motion.p 
               variants={fadeInUp}
-              className="text-lg text-white/70 max-w-2xl mx-auto mb-8"
+              className="text-lg text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed"
             >
               Get a free, no-obligation quote for your intercom or access control installation. 
               We respond within 24 hours.
             </motion.p>
+            
             <motion.div variants={fadeInUp}>
               <Button 
                 size="lg"
-                className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-8 py-6 text-base font-medium rounded-full"
+                className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-10 py-7 text-base font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={() => setIsContactOpen(true)}
               >
                 Contact us
