@@ -1,219 +1,200 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Star, Scissors, Sparkles, Heart, Check, CheckCircle2, Clock, CalendarDays, Dog, MapPin, Phone, Mail, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ArrowRight, Phone, Mail, MapPin,
+  ChevronLeft, ChevronRight, Star, CheckCircle, X,
+  Video, Lock, DoorOpen, Network
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import type { Variants } from "framer-motion";
 
-// Services Data
-const services = [
+// Animation variants - CarmoWood style
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
+  }
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const scaleIn: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }
+  }
+};
+
+// Solutions Data - Intercom focused
+const solutions = [
   {
-    icon: Scissors,
-    title: "Full Grooming",
-    description: "Complete grooming package including bath, haircut, nail trim, and ear cleaning.",
-    price: "From £45",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=768&q=80",
+    title: "Intercom Installation",
+    subtitle: "Audio & Video Entry",
+    description: "Complete installation of wired and wireless intercom systems for residential and commercial properties. Professional setup with minimal disruption.",
   },
   {
-    icon: Sparkles,
-    title: "Bath & Brush",
-    description: "Relaxing bath with premium shampoos followed by thorough brushing.",
-    price: "From £25",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=768&q=80",
+    title: "Access Control Systems",
+    subtitle: "Secure Entry Management",
+    description: "Keypad, card reader, and biometric access control solutions integrated with your intercom for seamless security management.",
   },
   {
-    icon: Heart,
-    title: "Puppy Package",
-    description: "Gentle introduction to grooming for puppies under 6 months.",
-    price: "From £30",
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=768&q=80",
+    title: "Video Entry Systems",
+    subtitle: "Visual Identification",
+    description: "HD video door entry systems with smartphone connectivity, allowing you to see and speak with visitors from anywhere.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=768&q=80",
+    title: "Gate & Barrier Integration",
+    subtitle: "Automated Entry",
+    description: "Integration of intercom systems with automated gates, barriers, and garage doors for complete access control.",
   },
 ];
 
-
-const addOnServices = [
-  { name: "Nail Trimming Only", price: "£12" },
-  { name: "Teeth Brushing", price: "£8" },
-  { name: "De-matting Treatment", price: "£15+" },
-  { name: "Flea Treatment", price: "£20" },
-  { name: "Blueberry Facial", price: "£10" },
-  { name: "Paw Balm Treatment", price: "£8" },
-  { name: "De-shedding Treatment", price: "£25" },
+// Projects Data - Intercom focused
+const projects = [
+  {
+    category: "Residential",
+    location: "Kensington, London",
+    title: "Apartment Block Intercom",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=768&q=80",
+  },
+  {
+    category: "Commercial",
+    location: "Canary Wharf, London",
+    title: "Office Access Control",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=768&q=80",
+  },
+  {
+    category: "Residential",
+    location: "Chelsea, London",
+    title: "Townhouse Video Entry",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=768&q=80",
+  },
+  {
+    category: "Commercial",
+    location: "Hampstead, London",
+    title: "Gate Entry System",
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=768&q=80",
+  },
 ];
 
 // Testimonials Data
 const testimonials = [
   {
-    name: "Sarah M.",
-    text: "The team at Dazziling Dog Groomers are amazing! My golden retriever always comes back looking beautiful and happy.",
-    rating: 5,
+    name: "James Mitchell",
+    role: "Property Manager",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
+    text: "Vision Electric installed intercom systems across our entire property portfolio in West London. The professionalism and quality of work was outstanding. Tenants love the new video entry systems.",
+    project: "Multi-Block Installation",
   },
   {
-    name: "James L.",
-    text: "Professional, caring, and thorough. They really understand how to handle nervous dogs. Highly recommend!",
-    rating: 5,
+    name: "Sarah Thompson",
+    role: "Homeowner",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    text: "From the initial consultation to installation completion, Vision Electric were excellent. Our new video intercom with smartphone connectivity gives us peace of mind, especially when we're away from home.",
+    project: "Residential Video Entry",
   },
   {
-    name: "Emma R.",
-    text: "Best groomers in Finsbury Park! Fair prices and excellent service. My poodle has never looked better.",
-    rating: 5,
+    name: "David Chen",
+    role: "Office Manager",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    text: "We needed a comprehensive access control system for our new office. Vision Electric delivered on time and on budget. The integration with our existing infrastructure was seamless.",
+    project: "Commercial Access Control",
+  },
+  {
+    name: "Emma Wilson",
+    role: "Development Director",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+    text: "Vision Electric has been our go-to contractor for all electrical and intercom work across our developments. Their attention to detail and reliability is why we keep coming back.",
+    project: "Multiple Developments",
   },
 ];
 
-// Gallery Data
-const galleryImages = [
-  { type: "before", description: "Golden Retriever - Before", breed: "Golden Retriever" },
-  { type: "after", description: "Golden Retriever - After", breed: "Golden Retriever" },
-  { type: "before", description: "Poodle - Before", breed: "Poodle" },
-  { type: "after", description: "Poodle - After", breed: "Poodle" },
-  { type: "before", description: "Cocker Spaniel - Before", breed: "Cocker Spaniel" },
-  { type: "after", description: "Cocker Spaniel - After", breed: "Cocker Spaniel" },
+// Certifications
+const certifications = [
+  "NICEIC Approved",
+  "Part P Registered",
+  "18th Edition Qualified",
+  "£5M Insurance",
+  "CHAS Accredited",
+  "SafeContractor",
 ];
 
-// Team Data
-const team = [
-  {
-    name: "Emma Thompson",
-    role: "Lead Groomer & Founder",
-    bio: "With over 10 years of experience, Emma founded Dazziling Dog Groomers to provide premium care for London's dogs.",
-    initials: "ET",
-  },
-  {
-    name: "James Wilson",
-    role: "Senior Groomer",
-    bio: "James specializes in breed-specific cuts and has a gentle approach with nervous dogs.",
-    initials: "JW",
-  },
-  {
-    name: "Sarah Chen",
-    role: "Groomer",
-    bio: "Sarah is passionate about creative styling and loves working with puppies.",
-    initials: "SC",
-  },
+// Partners
+const partners = [
+  "Savills", "Knight Frank", "JLL", "Foxtons", 
+  "Hamptons", "Crest Nicholson", "Barratt Homes", "Berkeley Group"
 ];
 
-// Values Data
-const values = [
+// Articles
+const articles = [
   {
-    icon: Heart,
-    title: "Compassionate Care",
-    description: "We treat every dog with love and patience, ensuring they feel safe and comfortable.",
+    date: "15/01/2026",
+    category: "Intercoms",
+    title: "Choosing the Right Video Entry System for Your Property",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=768&q=80",
+    excerpt: "A comprehensive guide to selecting video intercom systems for residential and commercial properties in London.",
   },
   {
-    icon: Scissors,
-    title: "Expert Grooming",
-    description: "Our certified groomers are trained in the latest techniques for all breeds.",
+    date: "08/12/2025",
+    category: "Security",
+    title: "Access Control Trends for 2026",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=768&q=80",
+    excerpt: "Exploring the latest innovations in access control technology and what they mean for property security.",
   },
   {
-    icon: Sparkles,
-    title: "Premium Products",
-    description: "We use only high-quality, dog-safe shampoos and conditioners.",
+    date: "22/11/2025",
+    category: "Installation",
+    title: "Smart Intercom Integration with Home Automation",
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=768&q=80",
+    excerpt: "How modern intercom systems integrate with smart home ecosystems for seamless control and monitoring.",
   },
-  {
-    icon: CheckCircle2,
-    title: "Attention to Detail",
-    description: "From nose to tail, we ensure every aspect of your dog's grooming is perfect.",
-  },
-];
-
-// FAQ Data
-
-// Blog Preview Data
-const blogPosts = [
-  {
-    title: "How Often Should You Groom Your Dog?",
-    excerpt: "Understanding the right grooming frequency for your dog based on breed and coat type.",
-    category: "Grooming Tips",
-    date: "March 15, 2024",
-    slug: "how-often-groom-dog",
-  },
-  {
-    title: "5 Signs Your Dog Needs Professional Grooming",
-    excerpt: "Learn to recognize when it's time to bring your furry friend to the groomer.",
-    category: "Pet Care",
-    date: "March 10, 2024",
-    slug: "signs-dog-needs-grooming",
-  },
-  {
-    title: "The Benefits of Regular Nail Trimming",
-    excerpt: "Why keeping your dog's nails short is essential for their health and comfort.",
-    category: "Health",
-    date: "March 5, 2024",
-    slug: "benefits-nail-trimming",
-  },
-];
-
-// Booking Data
-const bookingServices = [
-  { id: "full-grooming", name: "Full Grooming Package", price: "£45 - £75", duration: "1.5 - 2 hours" },
-  { id: "bath-brush", name: "Bath & Brush", price: "£25 - £40", duration: "45 - 60 mins" },
-  { id: "puppy", name: "Puppy Package", price: "£30 - £45", duration: "1 - 1.5 hours" },
-];
-
-const timeSlots = [
-  "09:00", "10:00", "11:00", "12:00",
-  "14:00", "15:00", "16:00", "17:00",
-];
-
-const dogSizes = [
-  { value: "small", label: "Small (under 10kg)" },
-  { value: "medium", label: "Medium (10-20kg)" },
-  { value: "large", label: "Large (20-40kg)" },
-  { value: "xlarge", label: "Extra Large (40kg+)" },
 ];
 
 export default function HomePage() {
-  // Booking form state
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState<string>("");
-  const [selectedService, setSelectedService] = useState<string>("");
-  const [formData, setFormData] = useState({
-    ownerName: "",
-    email: "",
-    phone: "",
-    dogName: "",
-    dogBreed: "",
-    dogSize: "" as string | null,
-    specialNotes: "",
-  });
-  const [bookingStep, setBookingStep] = useState(1);
-  const [contactFormData, setContactFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Booking request submitted! We'll confirm your appointment within 24 hours.");
-    setBookingStep(1);
-    setDate(undefined);
-    setSelectedTime("");
-    setSelectedService("");
-    setFormData({
-      ownerName: "",
-      email: "",
-      phone: "",
-      dogName: "",
-      dogBreed: "",
-      dogSize: "",
-      specialNotes: "",
-    });
-  };
+  // Auto-advance testimonials
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Thank you for your message! We'll get back to you soon.");
-    setContactFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-  };
+  // Listen for custom event from Navigation
+  useEffect(() => {
+    const handleOpenContact = () => setIsContactOpen(true);
+    window.addEventListener('openContactModal', handleOpenContact);
+    return () => window.removeEventListener('openContactModal', handleOpenContact);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -222,559 +203,558 @@ export default function HomePage() {
     }
   };
 
-  // Handle date selection safely
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-  };
-
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section id="home" className="relative py-20 lg:py-32 bg-secondary overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#ECEBE3]">
+      {/* Hero Section - CarmoWood Style */}
+      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2000&q=80"
+            alt="Modern building entrance with intercom"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+        </div>
+
+        {/* Content */}
         <motion.div 
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="container mx-auto px-4 sm:px-6 lg:px-8"
+          className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div variants={fadeInUp} className="space-y-6">
-              <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-foreground">
-                Premium Dog Grooming in{" "}
-                <span className="text-primary">Finsbury Park</span>
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-lg">
-                Treat your furry friend to a luxurious grooming experience. Our expert groomers provide top-quality care for dogs of all breeds and sizes.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-primary hover:bg-primary/90" onClick={() => scrollToSection('booking')}>
-                  Book Appointment
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button size="lg" variant="outline" onClick={() => scrollToSection('services')}>
-                  View Services
-                </Button>
-              </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                  ))}
-                </div>
-                <span>50+ 5-star reviews</span>
-              </div>
-            </motion.div>
-            <motion.div 
-              variants={fadeInUp}
-              className="relative aspect-square lg:aspect-[4/3] rounded-2xl overflow-hidden bg-muted"
+          <motion.h1 
+            variants={fadeInUp}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-heading font-extrabold text-white mb-6 leading-[0.95] tracking-tight"
+          >
+            Vision Electric
+          </motion.h1>
+          
+          <motion.p 
+            variants={fadeInUp}
+            className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 font-light"
+          >
+            Professional intercom and access control installations across Greater London.
+            Securing entrances with expertise and precision.
+          </motion.p>
+          
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-8 py-6 text-base font-medium rounded-full"
+              onClick={() => setIsContactOpen(true)}
             >
-              <Image
-                src="https://images.unsplash.com/photo-1719464454959-9cf304ef4774?q=80&w=2070&auto=format&fit=crop"
-                alt="Happy dog at grooming salon"
-                fill
-                className="object-cover"
-                priority
-              />
-            </motion.div>
+              Contact us
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </motion.div>
+        </motion.div>
+
+        {/* Hero Trust Badges - Enterprise Clients */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="absolute bottom-8 left-0 right-0 z-10"
+        >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-white/60 text-xs uppercase tracking-[0.2em]">
+                Powering Infrastructure For
+              </p>
+              <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                {/* Google */}
+                <div className="text-2xl md:text-3xl font-heading font-bold text-white/90 hover:text-white transition-colors">
+                  Google
+                </div>
+                {/* Microsoft */}
+                <div className="text-2xl md:text-3xl font-heading font-bold text-white/90 hover:text-white transition-colors">
+                  Microsoft
+                </div>
+                {/* Amazon */}
+                <div className="text-2xl md:text-3xl font-heading font-bold text-white/90 hover:text-white transition-colors">
+                  Amazon
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-20">
+      {/* Solutions Section - CarmoWood Grid Style */}
+      <section id="services" className="py-24 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="text-center mb-12"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold mb-4">Our Services</motion.h2>
-            <motion.p variants={fadeInUp} className="text-muted-foreground max-w-2xl mx-auto">
-              From basic baths to full grooming packages, we offer everything your dog needs to look and feel their best.
-            </motion.p>
-          </motion.div>
+            <motion.h2 
+              variants={fadeInUp}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-16"
+            >
+              Solutions
+            </motion.h2>
 
-          {/* Service Cards */}
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8 mb-16"
-          >
-            {services.map((service, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="group h-full hover:shadow-lg transition-shadow flex flex-col">
-                  <CardContent className="p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-3 bg-primary/10 rounded-xl">
-                        <service.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <h3 className="text-lg font-semibold leading-tight">{service.title}</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {solutions.map((solution, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeInUp}
+                  className="group cursor-pointer"
+                  onClick={() => scrollToSection('contact')}
+                >
+                  <Card className="overflow-hidden border-0 shadow-none bg-transparent">
+                    <div className="relative aspect-[4/3] overflow-hidden mb-4">
+                      <Image
+                        src={solution.image}
+                        alt={solution.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <p className="text-muted-foreground text-sm flex-grow mb-4 leading-relaxed">{service.description}</p>
-                    <div className="pt-4 border-t border-border mt-auto">
-                      <p className="text-primary font-bold text-lg">{service.price}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-
-
-          {/* Add-ons */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-16"
-          >
-            <h3 className="text-2xl font-bold text-center mb-8">Add-On Services</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-              {addOnServices.map((service, index) => (
-                <Card key={index}>
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <span className="font-medium">{service.name}</span>
-                    <span className="text-primary font-semibold">{service.price}</span>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-0">
+                      <p className="text-sm text-[#AD9677] font-medium mb-1">{solution.subtitle}</p>
+                      <h3 className="text-xl font-heading font-bold text-[#31261D] mb-2">{solution.title}</h3>
+                      <p className="text-[#31261D]/60 text-sm line-clamp-2">{solution.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section id="gallery" className="py-20 bg-secondary">
+      {/* Why Vision Electric Section - CarmoWood Style */}
+      <section id="about" className="py-24 bg-[#31261D]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="text-center mb-12"
+            className="grid lg:grid-cols-2 gap-16 items-center"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl font-bold mb-4">Our Work</motion.h2>
-            <motion.p variants={fadeInUp} className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              See the amazing transformations we create. From shaggy to chic, we bring out the best in every dog.
-            </motion.p>
-          </motion.div>
+            <motion.div variants={fadeInUp} className="space-y-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white leading-[0.95]">
+                Why Vision Electric
+              </h2>
+              
+              <p className="text-lg text-white/80 leading-relaxed">
+                Vision Electric is a NICEIC approved electrical contractor specializing in intercom 
+                and access control systems, dedicated to delivering secure, compliant, and 
+                high-quality installations for properties across Greater London.
+              </p>
+              
+              <p className="text-white/70 leading-relaxed">
+                With over two decades of accumulated expertise in electrical installations, 
+                we combine technical knowledge, innovation, and rigorous safety standards to 
+                create durable, efficient, and regulation-compliant security solutions.
+              </p>
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {galleryImages.map((image, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="relative aspect-square bg-muted">
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-                        <div className="text-center p-4">
-                          <p className="text-muted-foreground mb-2">Photo placeholder</p>
-                          <p className="text-sm font-medium">{image.description}</p>
-                        </div>
-                      </div>
-                      <Badge 
-                        className={`absolute top-4 right-4 ${
-                          image.type === 'before' ? 'bg-muted-foreground' : 'bg-primary'
-                        }`}
-                      >
-                        {image.type === 'before' ? 'Before' : 'After'}
-                      </Badge>
-                    </div>
-                    <div className="p-4">
-                      <p className="font-medium">{image.breed}</p>
-                      <p className="text-sm text-muted-foreground capitalize">{image.type} grooming</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+              <p className="text-white/70 leading-relaxed">
+                We work closely with homeowners, property managers, architects, and developers 
+                to transform security requirements into completed installations—from single 
+                video entry systems to multi-block access control networks.
+              </p>
+
+              <div className="flex flex-wrap gap-3 pt-4">
+                {certifications.map((cert, index) => (
+                  <Badge key={index} variant="secondary" className="px-4 py-2 text-sm bg-white/10 text-white border-0">
+                    <CheckCircle className="h-3 w-3 mr-1 text-[#2563eb]" />
+                    {cert}
+                  </Badge>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div 
+              variants={scaleIn}
+              className="relative aspect-[4/3] lg:aspect-square overflow-hidden"
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80"
+                alt="Intercom installation work"
+                fill
+                className="object-cover"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20">
+      {/* Projects Section - CarmoWood Carousel Style */}
+      <section id="projects" className="py-24 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid lg:grid-cols-2 gap-12 items-center mb-16"
           >
-            <motion.div variants={fadeInUp} className="space-y-6">
-              <h2 className="text-4xl lg:text-5xl font-bold">About Dazziling Dog Groomers</h2>
-              <p className="text-lg text-muted-foreground">
-                Founded in 2019, Dazziling Dog Groomers has become Finsbury Park&apos;s trusted destination for premium dog grooming. 
-                Our mission is simple: to provide exceptional care that leaves every dog looking and feeling their best.
-              </p>
-              <p className="text-muted-foreground">
-                We believe that grooming is more than just aesthetics - it&apos;s about your dog&apos;s health, comfort, and happiness. 
-                That&apos;s why we take the time to understand each dog&apos;s unique needs and provide personalized care.
-              </p>
-            </motion.div>
-            <motion.div 
-              variants={fadeInUp}
-              className="relative aspect-video lg:aspect-square rounded-2xl overflow-hidden bg-muted"
-            >
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary">
-                <div className="text-center">
-                  <Scissors className="h-20 w-20 text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">Shop interior photo</p>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
+              <motion.h2 
+                variants={fadeInUp}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D]"
+              >
+                Projects
+              </motion.h2>
+              <motion.div variants={fadeInUp}>
+                <Button 
+                  variant="outline" 
+                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full"
+                >
+                  know more
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </motion.div>
+            </div>
+
+            <motion.div variants={fadeInUp} className="relative">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {projects.map((project, index) => (
+                  <Card 
+                    key={index} 
+                    className="group overflow-hidden border-0 shadow-none bg-transparent cursor-pointer"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden mb-4">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-[#ECEBE3]/90 text-[#31261D] hover:bg-[#ECEBE3] font-medium">
+                          {project.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardContent className="p-0">
+                      <p className="text-sm text-[#AD9677] mb-1">{project.location}</p>
+                      <h3 className="text-lg font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors">
+                        {project.title}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </motion.div>
           </motion.div>
-
-          {/* Values */}
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-12"
-          >
-            <motion.h3 variants={fadeInUp} className="text-3xl font-bold mb-4">Our Values</motion.h3>
-          </motion.div>
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
-          >
-            {values.map((value, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="h-full">
-                  <CardContent className="p-6 text-center">
-                    <value.icon className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <h4 className="font-semibold text-lg mb-2">{value.title}</h4>
-                    <p className="text-sm text-muted-foreground">{value.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-
-
-          {/* Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mt-16 pt-16 border-t"
-          >
-            <div>
-              <p className="text-4xl font-bold text-primary mb-2">5+</p>
-              <p className="text-muted-foreground">Years in Business</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-primary mb-2">1000+</p>
-              <p className="text-muted-foreground">Happy Dogs</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-primary mb-2">3</p>
-              <p className="text-muted-foreground">Expert Groomers</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-primary mb-2">50+</p>
-              <p className="text-muted-foreground">5-Star Reviews</p>
-            </div>
-          </motion.div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-secondary">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-12"
+      {/* Check Portfolio Banner */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
+            alt="Access control systems"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-[#31261D]/80" />
+        </div>
+        
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white mb-6">
+            Check Out Our Portfolio of Installations
+          </h2>
+          <Button 
+            size="lg"
+            className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-8 py-6 text-base font-medium rounded-full"
           >
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold mb-4">What Our Customers Say</motion.h2>
-            <motion.p variants={fadeInUp} className="text-muted-foreground max-w-2xl mx-auto">
-              Don&apos;t just take our word for it - hear from our happy customers and their well-groomed pups.
-            </motion.p>
-          </motion.div>
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-3 gap-8"
-          >
-            {testimonials.map((testimonial, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="h-full">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-1 mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                      ))}
-                    </div>
-                    <p className="text-muted-foreground mb-4">&quot;{testimonial.text}&quot;</p>
-                    <p className="font-semibold">- {testimonial.name}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+            Check our portfolio
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </section>
 
-      {/* Booking Section - Simplified without Calendar */}
-      <section id="booking" className="py-20 bg-secondary">
+      {/* Testimonials Section - CarmoWood Carousel */}
+      <section className="py-24 bg-[#ECEBE3]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.h2 
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            variants={staggerContainer}
-            className="text-center mb-12"
+            variants={fadeInUp}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D] mb-16"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl font-bold mb-4">Book Your Appointment</motion.h2>
-            <motion.p variants={fadeInUp} className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Schedule a grooming session for your furry friend. We&apos;ll confirm your booking within 24 hours.
-            </motion.p>
-          </motion.div>
+            Testimonials
+          </motion.h2>
 
+          <div className="max-w-4xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTestimonial}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
+                className="text-center"
+              >
+                <div className="relative w-24 h-24 mx-auto mb-8 rounded-full overflow-hidden">
+                  <Image
+                    src={testimonials[currentTestimonial].image}
+                    alt={testimonials[currentTestimonial].name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                
+                <blockquote className="text-xl md:text-2xl text-[#31261D] leading-relaxed mb-8 font-heading font-medium">
+                  &ldquo;{testimonials[currentTestimonial].text}&rdquo;
+                </blockquote>
+                
+                <div className="space-y-1">
+                  <p className="font-bold text-[#31261D] text-lg">
+                    {testimonials[currentTestimonial].name}
+                  </p>
+                  <p className="text-[#AD9677]">
+                    {testimonials[currentTestimonial].role}
+                  </p>
+                  <p className="text-sm text-[#2563eb]">
+                    Project: {testimonials[currentTestimonial].project}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-8">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentTestimonial 
+                      ? 'bg-[#2563eb] w-8' 
+                      : 'bg-[#AD9677]/30 w-2'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="py-16 bg-[#ECEBE3] border-y border-[#DBC8B6]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-[#AD9677] text-sm uppercase tracking-[0.2em] mb-8">
+            Trusted By Leading Property Partners
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+            {partners.map((partner, index) => (
+              <div 
+                key={index}
+                className="text-xl font-heading font-bold text-[#31261D]/30 hover:text-[#2563eb] transition-colors"
+              >
+                {partner}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Articles/Blog Section - CarmoWood Style */}
+      <section className="py-24 bg-[#ECEBE3]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
           >
-            <Card className="max-w-4xl mx-auto">
-              <CardContent className="p-6">
-                <form onSubmit={handleBookingSubmit} className="space-y-6">
-                  {/* Step 1: Service Selection */}
-                  {bookingStep === 1 && (
-                    <div className="space-y-6">
-                      <h3 className="text-2xl font-semibold">Select a Service</h3>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        {bookingServices.map((service) => (
-                          <div
-                            key={service.id}
-                            onClick={() => setSelectedService(service.id)}
-                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                              selectedService === service.id
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-primary/50"
-                            }`}
-                          >
-                            <h4 className="font-semibold">{service.name}</h4>
-                            <p className="text-sm text-muted-foreground">{service.price}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              <Clock className="inline h-3 w-3 mr-1" />
-                              {service.duration}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                      <Button
-                        type="button"
-                        onClick={() => setBookingStep(2)}
-                        disabled={!selectedService}
-                        className="w-full bg-primary hover:bg-primary/90"
-                      >
-                        Continue
-                      </Button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
+              <motion.h2 
+                variants={fadeInUp}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-[#31261D]"
+              >
+                Articles
+              </motion.h2>
+              <motion.div variants={fadeInUp}>
+                <Button 
+                  variant="outline" 
+                  className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white rounded-full"
+                >
+                  know more
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </motion.div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {articles.map((article, index) => (
+                <motion.div key={index} variants={fadeInUp}>
+                  <Card className="group overflow-hidden border-0 shadow-none bg-transparent cursor-pointer h-full">
+                    <div className="relative aspect-[16/10] overflow-hidden mb-4">
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
                     </div>
-                  )}
-
-                  {/* Step 2: Date Selection */}
-                  {bookingStep === 2 && (
-                    <div className="space-y-6">
-                      <h3 className="text-2xl font-semibold">Select Date & Time</h3>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Preferred Date *</Label>
-                          <Input
-                            type="date"
-                            value={date ? date.toISOString().split('T')[0] : ''}
-                            onChange={(e) => handleDateSelect(e.target.value ? new Date(e.target.value) : undefined)}
-                            min={new Date().toISOString().split('T')[0]}
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Preferred Time *</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {timeSlots.map((time) => (
-                              <Button
-                                key={time}
-                                type="button"
-                                variant={selectedTime === time ? "default" : "outline"}
-                                onClick={() => setSelectedTime(time)}
-                                className={selectedTime === time ? "bg-primary" : ""}
-                              >
-                                {time}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
+                    <CardContent className="p-0">
+                      <div className="flex items-center gap-3 mb-3 text-sm text-[#AD9677]">
+                        <span>{article.date}</span>
+                        <span>•</span>
+                        <Badge variant="secondary" className="text-[#2563eb] bg-[#2563eb]/10 border-0">
+                          {article.category}
+                        </Badge>
                       </div>
-                      <div className="flex gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setBookingStep(1)}
-                          className="flex-1"
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          type="button"
-                          onClick={() => setBookingStep(3)}
-                          disabled={!date || !selectedTime}
-                          className="flex-1 bg-primary hover:bg-primary/90"
-                        >
-                          Continue
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Details */}
-                  {bookingStep === 3 && (
-                    <div className="space-y-6">
-                      <h3 className="text-2xl font-semibold">Your Details</h3>
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="ownerName">Your Name *</Label>
-                          <Input
-                            id="ownerName"
-                            value={formData.ownerName}
-                            onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-                            placeholder="John Smith"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email *</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            placeholder="john@email.com"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Phone *</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            placeholder="020 1234 5678"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="dogName">Dog&apos;s Name *</Label>
-                          <Input
-                            id="dogName"
-                            value={formData.dogName}
-                            onChange={(e) => setFormData({ ...formData, dogName: e.target.value })}
-                            placeholder="Buddy"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="dogBreed">Breed *</Label>
-                          <Input
-                            id="dogBreed"
-                            value={formData.dogBreed}
-                            onChange={(e) => setFormData({ ...formData, dogBreed: e.target.value })}
-                            placeholder="Golden Retriever"
-                            required
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="dogSize">Size *</Label>
-                          <Select
-                            value={formData.dogSize || undefined}
-                            onValueChange={(value) =>
-                              setFormData({ ...formData, dogSize: value || "" })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select size" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {dogSizes.map((size) => (
-                                <SelectItem key={size.value} value={size.value}>
-                                  {size.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="specialNotes">Special Notes</Label>
-                        <Textarea
-                          id="specialNotes"
-                          value={formData.specialNotes}
-                          onChange={(e) => setFormData({ ...formData, specialNotes: e.target.value })}
-                          placeholder="Any allergies, behavioral notes, or special requests..."
-                          rows={3}
-                        />
-                      </div>
-
-                      {/* Summary */}
-                      <Card className="bg-muted">
-                        <CardContent className="p-4">
-                          <h4 className="font-semibold mb-2">Booking Summary</h4>
-                          <p className="text-sm text-muted-foreground">
-                            <CalendarDays className="inline h-4 w-4 mr-1" />
-                            {date ? date.toLocaleDateString() : "No date selected"} at {selectedTime}
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            <Dog className="inline h-4 w-4 mr-1" />
-                            {bookingServices.find((s) => s.id === selectedService)?.name}
-                          </p>
-                        </CardContent>
-                      </Card>
-
-                      <div className="flex gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setBookingStep(2)}
-                          className="flex-1"
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          type="submit"
-                          className="flex-1 bg-primary hover:bg-primary/90"
-                        >
-                          <CheckCircle2 className="mr-2 h-4 w-4" />
-                          Confirm Booking
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </form>
-              </CardContent>
-            </Card>
+                      <h3 className="text-xl font-heading font-bold text-[#31261D] group-hover:text-[#2563eb] transition-colors mb-3">
+                        {article.title}
+                      </h3>
+                      <p className="text-[#31261D]/60 text-sm line-clamp-2">
+                        {article.excerpt}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
+
+      {/* Footer Contact CTA */}
+      <section id="contact" className="py-24 bg-[#31261D]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerContainer}
+          >
+            <motion.h2 
+              variants={fadeInUp}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6"
+            >
+              Ready to Secure Your Property?
+            </motion.h2>
+            <motion.p 
+              variants={fadeInUp}
+              className="text-lg text-white/70 max-w-2xl mx-auto mb-8"
+            >
+              Get a free, no-obligation quote for your intercom or access control installation. 
+              We respond within 24 hours.
+            </motion.p>
+            <motion.div variants={fadeInUp}>
+              <Button 
+                size="lg"
+                className="bg-[#2563eb] text-white hover:bg-[#2563eb]/90 px-8 py-6 text-base font-medium rounded-full"
+                onClick={() => setIsContactOpen(true)}
+              >
+                Contact us
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Modal - CarmoWood Style */}
+      <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
+        <DialogContent className="sm:max-w-lg p-0 gap-0 overflow-hidden bg-[#ECEBE3] border-[#DBC8B6]">
+          <div className="relative h-32 bg-[#2563eb]">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#2563eb] to-[#60a5fa]" />
+            <div className="relative z-10 p-6 flex items-end h-full">
+              <div>
+                <p className="text-white/80 text-sm uppercase tracking-[0.2em] mb-1">Get in Touch</p>
+                <DialogHeader className="text-left">
+                  <DialogTitle className="text-2xl font-heading font-bold text-white">
+                    Contact us
+                  </DialogTitle>
+                </DialogHeader>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsContactOpen(false); }}>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contact-name" className="text-[#31261D]">Name *</Label>
+                  <Input 
+                    id="contact-name" 
+                    placeholder="Your name" 
+                    className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-email" className="text-[#31261D]">Email *</Label>
+                  <Input 
+                    id="contact-email" 
+                    type="email" 
+                    placeholder="your@email.com" 
+                    className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contact-phone" className="text-[#31261D]">Telephone *</Label>
+                <Input 
+                  id="contact-phone" 
+                  placeholder="+44 20 1234 5678" 
+                  className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contact-address" className="text-[#31261D]">Address</Label>
+                <Input 
+                  id="contact-address" 
+                  placeholder="Your address" 
+                  className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contact-service" className="text-[#31261D]">Service Required</Label>
+                <Input 
+                  id="contact-service" 
+                  placeholder="e.g., Video intercom, Access control, etc." 
+                  className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contact-message" className="text-[#31261D]">Message</Label>
+                <Textarea 
+                  id="contact-message" 
+                  placeholder="Tell us about your project..."
+                  rows={4}
+                  className="bg-white border-[#DBC8B6] focus:border-[#2563eb] rounded-lg"
+                />
+              </div>
+              
+              <div className="flex items-start gap-2">
+                <input type="checkbox" id="consent" className="mt-1 accent-[#2563eb]" />
+                <Label htmlFor="consent" className="text-sm font-normal text-[#31261D]/70">
+                  I have read and agree to the Privacy Policy.
+                </Label>
+              </div>
+              
+              <Button 
+                type="submit"
+                className="w-full bg-[#2563eb] text-white hover:bg-[#2563eb]/90 py-6 rounded-full font-medium"
+              >
+                Send Message
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

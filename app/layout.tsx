@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dazziling Dog Groomers | Premium Dog Grooming in Finsbury Park",
-  description: "Professional dog grooming services in Finsbury Park, London. Full grooming, nail trimming, and spa treatments for your beloved pets.",
+  title: "Vision Electrics | Professional Electrical Services London",
+  description: "NICEIC approved electrical contractors serving Greater London. Residential, commercial & industrial electrical services. Fully insured, certified, and reliable.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased scroll-smooth`}>
-      <body className="min-h-full flex flex-col font-sans pt-16">
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground pt-0">
         <Navigation />
         <main className="flex-1">{children}</main>
         <Footer />

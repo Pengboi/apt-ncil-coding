@@ -58,3 +58,5 @@ next-env.d.ts
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+.aidesigner/*
+!.aidesigner/.gitkeep

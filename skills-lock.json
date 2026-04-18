@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "website-cloner": {
+      "source": "horuz-ai/claude-plugins",
+      "sourceType": "github",
+      "computedHash": "6b9d806fe7320fe7d9a7579a06b64a9348e24ec21edb0ded649750cca69e0982"
+    }
+  }
+}
