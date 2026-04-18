@@ -16,11 +16,16 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
   const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors[0] || '');
   const [ribbonText, setRibbonText] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
 
   // Update selected color when modal opens with new initialColor
   useEffect(() => {
     if (isOpen && initialColor) {
       setSelectedColor(initialColor);
+    }
+    // Reset adding state when modal opens
+    if (isOpen) {
+      setIsAdding(false);
     }
   }, [isOpen, initialColor]);
 
@@ -29,6 +34,10 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
   const galleryImages = product.gallery || [product.image];
 
   const handleAddToCart = () => {
+    if (isAdding || !product) return;
+    
+    setIsAdding(true);
+    console.log('Adding to cart:', product.id, product.name, 'Color:', selectedColor);
     onAddToCart(product, selectedColor, ribbonText);
     setRibbonText('');
     setCurrentImageIndex(0);
@@ -153,9 +162,10 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className="btn-primary w-full text-center"
+              disabled={isAdding}
+              className={`btn-primary w-full text-center ${isAdding ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Add to Cart - £{product.price}
+              {isAdding ? 'Adding...' : `Add to Cart - £${product.price}`}
             </button>
 
             {/* Additional Info */}

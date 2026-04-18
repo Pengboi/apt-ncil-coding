@@ -184,6 +184,16 @@ body {
   transform: translateX(0);
 }
 
+/* Checkout Sidebar */
+.checkout-sidebar {
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.checkout-sidebar.open {
+  transform: translateX(0);
+}
+
 /* Color Swatches */
 .color-swatch {
   @apply w-8 h-8 rounded-full border-2 border-gray-200 cursor-pointer transition-all duration-200;

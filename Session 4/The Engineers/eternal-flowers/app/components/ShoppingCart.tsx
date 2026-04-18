@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Product } from '../data/products';
+import ProductImage from './ProductImage';
 
 interface CartItem extends Product {
   quantity: number;
@@ -12,8 +14,10 @@ interface ShoppingCartProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemoveItem: (id: string) => void;
+  onUpdateQuantity: (id: string, color: string, ribbonText: string, quantity: number) => void;
+  onRemoveItem: (id: string, color: string, ribbonText: string) => void;
+  onClearCart?: () => void;
+  onCheckout?: () => void;
 }
 
 export default function ShoppingCart({ 
@@ -21,9 +25,19 @@ export default function ShoppingCart({
   onClose, 
   cartItems, 
   onUpdateQuantity, 
-  onRemoveItem 
+  onRemoveItem,
+  onClearCart,
+  onCheckout
 }: ShoppingCartProps) {
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // Debug: Log cart items when they change
+  useEffect(() => {
+    console.log('Cart items updated:', cartItems.length, 'items');
+    cartItems.forEach((item, i) => {
+      console.log(`  ${i + 1}. ${item.name} (ID: ${item.id}, Color: ${item.selectedColor}, Qty: ${item.quantity})`);
+    });
+  }, [cartItems]);
 
   return (
     <>
@@ -63,12 +77,14 @@ export default function ShoppingCart({
             </div>
           ) : (
             <div className="space-y-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-4 bg-gray-50 p-4 rounded-xl">
+              {cartItems.map((item, index) => (
+                <div key={`${item.id}-${item.selectedColor || 'default'}-${item.ribbonText || 'no-ribbon'}-${index}`} className="flex gap-4 bg-gray-50 p-4 rounded-xl">
                   {/* Image */}
-                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 via-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">🌹</span>
-                  </div>
+                  <ProductImage 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="w-20 h-20 rounded-lg flex-shrink-0"
+                  />
                   
                   {/* Details */}
                   <div className="flex-1 min-w-0">
@@ -89,7 +105,7 @@ export default function ShoppingCart({
                   {/* Quantity & Remove */}
                   <div className="flex flex-col items-end justify-between">
                     <button 
-                      onClick={() => onRemoveItem(item.id)}
+                      onClick={() => onRemoveItem(item.id, item.selectedColor || '', item.ribbonText || '')}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,14 +114,14 @@ export default function ShoppingCart({
                     </button>
                     <div className="flex items-center gap-2 bg-white rounded-lg border">
                       <button 
-                        onClick={() => onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))}
+                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', Math.max(0, item.quantity - 1))}
                         className="px-3 py-1 hover:bg-gray-100 transition-colors"
                       >
                         -
                       </button>
                       <span className="w-8 text-center font-medium">{item.quantity}</span>
                       <button 
-                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', item.quantity + 1)}
                         className="px-3 py-1 hover:bg-gray-100 transition-colors"
                       >
                         +
@@ -126,15 +142,35 @@ export default function ShoppingCart({
               <span className="font-bold text-2xl">£{total.toFixed(2)}</span>
             </div>
             <p className="text-sm text-gray-500">Shipping calculated at checkout</p>
-            <button className="btn-primary w-full text-center">
+            <button 
+              onClick={onCheckout}
+              className="btn-primary w-full text-center"
+            >
               Proceed to Checkout
             </button>
-            <button 
-              onClick={onClose}
-              className="w-full py-3 text-emerald-600 font-semibold hover:underline"
-            >
-              Continue Shopping
-            </button>
+            <div className="flex gap-3">
+              <button 
+                onClick={onClose}
+                className="flex-1 py-3 text-emerald-600 font-semibold hover:underline"
+              >
+                Continue Shopping
+              </button>
+              {onClearCart && (
+                <button 
+                  onClick={() => {
+                    if (confirm('Are you sure you want to clear your cart?')) {
+                      onClearCart();
+                    }
+                  }}
+                  className="px-4 py-3 text-red-500 font-semibold hover:text-red-600 transition-colors"
+                  title="Clear Cart"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

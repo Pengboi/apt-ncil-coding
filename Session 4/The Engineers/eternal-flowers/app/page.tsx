@@ -6,6 +6,7 @@ import ProductCard from './components/ProductCard';
 import ProductImage from './components/ProductImage';
 import ShoppingCart from './components/ShoppingCart';
 import ProductModal from './components/ProductModal';
+import CheckoutModal from './components/CheckoutModal';
 import { products, categories, Product } from './data/products';
 
 interface CartItem extends Product {
@@ -18,6 +19,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -27,9 +29,22 @@ export default function Home() {
     ? products 
     : products.filter(p => p.category === activeCategory);
 
-  // Add to cart
+  // Add to cart - with safety check
   const addToCart = (product: Product, color: string, ribbonText: string) => {
+    console.log('addToCart called:', product.id, product.name, 'Color:', color);
+    
+    // Safety check - ensure we're adding a valid product
+    if (!product || !product.id) {
+      console.error('Invalid product passed to addToCart:', product);
+      return;
+    }
+    
     setCart(prev => {
+      // Safety check - prevent adding if cart already has items from a different add
+      if (prev.length > 0) {
+        console.log('Cart already has', prev.length, 'items, adding one more');
+      }
+      
       const existing = prev.find(item => 
         item.id === product.id && 
         item.selectedColor === color && 
@@ -37,6 +52,7 @@ export default function Home() {
       );
       
       if (existing) {
+        console.log('Updating existing item quantity');
         return prev.map(item => 
           item.id === product.id && 
           item.selectedColor === color && 
@@ -46,25 +62,51 @@ export default function Home() {
         );
       }
       
-      return [...prev, { ...product, quantity: 1, selectedColor: color, ribbonText }];
+      console.log('Adding new item to cart. Current cart length:', prev.length);
+      // Only add the single product that was requested
+      const newItem = { ...product, quantity: 1, selectedColor: color, ribbonText };
+      return [...prev, newItem];
     });
     setIsCartOpen(true);
   };
 
+  // Clear entire cart
+  const clearCart = () => {
+    console.log('Clearing cart');
+    setCart([]);
+  };
+
   // Update quantity
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, color: string, ribbonText: string, quantity: number) => {
     if (quantity === 0) {
-      setCart(prev => prev.filter(item => item.id !== id));
+      setCart(prev => prev.filter(item => 
+        !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText)
+      ));
     } else {
       setCart(prev => prev.map(item => 
-        item.id === id ? { ...item, quantity } : item
+        item.id === id && item.selectedColor === color && item.ribbonText === ribbonText
+          ? { ...item, quantity } 
+          : item
       ));
     }
   };
 
   // Remove from cart
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+  const removeFromCart = (id: string, color: string, ribbonText: string) => {
+    setCart(prev => prev.filter(item => 
+      !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText)
+    ));
+  };
+
+  // Open checkout
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
+  // Handle order completion
+  const handleOrderComplete = () => {
+    setCart([]);
   };
 
   // Open product modal
@@ -553,6 +595,20 @@ export default function Home() {
         cartItems={cart}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeFromCart}
+        onClearCart={clearCart}
+        onCheckout={handleCheckout}
+      />
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        cartItems={cart}
+        onBackToCart={() => {
+          setIsCheckoutOpen(false);
+          setIsCartOpen(true);
+        }}
+        onOrderComplete={handleOrderComplete}
       />
 
       {/* Product Modal */}
