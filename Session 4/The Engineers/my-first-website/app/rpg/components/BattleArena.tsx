@@ -2,7 +2,33 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Character } from '../types';
-import { Monster, BattleReward, getRandomMonster, calculateRewards, RARITY_COLORS, RARITY_NAMES } from '../data/monsters';
+import { 
+  Monster, 
+  BattleReward, 
+  getMonstersForRound, 
+  getDifficultyMultiplier, 
+  isBossRound, 
+  BOSS_WARNINGS,
+  calculateRewards,
+  RARITY_COLORS,
+  RARITY_NAMES 
+} from '../data/monsters';
+import { 
+  getCurrentRound, 
+  incrementRound, 
+  decrementRound, 
+  getSurvivalStreak, 
+  incrementStreak, 
+  resetStreak,
+  addGold,
+  getGold,
+  addItemToInventory,
+  recordBossDefeat,
+  recordBossAttempt,
+  checkAchievements,
+  Achievement
+} from '../data/storage';
+import { Item, getItemById } from '../data/items';
 
 interface BattleArenaProps {
   character: Character;
@@ -10,60 +36,125 @@ interface BattleArenaProps {
   onFlee: () => void;
 }
 
-type BattleState = 'intro' | 'player-turn' | 'enemy-turn' | 'victory' | 'defeat' | 'fled';
+type BattleState = 'intro' | 'player-turn' | 'enemy-turn' | 'victory' | 'defeat' | 'fled' | 'boss-warning';
+type AttackType = 'normal' | 'heavy' | 'special' | 'aoe';
 
 interface BattleLog {
   id: number;
   text: string;
-  type: 'player' | 'enemy' | 'system' | 'damage' | 'heal' | 'reward';
+  type: 'player' | 'enemy' | 'system' | 'damage' | 'heal' | 'reward' | 'warning' | 'boss';
+}
+
+interface ActiveMonster extends Monster {
+  currentHealth: number;
 }
 
 export default function BattleArena({ character, onBattleEnd, onFlee }: BattleArenaProps) {
-  const [monster, setMonster] = useState<Monster>(() => getRandomMonster(character.level));
+  // Core State
+  const [round, setRound] = useState(getCurrentRound());
+  const [streak, setStreak] = useState(getSurvivalStreak());
+  const [enemies, setEnemies] = useState<ActiveMonster[]>([]);
+  const [selectedTarget, setSelectedTarget] = useState(0);
   const [battleState, setBattleState] = useState<BattleState>('intro');
   const [playerHealth, setPlayerHealth] = useState(character.derivedStats.maxHealth);
-  const [monsterHealth, setMonsterHealth] = useState(monster.maxHealth);
+  const [playerMana, setPlayerMana] = useState(character.derivedStats.maxMana);
   const [battleLog, setBattleLog] = useState<BattleLog[]>([]);
   const [turnCount, setTurnCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [playerShake, setPlayerShake] = useState(false);
-  const [monsterShake, setMonsterShake] = useState(false);
-  const [damageNumbers, setDamageNumbers] = useState<{ id: number; amount: number; isPlayer: boolean; isCrit?: boolean }[]>([]);
+  const [enemiesShake, setEnemiesShake] = useState<boolean[]>([]);
+  const [damageNumbers, setDamageNumbers] = useState<{ 
+    id: number; 
+    amount: number; 
+    isPlayer: boolean; 
+    enemyIndex?: number;
+    isCrit?: boolean 
+  }[]>([]);
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
+  const [showItemMenu, setShowItemMenu] = useState(false);
+  
+  // Initialize battle
+  useEffect(() => {
+    initializeBattle();
+  }, []);
 
-  const logIdRef = 0;
-  const damageIdRef = 0;
+  const initializeBattle = () => {
+    const currentRound = getCurrentRound();
+    setRound(currentRound);
+    setStreak(getSurvivalStreak());
+    
+    // Check for boss warning (rounds 9, 19, 29, 39, 49)
+    if (isBossRound(currentRound + 1) && BOSS_WARNINGS[currentRound + 1]) {
+      setBattleState('boss-warning');
+      addLog(BOSS_WARNINGS[currentRound + 1], 'warning');
+      setTimeout(() => {
+        spawnEnemies(currentRound);
+      }, 3000);
+    } else {
+      spawnEnemies(currentRound);
+    }
+  };
+
+  const spawnEnemies = (currentRound: number) => {
+    const monsterData = getMonstersForRound(currentRound);
+    const activeMonsters = monsterData.map(m => ({
+      ...m,
+      currentHealth: m.maxHealth,
+    }));
+    
+    setEnemies(activeMonsters);
+    setEnemiesShake(new Array(activeMonsters.length).fill(false));
+    setSelectedTarget(0);
+    
+    if (isBossRound(currentRound)) {
+      addLog(`⚠️ BOSS BATTLE: ${activeMonsters[0].name} appears!`, 'boss');
+      recordBossAttempt(currentRound);
+    } else {
+      if (activeMonsters.length === 1) {
+        addLog(`A wild ${activeMonsters[0].name} appears!`, 'system');
+      } else {
+        addLog(`${activeMonsters.length} enemies appear!`, 'system');
+      }
+    }
+    
+    const timer = setTimeout(() => {
+      setBattleState('player-turn');
+      addLog(`Round ${currentRound} - Your turn! Choose an action.`, 'system');
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  };
 
   const addLog = useCallback((text: string, type: BattleLog['type']) => {
     setBattleLog(prev => [...prev.slice(-9), { id: Date.now() + Math.random(), text, type }]);
   }, []);
 
-  const addDamageNumber = useCallback((amount: number, isPlayer: boolean, isCrit = false) => {
+  const addDamageNumber = useCallback((amount: number, isPlayer: boolean, enemyIndex?: number, isCrit = false) => {
     const id = Date.now() + Math.random();
-    setDamageNumbers(prev => [...prev, { id, amount, isPlayer, isCrit }]);
+    setDamageNumbers(prev => [...prev, { id, amount, isPlayer, enemyIndex, isCrit }]);
     setTimeout(() => {
       setDamageNumbers(prev => prev.filter(d => d.id !== id));
     }, 1500);
   }, []);
 
-  // Initialize battle
-  useEffect(() => {
-    addLog(`A wild ${monster.name} appears!`, 'system');
-    const timer = setTimeout(() => {
-      setBattleState('player-turn');
-      addLog('Your turn! Choose an action.', 'system');
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
   // Calculate damage
-  function calculateDamage(attacker: { attack: number }, defender: { defense: number }, isCrit = false): number {
+  function calculateDamage(
+    attacker: { attack: number }, 
+    defender: { defense: number }, 
+    isCrit = false,
+    isAOE = false
+  ): number {
     const baseDamage = attacker.attack;
     const defenseReduction = defender.defense * 0.5;
-    const variance = 0.8 + Math.random() * 0.4; // 80-120% damage
+    const variance = 0.8 + Math.random() * 0.4;
     let damage = Math.max(1, Math.floor((baseDamage - defenseReduction) * variance));
     
     if (isCrit) {
       damage = Math.floor(damage * 1.5);
+    }
+    
+    if (isAOE) {
+      damage = Math.floor(damage * (0.7 + Math.random() * 0.3)); // 70-100% for AOE
     }
     
     return damage;
@@ -78,11 +169,39 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
   }
 
   // Player attacks
-  async function playerAttack(attackType: 'normal' | 'heavy' | 'special') {
-    if (battleState !== 'player-turn' || isAnimating) return;
+  async function playerAttack(attackType: AttackType) {
+    if (battleState !== 'player-turn' || isAnimating || enemies.length === 0) return;
     
     setIsAnimating(true);
     setTurnCount(prev => prev + 1);
+
+    if (attackType === 'aoe') {
+      // AOE Attack - hits all enemies
+      await performAOEAttack();
+    } else {
+      // Single target attack
+      await performSingleAttack(attackType, selectedTarget);
+    }
+
+    // Check victory (all enemies dead)
+    const remainingEnemies = enemies.filter(e => e.currentHealth > 0);
+    if (remainingEnemies.length === 0) {
+      setTimeout(() => {
+        handleVictory();
+      }, 1000);
+      return;
+    }
+
+    // Enemy turn
+    setBattleState('enemy-turn');
+    setTimeout(() => {
+      performEnemyTurn();
+    }, 1500);
+  }
+
+  async function performSingleAttack(attackType: AttackType, targetIndex: number) {
+    const target = enemies[targetIndex];
+    if (!target || target.currentHealth <= 0) return;
 
     let damage = 0;
     let isCrit = false;
@@ -93,7 +212,7 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
         actionName = 'Attack';
         damage = calculateDamage(
           { attack: character.derivedStats.attack },
-          { defense: monster.defense }
+          { defense: target.defense }
         );
         isCrit = checkCrit(character.derivedStats.critChance);
         if (isCrit) damage = Math.floor(damage * character.derivedStats.critDamage / 100);
@@ -103,135 +222,293 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
         actionName = 'Heavy Strike';
         damage = calculateDamage(
           { attack: Math.floor(character.derivedStats.attack * 1.5) },
-          { defense: monster.defense }
+          { defense: target.defense }
         );
         isCrit = checkCrit(character.derivedStats.critChance * 0.7);
         break;
         
       case 'special':
-        actionName = character.classId === 'warrior' ? 'Berserk Slash' :
-                     character.classId === 'rogue' ? 'Backstab' :
-                     character.classId === 'mage' ? 'Fireball' :
-                     character.classId === 'engineer' ? 'Turret Strike' :
-                     'Precision Shot';
+        actionName = getSpecialAttackName();
         damage = calculateDamage(
           { attack: Math.floor(character.derivedStats.attack * 2) },
-          { defense: Math.floor(monster.defense * 0.5) }
+          { defense: Math.floor(target.defense * 0.5) }
         );
         isCrit = checkCrit(character.derivedStats.critChance * 1.5);
+        
+        // Consume mana for special
+        setPlayerMana(prev => Math.max(0, prev - 20));
         break;
     }
 
-    // Check for monster dodge
-    const monsterDodgeChance = monster.speed * 0.5;
-    if (checkDodge(monsterDodgeChance)) {
-      addLog(`${monster.name} dodged your ${actionName}!`, 'enemy');
-      setMonsterShake(true);
-      setTimeout(() => setMonsterShake(false), 300);
+    // Check for enemy dodge
+    const enemyDodgeChance = target.speed * 0.5;
+    if (checkDodge(enemyDodgeChance)) {
+      addLog(`${target.name} dodged your ${actionName}!`, 'enemy');
+      setEnemiesShake(prev => {
+        const newShake = [...prev];
+        newShake[targetIndex] = true;
+        return newShake;
+      });
+      setTimeout(() => {
+        setEnemiesShake(prev => {
+          const newShake = [...prev];
+          newShake[targetIndex] = false;
+          return newShake;
+        });
+      }, 300);
     } else {
       // Apply damage
       const actualDamage = Math.floor(damage * (0.9 + Math.random() * 0.2));
-      setMonsterHealth(prev => {
-        const newHealth = Math.max(0, prev - actualDamage);
-        return newHealth;
+      
+      setEnemies(prev => {
+        const newEnemies = [...prev];
+        newEnemies[targetIndex] = {
+          ...newEnemies[targetIndex],
+          currentHealth: Math.max(0, newEnemies[targetIndex].currentHealth - actualDamage)
+        };
+        return newEnemies;
       });
       
-      addLog(`You used ${actionName} for ${actualDamage}${isCrit ? ' CRITICAL' : ''} damage!`, isCrit ? 'damage' : 'player');
-      addDamageNumber(actualDamage, false, isCrit);
+      addLog(`You used ${actionName} on ${target.name} for ${actualDamage}${isCrit ? ' CRITICAL' : ''} damage!`, isCrit ? 'damage' : 'player');
+      addDamageNumber(actualDamage, false, targetIndex, isCrit);
       
       // Visual effects
-      setMonsterShake(true);
-      setTimeout(() => setMonsterShake(false), 300);
-    }
-
-    // Check victory
-    if (monsterHealth - damage <= 0) {
+      setEnemiesShake(prev => {
+        const newShake = [...prev];
+        newShake[targetIndex] = true;
+        return newShake;
+      });
       setTimeout(() => {
-        handleVictory();
-      }, 1000);
-      return;
+        setEnemiesShake(prev => {
+          const newShake = [...prev];
+          newShake[targetIndex] = false;
+          return newShake;
+        });
+      }, 300);
     }
-
-    // Enemy turn
-    setBattleState('enemy-turn');
-    setTimeout(() => {
-      enemyTurn();
-    }, 1500);
   }
 
-  // Enemy attacks
-  function enemyTurn() {
-    // Choose ability
-    const availableAbilities = monster.abilities.filter(a => turnCount % (a.cooldown + 1) === 0);
-    const ability = availableAbilities[Math.floor(Math.random() * availableAbilities.length)] || monster.abilities[0];
-    
-    // Check for player dodge
-    if (checkDodge(character.derivedStats.dodgeChance)) {
-      addLog(`You dodged ${monster.name}'s ${ability.name}!`, 'player');
-      setPlayerShake(true);
-      setTimeout(() => setPlayerShake(false), 300);
-    } else {
-      const damage = calculateDamage(
-        { attack: ability.damage || monster.attack },
-        { defense: character.derivedStats.defense }
-      );
-      
-      const actualDamage = Math.floor(damage * (0.9 + Math.random() * 0.2));
-      setPlayerHealth(prev => Math.max(0, prev - actualDamage));
-      
-      addLog(`${monster.name} used ${ability.name} for ${actualDamage} damage!`, 'enemy');
-      addDamageNumber(actualDamage, true);
-      
-      // Visual effects
-      setPlayerShake(true);
-      setTimeout(() => setPlayerShake(false), 300);
-      
-      // Apply effects
-      if (ability.effect === 'healing' && ability.healing) {
-        setMonsterHealth(prev => Math.min(monster.maxHealth, prev + ability.healing!));
-        addLog(`${monster.name} healed for ${ability.healing} HP!`, 'heal');
+  async function performAOEAttack() {
+    const actionName = 'Area Strike';
+    addLog(`You unleash ${actionName} on all enemies!`, 'player');
+
+    // Hit all enemies with reduced damage
+    enemies.forEach((enemy, index) => {
+      if (enemy.currentHealth > 0) {
+        const damage = calculateDamage(
+          { attack: Math.floor(character.derivedStats.attack * 1.2) },
+          { defense: enemy.defense },
+          false,
+          true // AOE flag
+        );
+        
+        const actualDamage = Math.floor(damage * (0.9 + Math.random() * 0.2));
+        
+        setEnemies(prev => {
+          const newEnemies = [...prev];
+          newEnemies[index] = {
+            ...newEnemies[index],
+            currentHealth: Math.max(0, newEnemies[index].currentHealth - actualDamage)
+          };
+          return newEnemies;
+        });
+        
+        addLog(`${enemy.name} takes ${actualDamage} damage!`, 'damage');
+        addDamageNumber(actualDamage, false, index, false);
+        
+        // Shake all enemies
+        setEnemiesShake(prev => {
+          const newShake = [...prev];
+          newShake[index] = true;
+          return newShake;
+        });
       }
-    }
+    });
 
-    // Check defeat
-    if (playerHealth - (ability.damage || monster.attack) <= 0) {
+    setTimeout(() => {
+      setEnemiesShake(new Array(enemies.length).fill(false));
+    }, 300);
+
+    // Consume more mana for AOE
+    setPlayerMana(prev => Math.max(0, prev - 30));
+  }
+
+  function getSpecialAttackName(): string {
+    switch (character.classId) {
+      case 'warrior': return 'Berserk Slash';
+      case 'rogue': return 'Backstab';
+      case 'mage': return 'Fireball';
+      case 'engineer': return 'Turret Strike';
+      case 'ranger': return 'Precision Shot';
+      default: return 'Special Attack';
+    }
+  }
+
+  // Enemy turn
+  function performEnemyTurn() {
+    let totalDamage = 0;
+    let playerStillAlive = true;
+
+    enemies.forEach((enemy, index) => {
+      if (enemy.currentHealth <= 0 || !playerStillAlive) return;
+
+      // Small delay between enemy attacks
       setTimeout(() => {
-        handleDefeat();
-      }, 1000);
-      return;
-    }
+        if (!playerStillAlive) return;
 
-    setBattleState('player-turn');
-    addLog('Your turn! Choose an action.', 'system');
-    setIsAnimating(false);
+        // Choose ability
+        const availableAbilities = enemy.abilities.filter(a => turnCount % (a.cooldown + 1) === 0);
+        const ability = availableAbilities[Math.floor(Math.random() * availableAbilities.length)] || enemy.abilities[0];
+        
+        // Check for player dodge
+        if (checkDodge(character.derivedStats.dodgeChance)) {
+          addLog(`You dodged ${enemy.name}'s ${ability.name}!`, 'player');
+          setPlayerShake(true);
+          setTimeout(() => setPlayerShake(false), 300);
+        } else {
+          const isAOE = ability.aoe;
+          const damage = calculateDamage(
+            { attack: ability.damage || enemy.attack },
+            { defense: character.derivedStats.defense }
+          );
+          
+          const actualDamage = Math.floor(damage * (0.9 + Math.random() * 0.2));
+          
+          setPlayerHealth(prev => {
+            const newHealth = Math.max(0, prev - actualDamage);
+            if (newHealth <= 0) playerStillAlive = false;
+            return newHealth;
+          });
+          
+          totalDamage += actualDamage;
+          
+          addLog(`${enemy.name} used ${ability.name} for ${actualDamage} damage!`, 'enemy');
+          addDamageNumber(actualDamage, true, undefined, false);
+          
+          // Visual effects
+          setPlayerShake(true);
+          setTimeout(() => setPlayerShake(false), 300);
+          
+          // Apply effects
+          if (ability.effect === 'healing' && ability.healing) {
+            setEnemies(prev => {
+              const newEnemies = [...prev];
+              newEnemies[index] = {
+                ...newEnemies[index],
+                currentHealth: Math.min(newEnemies[index].maxHealth, newEnemies[index].currentHealth + ability.healing!)
+              };
+              return newEnemies;
+            });
+            addLog(`${enemy.name} healed for ${ability.healing} HP!`, 'heal');
+          }
+          
+          if (ability.effect === 'regenerate') {
+            addLog(`${enemy.name} is regenerating health!`, 'heal');
+          }
+        }
+
+        // Check defeat after each enemy attack
+        if (!playerStillAlive) {
+          setTimeout(() => {
+            handleDefeat();
+          }, 500);
+        }
+      }, index * 800); // Stagger enemy attacks
+    });
+
+    // Return to player turn if still alive
+    setTimeout(() => {
+      if (playerHealth > 0) {
+        setBattleState('player-turn');
+        addLog('Your turn! Choose an action.', 'system');
+        setIsAnimating(false);
+      }
+    }, enemies.length * 800 + 500);
   }
 
   function handleVictory() {
     setBattleState('victory');
-    const rewards = calculateRewards(monster, character.level);
     
-    addLog(`Victory! You defeated ${monster.name}!`, 'system');
+    const rewards = calculateRewards(enemies, round, streak, character.level);
+    
+    // Update gold
+    addGold(rewards.gold);
+    
+    // Add items to inventory
+    rewards.items.forEach(itemId => {
+      addItemToInventory(itemId);
+    });
+    
+    // Update round and streak
+    const newRound = incrementRound();
+    const newStreak = incrementStreak();
+    setRound(newRound);
+    setStreak(newStreak);
+    
+    // Record boss defeat
+    if (isBossRound(round)) {
+      recordBossDefeat(round);
+      addLog(`🎉 BOSS DEFEATED! ${enemies[0].name} has fallen!`, 'boss');
+    }
+    
+    addLog(`Victory! You defeated ${enemies.length > 1 ? 'all enemies' : enemies[0].name}!`, 'system');
     addLog(`Gained ${rewards.experience} XP and ${rewards.gold} gold!`, 'reward');
+    
+    if (rewards.items.length > 0) {
+      rewards.items.forEach(itemId => {
+        const item = getItemById(itemId);
+        if (item) {
+          addLog(`Found: ${item.name}!`, 'reward');
+        }
+      });
+    }
+    
+    // Check achievements
+    const achievements = checkAchievements();
+    if (achievements.length > 0) {
+      setNewAchievements(achievements);
+      achievements.forEach(ach => {
+        addLog(`🏆 Achievement Unlocked: ${ach.name}!`, 'reward');
+      });
+    }
     
     setTimeout(() => {
       onBattleEnd(true, rewards, playerHealth);
-    }, 2000);
+    }, 3000);
   }
 
   function handleDefeat() {
     setBattleState('defeat');
-    addLog('You were defeated...', 'system');
+    
+    if (isBossRound(round)) {
+      // Boss punishment: -3 rounds
+      const newRound = decrementRound(3);
+      setRound(newRound);
+      addLog(`Defeated by boss! Returning to Round ${newRound}...`, 'warning');
+    } else {
+      addLog('You were defeated...', 'system');
+    }
+    
+    resetStreak();
+    setStreak(0);
     
     setTimeout(() => {
-      onBattleEnd(false, { experience: 0, gold: 0 }, 0);
-    }, 2000);
+      onBattleEnd(false, { experience: 0, gold: 0, items: [] }, 0);
+    }, 3000);
   }
 
   function attemptFlee() {
     if (battleState !== 'player-turn' || isAnimating) return;
     
     setIsAnimating(true);
-    const fleeChance = 50 + (character.stats.agility - monster.stats.agility);
+    const fleeChance = 50 + (character.stats.agility - enemies[0].stats.agility);
+    
+    // Can't flee from bosses!
+    if (isBossRound(round)) {
+      addLog('Cannot flee from a boss battle!', 'warning');
+      setIsAnimating(false);
+      return;
+    }
     
     if (Math.random() * 100 < fleeChance) {
       addLog('You successfully fled!', 'system');
@@ -243,152 +520,218 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
       addLog('Failed to flee!', 'system');
       setBattleState('enemy-turn');
       setTimeout(() => {
-        enemyTurn();
+        performEnemyTurn();
       }, 1000);
     }
   }
 
+  // Calculate percentages
   const playerHealthPercent = (playerHealth / character.derivedStats.maxHealth) * 100;
-  const monsterHealthPercent = (monsterHealth / monster.maxHealth) * 100;
+  const playerManaPercent = (playerMana / character.derivedStats.maxMana) * 100;
+  const difficultyMultiplier = getDifficultyMultiplier(round);
+  const nextBossRound = Math.ceil(round / 10) * 10;
+  const isNextBossSoon = nextBossRound - round <= 2 && !isBossRound(round);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      {/* Battle Scene */}
-      <div className="glass-card rounded-2xl p-8 mb-6 relative overflow-hidden min-h-[400px]">
-        {/* Background effect based on monster rarity */}
-        <div 
-          className="absolute inset-0 opacity-10"
-          style={{ 
-            background: `radial-gradient(circle at 50% 50%, ${RARITY_COLORS[monster.rarity]}, transparent 70%)` 
-          }}
-        />
-        
-        {/* Battle Header */}
-        <div className="relative flex justify-between items-center mb-8">
+      {/* Battle Header */}
+      <div className="glass-card rounded-xl p-4 mb-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <div className="font-display text-xs text-[var(--text-muted)]">ROUND</div>
+              <div className="font-display text-3xl font-bold text-white">{round}</div>
+            </div>
+            <div className="text-center">
+              <div className="font-display text-xs text-[var(--text-muted)]">MULTIPLIER</div>
+              <div className="font-display text-xl font-bold text-[var(--arcane-cyan)]">
+                {difficultyMultiplier.toFixed(1)}x
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="font-display text-xs text-[var(--text-muted)]">STREAK</div>
+              <div className="font-display text-xl font-bold text-[var(--legendary-amber)]">
+                {streak}
+              </div>
+            </div>
+          </div>
+          
           <div className="text-center">
-            <div className="font-display text-sm text-[var(--text-muted)]">TURN</div>
-            <div className="font-display text-2xl font-bold text-white">{turnCount}</div>
+            <div className="font-display text-xs text-[var(--text-muted)]">GOLD</div>
+            <div className="font-display text-xl font-bold text-[var(--mystic-magenta)]">
+              {getGold()}
+            </div>
           </div>
+        </div>
+        
+        {/* Boss Warning */}
+        {isNextBossSoon && (
+          <div className="mt-3 p-2 rounded-lg bg-[var(--mystic-magenta)]/20 border border-[var(--mystic-magenta)]">
+            <div className="font-body text-sm text-[var(--mystic-magenta)] text-center">
+              ⚠️ Boss Battle in {nextBossRound - round} rounds! Prepare yourself!
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Battle Scene */}
+      <div className="glass-card rounded-2xl p-6 mb-4 relative overflow-hidden min-h-[400px]">
+        {/* Background effect based on enemy rarity */}
+        {enemies.length > 0 && (
           <div 
-            className="px-4 py-2 rounded-full font-display text-sm font-bold"
+            className="absolute inset-0 opacity-10"
             style={{ 
-              backgroundColor: `${RARITY_COLORS[monster.rarity]}20`,
-              border: `1px solid ${RARITY_COLORS[monster.rarity]}`,
-              color: RARITY_COLORS[monster.rarity]
+              background: `radial-gradient(circle at 50% 50%, ${RARITY_COLORS[enemies[0].rarity]}, transparent 70%)` 
             }}
-          >
-            {RARITY_NAMES[monster.rarity]}
+          />
+        )}
+        
+        {/* Player Stats */}
+        <div className="relative mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--ethereal-violet)] flex items-center justify-center text-3xl">
+              🎭
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-display font-bold text-white">{character.name}</span>
+                <span className="font-display text-sm text-[var(--text-muted)]">
+                  Lv.{character.level}
+                </span>
+              </div>
+              
+              {/* HP Bar */}
+              <div className="mb-2">
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="font-body text-[var(--text-muted)]">HP</span>
+                  <span className="font-display text-white">{playerHealth}/{character.derivedStats.maxHealth}</span>
+                </div>
+                <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${playerHealthPercent}%`,
+                      backgroundColor: playerHealthPercent > 50 ? '#2ecc71' : playerHealthPercent > 25 ? '#f39c12' : '#e74c3c'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              {/* MP Bar */}
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="font-body text-[var(--text-muted)]">MP</span>
+                  <span className="font-display text-white">{playerMana}/{character.derivedStats.maxMana}</span>
+                </div>
+                <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-300 bg-[var(--mystic-magenta)]"
+                    style={{ width: `${playerManaPercent}%` }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Combatants */}
-        <div className="relative flex justify-between items-end px-8 mb-8">
-          {/* Player */}
-          <div className={`text-center transition-transform ${playerShake ? 'animate-pulse translate-x-2' : ''}`}>
-            <div className="relative inline-block">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--ethereal-violet)] flex items-center justify-center text-4xl mb-3">
-                🎭
-              </div>
-              {/* Damage numbers */}
-              {damageNumbers.filter(d => d.isPlayer).map(d => (
-                <div 
-                  key={d.id}
-                  className={`absolute -top-4 left-1/2 -translate-x-1/2 font-display font-bold text-2xl animate-bounce
-                    ${d.isCrit ? 'text-[var(--mystic-magenta)] text-3xl' : 'text-[#e74c3c]'}`}
-                >
-                  -{d.amount}
-                </div>
-              ))}
-            </div>
-            <div className="font-display font-bold text-white mb-2">{character.name}</div>
+        {/* Enemies */}
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {enemies.map((enemy, index) => {
+            const enemyHealthPercent = (enemy.currentHealth / enemy.maxHealth) * 100;
+            const isSelected = selectedTarget === index && enemy.currentHealth > 0;
+            const isDead = enemy.currentHealth <= 0;
             
-            {/* Health Bar */}
-            <div className="w-32 mx-auto">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-body text-[var(--text-muted)]">HP</span>
-                <span className="font-display text-white">{playerHealth}/{character.derivedStats.maxHealth}</span>
-              </div>
-              <div className="h-3 bg-[var(--edge)] rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${playerHealthPercent}%`,
-                    backgroundColor: playerHealthPercent > 50 ? '#2ecc71' : playerHealthPercent > 25 ? '#f39c12' : '#e74c3c'
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* VS */}
-          <div className="font-display text-4xl font-bold text-[var(--text-muted)] opacity-50">VS</div>
-
-          {/* Monster */}
-          <div className={`text-center transition-transform ${monsterShake ? 'animate-pulse -translate-x-2' : ''}`}>
-            <div className="relative inline-block">
+            return (
               <div 
-                className="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl mb-3"
-                style={{ 
-                  backgroundColor: `${RARITY_COLORS[monster.rarity]}20`,
-                  border: `2px solid ${RARITY_COLORS[monster.rarity]}`
-                }}
+                key={enemy.id + index}
+                onClick={() => enemy.currentHealth > 0 && setSelectedTarget(index)}
+                className={`relative p-4 rounded-xl border-2 transition-all cursor-pointer
+                  ${isSelected ? 'border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/10' : 'border-[var(--edge)]'}
+                  ${isDead ? 'opacity-50 grayscale' : ''}
+                  ${enemiesShake[index] ? 'animate-pulse' : ''}
+                `}
               >
-                {monster.icon}
-              </div>
-              {/* Damage numbers */}
-              {damageNumbers.filter(d => !d.isPlayer).map(d => (
-                <div 
-                  key={d.id}
-                  className={`absolute -top-4 left-1/2 -translate-x-1/2 font-display font-bold text-2xl animate-bounce
-                    ${d.isCrit ? 'text-[var(--legendary-amber)] text-3xl' : 'text-white'}`}
-                >
-                  -{d.amount}
+                {/* Damage numbers */}
+                {damageNumbers.filter(d => d.enemyIndex === index && !d.isPlayer).map(d => (
+                  <div 
+                    key={d.id}
+                    className={`absolute -top-2 left-1/2 -translate-x-1/2 font-display font-bold text-2xl animate-bounce
+                      ${d.isCrit ? 'text-[var(--legendary-amber)] text-3xl' : 'text-white'}`}
+                  >
+                    -{d.amount}
+                  </div>
+                ))}
+                
+                {/* Selection indicator */}
+                {isSelected && (
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--arcane-cyan)] rounded-full" />
+                )}
+                
+                {/* Enemy Icon */}
+                <div className="text-center mb-2">
+                  <div 
+                    className="w-16 h-16 mx-auto rounded-xl flex items-center justify-center text-3xl"
+                    style={{ 
+                      backgroundColor: `${RARITY_COLORS[enemy.rarity]}20`,
+                      border: `2px solid ${RARITY_COLORS[enemy.rarity]}`
+                    }}
+                  >
+                    {enemy.icon}
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="font-display font-bold text-white mb-1">{monster.name}</div>
-            <div className="font-body text-xs text-[var(--text-secondary)] mb-2">Lv.{monster.level}</div>
-            
-            {/* Health Bar */}
-            <div className="w-32 mx-auto">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-body text-[var(--text-muted)]">HP</span>
-                <span className="font-display text-white">{monsterHealth}/{monster.maxHealth}</span>
+                
+                {/* Enemy Info */}
+                <div className="text-center mb-2">
+                  <div className="font-display font-bold text-white text-sm">{enemy.name}</div>
+                  <div className="font-body text-xs text-[var(--text-secondary)]">
+                    Lv.{enemy.level} {RARITY_NAMES[enemy.rarity]}
+                  </div>
+                </div>
+                
+                {/* HP Bar */}
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-body text-[var(--text-muted)]">HP</span>
+                    <span className="font-display text-white">{enemy.currentHealth}/{enemy.maxHealth}</span>
+                  </div>
+                  <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ 
+                        width: `${enemyHealthPercent}%`,
+                        backgroundColor: RARITY_COLORS[enemy.rarity]
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Target indicator for dead enemies */}
+                {isDead && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-display text-2xl font-bold text-[var(--mystic-magenta)]">DEFEATED</span>
+                  </div>
+                )}
               </div>
-              <div className="h-3 bg-[var(--edge)] rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ 
-                    width: `${monsterHealthPercent}%`,
-                    backgroundColor: RARITY_COLORS[monster.rarity]
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Monster Description */}
-        <div className="relative text-center mb-6">
-          <p className="font-body text-sm text-[var(--text-secondary)] italic">&quot;{monster.description}&quot;</p>
+            );
+          })}
         </div>
 
         {/* Action Buttons */}
         {battleState === 'player-turn' && (
-          <div className="relative grid grid-cols-4 gap-3">
+          <div className="relative grid grid-cols-5 gap-2">
             <button
               onClick={() => playerAttack('normal')}
               disabled={isAnimating}
-              className="py-3 px-4 rounded-xl bg-[var(--surface)] border border-[var(--arcane-cyan)]/30 hover:border-[var(--arcane-cyan)] hover:bg-[var(--arcane-cyan)]/10 transition-colors disabled:opacity-50"
+              className="py-3 px-2 rounded-xl bg-[var(--surface)] border border-[var(--arcane-cyan)]/30 hover:border-[var(--arcane-cyan)] hover:bg-[var(--arcane-cyan)]/10 transition-colors disabled:opacity-50"
             >
               <div className="font-display text-sm text-white mb-1">Attack</div>
-              <div className="font-body text-xs text-[var(--text-muted)]">Standard</div>
+              <div className="font-body text-xs text-[var(--text-muted)]">Target</div>
             </button>
             
             <button
               onClick={() => playerAttack('heavy')}
               disabled={isAnimating}
-              className="py-3 px-4 rounded-xl bg-[var(--surface)] border border-[var(--legendary-amber)]/30 hover:border-[var(--legendary-amber)] hover:bg-[var(--legendary-amber)]/10 transition-colors disabled:opacity-50"
+              className="py-3 px-2 rounded-xl bg-[var(--surface)] border border-[var(--legendary-amber)]/30 hover:border-[var(--legendary-amber)] hover:bg-[var(--legendary-amber)]/10 transition-colors disabled:opacity-50"
             >
               <div className="font-display text-sm text-white mb-1">Heavy</div>
               <div className="font-body text-xs text-[var(--text-muted)]">1.5x DMG</div>
@@ -396,20 +739,31 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
             
             <button
               onClick={() => playerAttack('special')}
-              disabled={isAnimating}
-              className="py-3 px-4 rounded-xl bg-[var(--surface)] border border-[var(--mystic-magenta)]/30 hover:border-[var(--mystic-magenta)] hover:bg-[var(--mystic-magenta)]/10 transition-colors disabled:opacity-50"
+              disabled={isAnimating || playerMana < 20}
+              className="py-3 px-2 rounded-xl bg-[var(--surface)] border border-[var(--mystic-magenta)]/30 hover:border-[var(--mystic-magenta)] hover:bg-[var(--mystic-magenta)]/10 transition-colors disabled:opacity-50"
             >
               <div className="font-display text-sm text-white mb-1">Special</div>
-              <div className="font-body text-xs text-[var(--text-muted)]">2x DMG</div>
+              <div className="font-body text-xs text-[var(--text-muted)]">2x DMG (20 MP)</div>
+            </button>
+            
+            <button
+              onClick={() => playerAttack('aoe')}
+              disabled={isAnimating || playerMana < 30 || enemies.length <= 1}
+              className="py-3 px-2 rounded-xl bg-[var(--surface)] border border-[var(--epic)]/30 hover:border-[var(--epic)] hover:bg-[var(--epic)]/10 transition-colors disabled:opacity-50"
+            >
+              <div className="font-display text-sm text-white mb-1">AOE</div>
+              <div className="font-body text-xs text-[var(--text-muted)]">All (30 MP)</div>
             </button>
             
             <button
               onClick={attemptFlee}
-              disabled={isAnimating}
-              className="py-3 px-4 rounded-xl bg-[var(--surface)] border border-[var(--text-muted)]/30 hover:border-[var(--text-muted)] hover:bg-[var(--text-muted)]/10 transition-colors disabled:opacity-50"
+              disabled={isAnimating || isBossRound(round)}
+              className="py-3 px-2 rounded-xl bg-[var(--surface)] border border-[var(--text-muted)]/30 hover:border-[var(--text-muted)] hover:bg-[var(--text-muted)]/10 transition-colors disabled:opacity-50"
             >
               <div className="font-display text-sm text-white mb-1">Flee</div>
-              <div className="font-body text-xs text-[var(--text-muted)]">Escape</div>
+              <div className="font-body text-xs text-[var(--text-muted)]">
+                {isBossRound(round) ? 'No escape!' : 'Escape'}
+              </div>
             </button>
           </div>
         )}
@@ -418,24 +772,70 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
         {battleState === 'enemy-turn' && (
           <div className="relative text-center py-4">
             <div className="inline-block px-6 py-3 rounded-xl bg-[var(--mystic-magenta)]/20 border border-[var(--mystic-magenta)]">
-              <span className="font-display text-[var(--mystic-magenta)]">Enemy is attacking...</span>
+              <span className="font-display text-[var(--mystic-magenta)]">Enemies are attacking...</span>
             </div>
           </div>
         )}
 
-        {/* Victory/Defeat Overlay */}
-        {(battleState === 'victory' || battleState === 'defeat') && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[var(--void)]/80 backdrop-blur-sm">
-            <div className={`text-center p-8 rounded-2xl border-2 ${
-              battleState === 'victory' 
-                ? 'border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/10' 
-                : 'border-[var(--mystic-magenta)] bg-[var(--mystic-magenta)]/10'
-            }`}>
-              <div className="text-6xl mb-4">{battleState === 'victory' ? '🏆' : '💀'}</div>
-              <div className={`font-display text-4xl font-bold mb-2 ${
-                battleState === 'victory' ? 'text-[var(--arcane-cyan)]' : 'text-[var(--mystic-magenta)]'
-              }`}>
-                {battleState === 'victory' ? 'VICTORY!' : 'DEFEAT'}
+        {/* Boss Warning Overlay */}
+        {battleState === 'boss-warning' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--void)]/90 backdrop-blur-sm z-20">
+            <div className="text-center p-8 rounded-2xl border-2 border-[var(--mystic-magenta)] bg-[var(--mystic-magenta)]/10 animate-pulse">
+              <div className="text-6xl mb-4">⚠️</div>
+              <div className="font-display text-3xl font-bold text-[var(--mystic-magenta)] mb-2">
+                BOSS APPROACHING
+              </div>
+              <div className="font-body text-[var(--text-secondary)]">
+                Prepare for battle...
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Victory Overlay */}
+        {battleState === 'victory' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--void)]/80 backdrop-blur-sm z-10">
+            <div className="text-center p-8 rounded-2xl border-2 border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/10">
+              <div className="text-6xl mb-4">🏆</div>
+              <div className="font-display text-4xl font-bold text-[var(--arcane-cyan)] mb-2">
+                VICTORY!
+              </div>
+              <div className="font-body text-[var(--text-secondary)] mb-4">
+                Round {round} Complete
+              </div>
+              
+              {/* Achievements */}
+              {newAchievements.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {newAchievements.map(ach => (
+                    <div key={ach.id} className="px-4 py-2 rounded-lg bg-[var(--legendary-amber)]/20 border border-[var(--legendary-amber)]">
+                      <span className="font-body text-sm text-[var(--legendary-amber)]">
+                        🏆 {ach.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              <div className="font-body text-sm text-[var(--text-muted)]">
+                Advancing to Round {round + 1}...
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Defeat Overlay */}
+        {battleState === 'defeat' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--void)]/80 backdrop-blur-sm z-10">
+            <div className="text-center p-8 rounded-2xl border-2 border-[var(--mystic-magenta)] bg-[var(--mystic-magenta)]/10">
+              <div className="text-6xl mb-4">💀</div>
+              <div className="font-display text-4xl font-bold text-[var(--mystic-magenta)] mb-2">
+                DEFEAT
+              </div>
+              <div className="font-body text-[var(--text-secondary)]">
+                {isBossRound(round) 
+                  ? `Returning to Round ${round - 3}...` 
+                  : 'Rest and try again.'}
               </div>
             </div>
           </div>
@@ -455,12 +855,16 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
                 log.type === 'damage' ? 'text-[var(--legendary-amber)] font-bold' :
                 log.type === 'heal' ? 'text-[#2ecc71]' :
                 log.type === 'reward' ? 'text-[var(--arcane-cyan)] font-bold' :
+                log.type === 'warning' ? 'text-[var(--mystic-magenta)]' :
+                log.type === 'boss' ? 'text-[var(--mystic-magenta)] font-bold' :
                 'text-[var(--text-secondary)]'
               }`}
             >
               {log.type === 'damage' && '⚔️ '}
               {log.type === 'heal' && '💚 '}
               {log.type === 'reward' && '🎁 '}
+              {log.type === 'warning' && '⚠️ '}
+              {log.type === 'boss' && '🐉 '}
               {log.text}
             </div>
           ))}

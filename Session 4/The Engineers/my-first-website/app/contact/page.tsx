@@ -46,19 +46,19 @@ export default function ContactPage() {
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-[var(--void)]/50 border border-[var(--edge)] text-left">
                 <div className="font-body text-xs text-[var(--text-muted)] mb-1">EMAIL</div>
-                <div className="font-body text-white">hello@aetheria.quest</div>
+                <div className="font-body text-white">knights@syntaxia.academy</div>
               </div>
               
               <div className="p-4 rounded-lg bg-[var(--void)]/50 border border-[var(--edge)] text-left">
-                <div className="font-body text-xs text-[var(--text-muted)] mb-1">LOCATION</div>
-                <div className="font-body text-white">APT Coding Camp, Session 4</div>
+                <div className="font-body text-xs text-[var(--text-muted)] mb-1">GUILD</div>
+                <div className="font-body text-white">Adventurers Academy</div>
               </div>
               
               <div className="p-4 rounded-lg bg-[var(--void)]/50 border border-[var(--edge)] text-left">
-                <div className="font-body text-xs text-[var(--text-muted)] mb-1">STATUS</div>
+                <div className="font-body text-xs text-[var(--text-muted)] mb-1">RANK</div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <div className="font-body text-white">Online & Coding</div>
+                  <div className="w-2 h-2 rounded-full bg-[var(--legendary-amber)] animate-pulse" />
+                  <div className="font-body text-white">Squire in Training</div>
                 </div>
               </div>
             </div>

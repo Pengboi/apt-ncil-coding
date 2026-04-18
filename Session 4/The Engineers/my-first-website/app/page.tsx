@@ -28,7 +28,7 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-[var(--arcane-cyan)]/20">
                 <span className="w-2 h-2 rounded-full bg-[var(--legendary-amber)] animate-pulse" />
                 <span className="font-body text-sm text-[var(--text-secondary)] tracking-wide">
-                  APT Coding Camp Session 4
+                  Adventurers Academy | Syntaxia
                 </span>
               </div>
 
@@ -62,21 +62,21 @@ export default function Home() {
               <div className="flex gap-8 pt-4">
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--arcane-cyan)] text-glow-cyan">
-                    4
+                    30
                   </div>
-                  <div className="font-body text-sm text-[var(--text-muted)]">Sessions</div>
+                  <div className="font-body text-sm text-[var(--text-muted)]">Epic Quests</div>
                 </div>
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--mystic-magenta)] text-glow-magenta">
-                    3
+                    5
                   </div>
-                  <div className="font-body text-sm text-[var(--text-muted)]">Character Classes</div>
+                  <div className="font-body text-sm text-[var(--text-muted)]">Sacred Disciplines</div>
                 </div>
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--legendary-amber)] text-glow-amber">
-                    ∞
+                    5
                   </div>
-                  <div className="font-body text-sm text-[var(--text-muted)]">Possibilities</div>
+                  <div className="font-body text-sm text-[var(--text-muted)]">Bosses</div>
                 </div>
               </div>
             </div>
@@ -248,12 +248,13 @@ export default function Home() {
             {/* Timeline line */}
             <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[var(--arcane-cyan)] via-[var(--mystic-magenta)] to-[var(--legendary-amber)] hidden md:block" />
 
-            {/* Sessions */}
+            {/* The Five Sacred Disciplines */}
             {[
-              { num: "01", title: "The Basics", desc: "Variables, functions, and the foundations of code magic" },
-              { num: "02", title: "Control Flow", desc: "Conditionals and loops to guide your adventure" },
-              { num: "03", title: "Data Structures", desc: "Lists and dictionaries to organize your inventory" },
-              { num: "04", title: "Web Mastery", desc: "Next.js, React, and building legendary interfaces" },
+              { num: "I", title: "Way of the Serpent", desc: "Master loops, variables, and the foundations of logic in the Turtle Marshes" },
+              { num: "II", title: "Path of Variables", desc: "Navigate data structures and the Forest of Mutable Shadows" },
+              { num: "III", title: "Art of Functions", desc: "Climb the Mountain of Reusable Stone and craft modular spells" },
+              { num: "IV", title: "Domain of Interfaces", desc: "Explore the Crystal Plains of UI with React and Next.js" },
+              { num: "V", title: "Mastery of Intelligence", desc: "Ascend the Neural Peaks and command the power of AI" },
             ].map((session, i) => (
               <div key={session.num} className={`relative flex items-center gap-8 mb-12 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
                 {/* Content */}
@@ -309,18 +310,18 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] flex items-center justify-center">
-                <span className="font-display font-bold text-sm text-[var(--void)]">A</span>
+                <span className="font-display font-bold text-sm text-[var(--void)]">S</span>
               </div>
-              <span className="font-display font-bold text-lg text-white">AETHERIA</span>
+              <span className="font-display font-bold text-lg text-white">SYNTAXIA</span>
             </div>
             
             <div className="font-body text-sm text-[var(--text-muted)]">
-              Built with code and curiosity at APT Coding Camp
+              Forged at the Adventurers Academy
             </div>
             
             <div className="flex items-center gap-4">
               <span className="font-body text-xs text-[var(--text-muted)] tracking-wider">
-                SESSION 4
+                PHASE I: SERPENT
               </span>
               <div className="w-2 h-2 rounded-full bg-[var(--arcane-cyan)] animate-pulse" />
             </div>

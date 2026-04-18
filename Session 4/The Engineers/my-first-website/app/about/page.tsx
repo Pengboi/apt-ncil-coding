@@ -29,43 +29,49 @@ export default function AboutPage() {
           {/* Content */}
           <div className="space-y-4">
             <h1 className="font-display text-5xl md:text-6xl font-bold text-white">
-              The <span className="gradient-text">Lore</span>
+              The <span className="gradient-text">Chronicles</span>
             </h1>
             <p className="font-body text-xl text-[var(--text-secondary)]">
-              Every legend has a beginning. This is the story of your coding journey 
-              through the realms of web development.
+              Every knight has a beginning. This is the story of your heroic journey 
+              through the Five Sacred Disciplines of Syntaxia.
             </p>
           </div>
 
           {/* Story Card */}
           <div className="glass-card rounded-2xl p-8 max-w-lg mx-auto corner-accent text-left">
             <div className="font-display text-sm text-[var(--ethereal-violet)] tracking-widest mb-6">
-              CHAPTER 1
+              THE CHRONICLES OF SYNTAXIA
             </div>
             <p className="font-body text-[var(--text-secondary)] leading-relaxed mb-4">
-              In the digital realm of Aetheria, brave coders gather to learn the ancient arts 
-              of web development. Through four epic sessions, they master the powers of Python, 
-              unlock the secrets of React, and forge legendary applications.
+              In the realm of <strong className="text-[var(--arcane-cyan)]">Syntaxia</strong>, heroes are forged not by sword and shield, 
+              but by wit and will. The <strong className="text-[var(--mystic-magenta)]">Adventurers Academy</strong> stands as the last 
+              bastion against the Ancient Bugs that threaten to unravel reality itself.
+            </p>
+            <p className="font-body text-[var(--text-secondary)] leading-relaxed mb-4">
+              Through <strong>30 epic quests</strong>, knights master the <strong>Five Sacred Disciplines</strong>: 
+              the Way of the Serpent, the Path of Variables, the Art of Functions, 
+              the Domain of Interfaces, and the Mastery of Intelligence.
             </p>
             <p className="font-body text-[var(--text-secondary)] leading-relaxed">
-              This website represents the culmination of Session 4 — where imagination 
-              meets code, and first websites become portals to infinite possibilities.
+              This website represents your progress through the Academy — from humble 
+              <strong className="text-[var(--legendary-amber)]"> Squire</strong> to legendary <strong className="text-[var(--legendary-amber)]">Paragon</strong>. 
+              Every line of code is a spell. Every bug slain is a victory. Your legend begins now.
             </p>
           </div>
 
           {/* Stats */}
           <div className="flex justify-center gap-12">
             <div className="text-center">
-              <div className="font-display text-4xl font-bold text-[var(--arcane-cyan)] text-glow-cyan">4</div>
-              <div className="font-body text-sm text-[var(--text-muted)]">Sessions</div>
+              <div className="font-display text-4xl font-bold text-[var(--arcane-cyan)] text-glow-cyan">30</div>
+              <div className="font-body text-sm text-[var(--text-muted)]">Epic Quests</div>
             </div>
             <div className="text-center">
-              <div className="font-display text-4xl font-bold text-[var(--mystic-magenta)] text-glow-magenta">1</div>
-              <div className="font-body text-sm text-[var(--text-muted)]">Journey</div>
+              <div className="font-display text-4xl font-bold text-[var(--mystic-magenta)] text-glow-magenta">5</div>
+              <div className="font-body text-sm text-[var(--text-muted)]">Sacred Disciplines</div>
             </div>
             <div className="text-center">
               <div className="font-display text-4xl font-bold text-[var(--legendary-amber)] text-glow-amber">∞</div>
-              <div className="font-body text-sm text-[var(--text-muted)]">Dreams</div>
+              <div className="font-body text-sm text-[var(--text-muted)]">Possibilities</div>
             </div>
           </div>
 

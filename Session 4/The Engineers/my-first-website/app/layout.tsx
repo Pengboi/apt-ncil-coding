@@ -15,8 +15,8 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Aetheria | RPG Hub",
-  description: "Your portal to legendary adventures",
+  title: "Adventurers Academy | Syntaxia",
+  description: "Forge your legend. Code your destiny.",
 };
 
 export default function RootLayout({
