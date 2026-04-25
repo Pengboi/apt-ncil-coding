@@ -2,17 +2,23 @@
 -- Run this after all migrations to add popular cards and some sample prices
 
 -- ============================================
+-- ADD CARDS TO THE MASTER LIST FIRST
+-- ============================================
+
+INSERT INTO cards (id, name, set_id, set_name, rarity, image_url, pokemon_name, card_type) VALUES
+  ('base1-4', 'Charizard', 'base1', 'Base Set', 'Rare Holo', 'https://images.pokemontcg.io/base1/4_hires.png', 'Charizard', 'Pokemon'),
+  ('base1-2', 'Blastoise', 'base1', 'Base Set', 'Rare Holo', 'https://images.pokemontcg.io/base1/2_hires.png', 'Blastoise', 'Pokemon'),
+  ('base1-15', 'Venusaur', 'base1', 'Base Set', 'Rare Holo', 'https://images.pokemontcg.io/base1/15_hires.png', 'Venusaur', 'Pokemon')
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================
 -- ADD POPULAR CARDS TO TRACK
 -- ============================================
 
 INSERT INTO tracked_cards (card_id, notes) VALUES
   ('base1-4', 'Charizard - Base Set (Holo) - Most famous card!'),
   ('base1-2', 'Blastoise - Base Set (Holo)'),
-  ('base1-15', 'Venusaur - Base Set (Holo)'),
-  ('base1-58', 'Pikachu - Base Set'),
-  ('base1-12', 'Mewtwo - Base Set (Holo)'),
-  ('swsh4-75', 'Pikachu VMAX - Vivid Voltage'),
-  ('sm115-1', 'Moltres & Zapdos & Articuno GX - Hidden Fates')
+  ('base1-15', 'Venusaur - Base Set (Holo)')
 ON CONFLICT (card_id) DO NOTHING;
 
 -- ============================================
