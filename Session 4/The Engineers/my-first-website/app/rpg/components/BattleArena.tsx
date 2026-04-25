@@ -2,12 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Character } from '../types';
-import { 
-  Monster, 
-  BattleReward, 
-  getRandomMonster, 
-  calculateRewards, 
-  RARITY_COLORS, 
+import {
+  Monster,
+  BattleReward,
+  calculateRewards,
+  RARITY_COLORS,
   RARITY_NAMES,
   getMonstersForRound,
   getDifficultyMultiplier,
@@ -429,12 +428,35 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
 
   function handleVictory() {
     setBattleState('victory');
-    
+
     const rewards = calculateRewards(enemies[0], character.level, character.stats.luck || 0);
-    
+
+    // Update storage with rewards - THESE WERE MISSING!
+    incrementRound();           // Advance round in storage
+    incrementStreak();          // Increase survival streak
+    addGold(rewards.gold);      // Add gold to storage
+
+    // Add items to storage inventory
+    if (rewards.items && rewards.items.length > 0) {
+      rewards.items.forEach(itemId => {
+        addItemToInventory(itemId);  // Add to storage inventory
+      });
+    }
+
+    // Record boss defeat if applicable
+    if (isBossRound(round)) {
+      recordBossDefeat(round);
+    }
+
+    // Check for new achievements
+    const unlockedAchievements = checkAchievements();
+    if (unlockedAchievements.length > 0) {
+      setNewAchievements(unlockedAchievements);
+    }
+
     addLog(`Victory! You defeated ${enemies.length > 1 ? 'all enemies' : enemies[0].name}!`, 'system');
     addLog(`Gained ${rewards.experience} XP and ${rewards.gold} gold!`, 'reward');
-    
+
     // Show item drops in battle log
     if (rewards.items && rewards.items.length > 0) {
       rewards.items.forEach(itemId => {
@@ -444,7 +466,11 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
         }
       });
     }
-    
+
+    // Update local state to reflect new values
+    setRound(getCurrentRound());
+    setStreak(getSurvivalStreak());
+
     setTimeout(() => {
       onBattleEnd(true, rewards, playerHealth);
     }, 3000);
@@ -452,19 +478,22 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
 
   function handleDefeat() {
     setBattleState('defeat');
-    
+
     if (isBossRound(round)) {
       // Boss punishment: -3 rounds
       const newRound = decrementRound(3);
       setRound(newRound);
       addLog(`Defeated by boss! Returning to Round ${newRound}...`, 'warning');
     } else {
-      addLog('You were defeated...', 'system');
+      // Regular defeat: -1 round (minimum 1)
+      const newRound = decrementRound(1);
+      setRound(newRound);
+      addLog(`Defeated! Returning to Round ${newRound}...`, 'warning');
     }
-    
+
     resetStreak();
     setStreak(0);
-    
+
     setTimeout(() => {
       onBattleEnd(false, { experience: 0, gold: 0, items: [] }, 0);
     }, 3000);

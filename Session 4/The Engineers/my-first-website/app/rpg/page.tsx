@@ -7,8 +7,9 @@ import CharacterSheet from './components/CharacterSheet';
 import BattleArena from './components/BattleArena';
 import { Character, calculateDerivedStats, POINTS_PER_LEVEL, BattleReward, Item } from './types';
 import { getClassById } from './data/classes';
-import { Monster, getRandomMonster, calculateRewards } from './data/monsters';
+import { Monster, calculateRewards } from './data/monsters';
 import { getItemById } from './data/items';
+import { getInventory, addItemToInventory, removeItemFromInventory, getGold, getCurrentRound, getSurvivalStreak } from './data/storage';
 
 export default function RPGPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -21,21 +22,32 @@ export default function RPGPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load characters from localStorage on mount
+  // Storage-managed state (rounds, inventory, gold)
+  const [currentRound, setCurrentRound] = useState(1);
+  const [survivalStreak, setSurvivalStreak] = useState(0);
+  const [storageGold, setStorageGold] = useState(0);
+  const [storageInventory, setStorageInventory] = useState<{ itemId: string; quantity: number }[]>([]);
+
+  // Load data from storage on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const saved = localStorage.getItem('rpg-characters');
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Validate the data is an array
         if (Array.isArray(parsed)) {
           setCharacters(parsed);
         }
       }
+
+      // Load storage-managed data
+      setCurrentRound(getCurrentRound());
+      setSurvivalStreak(getSurvivalStreak());
+      setStorageGold(getGold());
+      setStorageInventory(getInventory().items);
     } catch (error) {
-      console.error('Failed to load characters:', error);
+      console.error('Failed to load data:', error);
     } finally {
       setIsLoaded(true);
     }
@@ -208,7 +220,7 @@ export default function RPGPage() {
   function handleBattleEnd(won: boolean, rewards: BattleReward, remainingHealth: number) {
     if (!selectedCharacter) return;
 
-    // Update character with battle results
+    // Update character with battle results (XP/level only - inventory/gold handled by storage system)
     setCharacters(prev => prev.map(char => {
       if (char.id !== selectedCharacter.id) return char;
 
@@ -226,46 +238,36 @@ export default function RPGPage() {
         newSkillPoints += 1;
       }
 
-      // Add items to inventory
-      let newInventory = [...char.inventory];
-      if (won && rewards.items && rewards.items.length > 0) {
-        rewards.items.forEach(itemId => {
-          const item = getItemById(itemId);
-          if (item) {
-            // Check if item already exists in inventory (for stacking consumables/materials)
-            const existingIndex = newInventory.findIndex(invItem => invItem.id === itemId);
-            if (existingIndex >= 0) {
-              // Stack the item - for now, we'll just add a quantity property or create a new entry
-              // Since the Item type doesn't have quantity, we add as new entries
-              newInventory.push({ ...item });
-            } else {
-              newInventory.push({ ...item });
-            }
-          }
-        });
-      }
-
       return {
         ...char,
         experience: newExp,
         level: newLevel,
         statPoints: newStatPoints,
         skillPoints: newSkillPoints,
-        gold: char.gold + rewards.gold,
-        inventory: newInventory,
       };
     }));
 
     setBattleResult({ won, rewards });
 
-    // Exit battle after delay
+    // Exit battle after delay and refresh storage data
     setTimeout(() => {
       setInBattle(false);
+      refreshStorageData(); // Refresh round, streak, gold, inventory from storage
     }, 2000);
   }
 
   function handleFlee() {
     setInBattle(false);
+    // Refresh storage data after fleeing
+    refreshStorageData();
+  }
+
+  // Refresh storage-managed data (round, streak, gold, inventory)
+  function refreshStorageData() {
+    setCurrentRound(getCurrentRound());
+    setSurvivalStreak(getSurvivalStreak());
+    setStorageGold(getGold());
+    setStorageInventory(getInventory().items);
   }
 
   // Dismiss battle result notification
@@ -464,6 +466,26 @@ export default function RPGPage() {
             <p className="font-body text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
               Create heroes, distribute stats, battle monsters, and forge your legend.
             </p>
+
+            {/* Battle Progress Stats */}
+            <div className="flex justify-center gap-6 mt-6">
+              <div className="glass-card rounded-xl px-6 py-3">
+                <div className="font-body text-xs text-[var(--text-muted)] uppercase tracking-wider">Round</div>
+                <div className="font-display text-2xl font-bold text-white">{currentRound}</div>
+              </div>
+              <div className="glass-card rounded-xl px-6 py-3">
+                <div className="font-body text-xs text-[var(--text-muted)] uppercase tracking-wider">Streak</div>
+                <div className="font-display text-2xl font-bold text-[var(--legendary-amber)]">{survivalStreak}</div>
+              </div>
+              <div className="glass-card rounded-xl px-6 py-3">
+                <div className="font-body text-xs text-[var(--text-muted)] uppercase tracking-wider">Gold</div>
+                <div className="font-display text-2xl font-bold text-[var(--arcane-cyan)]">{storageGold}</div>
+              </div>
+              <div className="glass-card rounded-xl px-6 py-3">
+                <div className="font-body text-xs text-[var(--text-muted)] uppercase tracking-wider">Inventory</div>
+                <div className="font-display text-2xl font-bold text-[var(--mystic-magenta)]">{storageInventory.length}</div>
+              </div>
+            </div>
           </div>
 
           {/* Battle Result Notification */}

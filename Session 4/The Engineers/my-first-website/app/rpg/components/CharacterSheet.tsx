@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Character } from '../types';
 import { getClassById } from '../data/classes';
+import { getGold, getInventory, getCurrentRound, getSurvivalStreak } from '../data/storage';
 
 interface CharacterSheetProps {
   character: Character;
@@ -27,12 +29,25 @@ const STAT_COLORS: Record<string, string> = {
 
 export default function CharacterSheet({ character, onLevelUp, isEditable = false }: CharacterSheetProps) {
   const characterClass = getClassById(character.classId);
-  
+
   if (!characterClass) return null;
 
   const xpPercent = (character.experience / (character.level * 100)) * 100;
   const hpPercent = (character.derivedStats.maxHealth / (character.derivedStats.maxHealth + 100)) * 100;
   const mpPercent = (character.derivedStats.maxMana / (character.derivedStats.maxMana + 50)) * 100;
+
+  // Storage-managed stats
+  const [storageGold, setStorageGold] = useState(0);
+  const [storageInventoryCount, setStorageInventoryCount] = useState(0);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [survivalStreak, setSurvivalStreak] = useState(0);
+
+  useEffect(() => {
+    setStorageGold(getGold());
+    setStorageInventoryCount(getInventory().items.length);
+    setCurrentRound(getCurrentRound());
+    setSurvivalStreak(getSurvivalStreak());
+  }, []);
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden corner-accent">
@@ -226,17 +241,25 @@ export default function CharacterSheet({ character, onLevelUp, isEditable = fals
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Storage Managed */}
         <div className="p-4 rounded-xl bg-[var(--void)]/50">
-          <h4 className="font-display text-sm text-[var(--text-muted)] mb-3">INFO</h4>
+          <h4 className="font-display text-sm text-[var(--text-muted)] mb-3">BATTLE PROGRESS</h4>
           <div className="space-y-2 font-body text-sm">
             <div className="flex justify-between">
+              <span className="text-[var(--text-secondary)]">Current Round</span>
+              <span className="text-white font-bold">{currentRound}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[var(--text-secondary)]">Win Streak</span>
+              <span className="text-[var(--legendary-amber)]">{survivalStreak} 🔥</span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">Gold</span>
-              <span className="text-[var(--legendary-amber)]">🪙 {character.gold}</span>
+              <span className="text-[var(--arcane-cyan)]">🪙 {storageGold}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">Inventory</span>
-              <span className="text-white">{character.inventory.length} items</span>
+              <span className="text-[var(--mystic-magenta)]">{storageInventoryCount} items</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-secondary)]">Stat Points</span>
