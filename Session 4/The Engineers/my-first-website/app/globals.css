@@ -1,26 +1,494 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Black Ops Military Color Palette */
+  --void-black: #050505;
+  --deep-green: #0d1a0d;
+  --military-green: #1a3d1a;
+  --phosphor-amber: #ffb000;
+  --warning-red: #d93025;
+  --tactical-orange: #ff6b00;
+  --terminal-green: #00ff41;
+  --steel-gray: #2d2d2d;
+  --concrete: #4a4a4a;
+  --dust: #8b8b8b;
+  --ice-blue: #00d4ff;
+  --radar-blip: #00ff00;
+  
+  --background: var(--void-black);
+  --foreground: var(--phosphor-amber);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-terminal: var(--font-terminal);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--void-black);
+  color: var(--phosphor-amber);
+  font-family: var(--font-terminal), 'Courier New', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* CRT Scanline Effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+
+/* CRT Flicker Effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(18, 16, 16, 0.02);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.02; }
+  5% { opacity: 0.05; }
+  10% { opacity: 0.02; }
+  15% { opacity: 0.06; }
+  20% { opacity: 0.02; }
+  50% { opacity: 0.03; }
+  80% { opacity: 0.02; }
+  90% { opacity: 0.04; }
+  100% { opacity: 0.02; }
+}
+
+/* Terminal Text Glow */
+.terminal-glow {
+  text-shadow: 0 0 5px var(--phosphor-amber), 0 0 10px rgba(255, 176, 0, 0.5);
+}
+
+.terminal-glow-green {
+  text-shadow: 0 0 5px var(--terminal-green), 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.terminal-glow-red {
+  text-shadow: 0 0 5px var(--warning-red), 0 0 10px rgba(217, 48, 37, 0.5);
+}
+
+/* Blinking Cursor */
+.blink-cursor::after {
+  content: '█';
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Typing Animation */
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 3s steps(40, end);
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Glitch Effect */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  animation: glitch-1 0.3s infinite linear alternate-reverse;
+  color: var(--warning-red);
+  z-index: -1;
+}
+
+.glitch::after {
+  animation: glitch-2 0.3s infinite linear alternate-reverse;
+  color: var(--terminal-green);
+  z-index: -2;
+}
+
+@keyframes glitch-1 {
+  0% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, 0); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 0); }
+  40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 0); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 0); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 0); }
+  100% { clip-path: inset(30% 0 40% 0); transform: translate(2px, 0); }
+}
+
+@keyframes glitch-2 {
+  0% { clip-path: inset(15% 0 75% 0); transform: translate(2px, 0); }
+  20% { clip-path: inset(65% 0 15% 0); transform: translate(-2px, 0); }
+  40% { clip-path: inset(45% 0 45% 0); transform: translate(2px, 0); }
+  60% { clip-path: inset(85% 0 10% 0); transform: translate(-2px, 0); }
+  80% { clip-path: inset(5% 0 75% 0); transform: translate(2px, 0); }
+  100% { clip-path: inset(35% 0 45% 0); transform: translate(-2px, 0); }
+}
+
+/* Tactical Grid Background */
+.tactical-grid {
+  background-image: 
+    linear-gradient(rgba(255, 176, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 176, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Hexagonal Pattern */
+.hex-pattern {
+  background-color: var(--deep-green);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffb000' fill-opacity='0.05'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Noise Texture Overlay */
+.noise-overlay {
+  position: relative;
+}
+
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* Radar Sweep Animation */
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.radar-sweep {
+  animation: radar-sweep 4s linear infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse-military {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse-military {
+  animation: pulse-military 2s ease-in-out infinite;
+}
+
+/* Tactical Button Styles */
+.tactical-btn {
+  position: relative;
+  background: transparent;
+  border: 2px solid var(--phosphor-amber);
+  color: var(--phosphor-amber);
+  font-family: var(--font-terminal), monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.tactical-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--phosphor-amber);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.tactical-btn:hover {
+  color: var(--void-black);
+  box-shadow: 0 0 20px var(--phosphor-amber);
+}
+
+.tactical-btn:hover::before {
+  left: 0;
+}
+
+/* Active Mission Button */
+.mission-btn {
+  position: relative;
+  background: var(--warning-red);
+  border: none;
+  color: var(--void-black);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  padding: 1.5rem 3rem;
+  clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.mission-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.mission-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px var(--warning-red), 0 0 80px rgba(217, 48, 37, 0.5);
+}
+
+.mission-btn:hover::before {
+  left: 100%;
+}
+
+/* Terminal Window */
+.terminal-window {
+  background: rgba(13, 26, 13, 0.95);
+  border: 1px solid var(--military-green);
+  position: relative;
+}
+
+.terminal-window::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--phosphor-amber), transparent);
+  animation: scan-horizontal 3s linear infinite;
+}
+
+@keyframes scan-horizontal {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Stamp Effect */
+.stamp {
+  position: relative;
+  display: inline-block;
+  border: 3px solid var(--warning-red);
+  color: var(--warning-red);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  padding: 0.5rem 1rem;
+  transform: rotate(-5deg);
+  opacity: 0.8;
+}
+
+/* Staggered Entry Animation */
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+/* Delay utilities */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-1000 { animation-delay: 1s; }
+.delay-1200 { animation-delay: 1.2s; }
+.delay-1500 { animation-delay: 1.5s; }
+
+/* Start hidden for animations */
+.animate-initial {
+  opacity: 0;
+}
+
+/* Progress Bar */
+.progress-bar {
+  background: var(--deep-green);
+  height: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background: var(--phosphor-amber);
+  height: 100%;
+  position: relative;
+  animation: progress-fill 2s ease-out forwards;
+}
+
+@keyframes progress-fill {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--phosphor-amber));
+  animation: progress-glow 1s ease-in-out infinite;
+}
+
+@keyframes progress-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Corner Accents */
+.corner-accent {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--phosphor-amber);
+}
+
+.corner-accent.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.corner-accent.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.corner-accent.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.corner-accent.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-green);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--military-green);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--phosphor-amber);
+}
+
+/* Selection Color */
+::selection {
+  background: var(--phosphor-amber);
+  color: var(--void-black);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tactical-grid {
+    background-size: 30px 30px;
+  }
 }

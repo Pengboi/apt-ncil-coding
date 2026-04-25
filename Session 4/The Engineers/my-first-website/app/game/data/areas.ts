@@ -40,6 +40,9 @@ function createEnemy(type: 'grunt' | 'soldier' | 'drone' | 'heavy', x: number, y
     detectionRange: config.detectionRange,
     attackRange: config.attackRange,
     lastAttackTime: 0,
+    animationState: 'idle',
+    animationTimer: 0,
+    isShooting: false,
   };
 }
 

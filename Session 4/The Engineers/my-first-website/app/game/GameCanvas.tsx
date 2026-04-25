@@ -169,16 +169,6 @@ export default function GameCanvas() {
             <li><span className="text-blue-400">E</span> - Save at Terminal</li>
           </ul>
         </div>
-        <div>
-          <h3 className="font-bold text-yellow-400 mb-2">🛠️ Dev Shortcuts</h3>
-          <ul className="space-y-1 text-xs">
-            <li><span className="text-yellow-400">F1</span> - Boot Camp</li>
-            <li><span className="text-yellow-400">F2</span> - City</li>
-            <li><span className="text-yellow-400">F3</span> - Bunker</li>
-            <li><span className="text-yellow-400">F4</span> - Mountain</li>
-            <li><span className="text-yellow-400">F5</span> - HQ</li>
-          </ul>
-        </div>
       </div>
       
       {/* Game Info */}

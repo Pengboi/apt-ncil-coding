@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Black_Ops_One, Share_Tech_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const blackOps = Black_Ops_One({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const techMono = Share_Tech_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-terminal",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Tactical Ops - Military Adventure Platformer",
-  description: "A 2D military RPG platformer with exploration, combat, and progression",
+  title: "TACTICAL OPS | CLASSIFIED MISSION",
+  description: "OPERATION: SHADOW STRIKE - Classified military brief. Eyes only.",
 };
 
 export default function RootLayout({
@@ -16,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${blackOps.variable} ${techMono.variable} antialiased`}>
         {children}
       </body>
     </html>

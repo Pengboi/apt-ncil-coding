@@ -650,7 +650,11 @@ export class GameEngine {
       } else if (distance > enemy.attackRange) {
         // Chase player
         const chaseSpeed = enemy.speed * 0.3;
-        enemy.x += (dx > 0 ? chaseSpeed : -chaseSpeed) * dt;
+        enemy.vx = dx > 0 ? chaseSpeed : -chaseSpeed;
+        enemy.x += enemy.vx * dt;
+      } else {
+        // In attack range, stop moving
+        enemy.vx = 0;
       }
       
       // Shooting (only soldiers and heavies for now)
@@ -678,12 +682,12 @@ export class GameEngine {
   private enemyShoot(enemy: Enemy, targetX: number, targetY: number): void {
     const gunX = enemy.x + enemy.width / 2;
     const gunY = enemy.y + enemy.height / 2;
-    
+
     // Add some inaccuracy
     const inaccuracy = 20;
     const targetXWithSpread = targetX + (Math.random() - 0.5) * inaccuracy;
     const targetYWithSpread = targetY + (Math.random() - 0.5) * inaccuracy;
-    
+
     const bullet = new Bullet(
       gunX,
       gunY,
@@ -694,8 +698,15 @@ export class GameEngine {
       false,  // Not player bullet
       '#e74c3c'  // Red for enemy bullets
     );
-    
+
     this.enemyBullets.push(bullet);
+
+    // Trigger shooting animation for grunt, soldier, and heavy types
+    if (enemy.type !== 'drone') {
+      enemy.isShooting = true;
+      enemy.animationTimer = 0;
+      enemy.animationState = 'shoot';
+    }
   }
   
   private updateEnemyBullets(dt: number): void {
@@ -1032,25 +1043,25 @@ export class GameEngine {
   }
   
   private renderEnemies(ctx: CanvasRenderingContext2D): void {
+    // Generate sprites on first render
+    if (!this.enemySpritesGenerated) {
+      this.generateEnemySprites();
+    }
+
     for (const enemy of this.currentArea.enemies) {
       if (enemy.isDead) continue;
       if (!this.camera.isVisible(enemy.x, enemy.y, enemy.width, enemy.height)) {
         continue;
       }
-      
-      // Draw enemy based on type
-      let color = COLORS.enemyGrunt;
-      switch (enemy.type) {
-        case 'soldier': color = COLORS.enemySoldier; break;
-        case 'drone': color = COLORS.enemyDrone; break;
-        case 'heavy': color = COLORS.enemyHeavy; break;
-      }
-      
-      ctx.fillStyle = color;
-      
-      // Different shapes for different enemies
+
+      // Update animation state based on enemy behavior
+      this.updateEnemyAnimation(enemy);
+
+      // Get the appropriate sprite
+      let spriteKey: string;
       if (enemy.type === 'drone') {
-        // Drone is circular
+        // Drones use simple circle rendering (no sprite)
+        ctx.fillStyle = COLORS.enemyDrone;
         ctx.beginPath();
         ctx.arc(
           enemy.x + enemy.width / 2,
@@ -1061,16 +1072,74 @@ export class GameEngine {
         );
         ctx.fill();
       } else {
-        // Others are rectangular
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        // Human enemies use sprites
+        const typeKey = enemy.type as 'grunt' | 'soldier' | 'heavy';
+
+        if (enemy.animationState === 'shoot' && enemy.isShooting) {
+          // Shooting animation - cycle through 4 frames
+          const shootFrame = Math.floor(enemy.animationTimer * 8) % 4;
+          spriteKey = `${typeKey}_shoot${shootFrame}`;
+        } else if (enemy.animationState === 'walk') {
+          // Walking animation - alternate between walk frames
+          const walkFrame = Math.floor(enemy.animationTimer * 6) % 2;
+          spriteKey = `${typeKey}_walk${walkFrame + 1}`;
+        } else {
+          // Idle
+          spriteKey = `${typeKey}_idle`;
+        }
+
+        const sprite = this.enemySprites.get(spriteKey);
+        const spriteSize = typeKey === 'heavy' ? 48 : 36;
+
+        ctx.save();
+
+        if (!enemy.isFacingRight) {
+          // Flip sprite when facing left
+          ctx.translate(enemy.x + enemy.width, enemy.y);
+          ctx.scale(-1, 1);
+          if (sprite) {
+            ctx.drawImage(sprite, 0, 0, enemy.width, enemy.height);
+          }
+        } else {
+          if (sprite) {
+            ctx.drawImage(sprite, enemy.x, enemy.y, enemy.width, enemy.height);
+          }
+        }
+
+        ctx.restore();
+
+        // Fallback if sprite not found
+        if (!sprite) {
+          ctx.fillStyle = COLORS.enemyGrunt;
+          ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        }
       }
-      
+
       // Health bar
       const hpPercent = enemy.hp / enemy.maxHp;
       ctx.fillStyle = '#333';
       ctx.fillRect(enemy.x, enemy.y - 10, enemy.width, 6);
       ctx.fillStyle = hpPercent > 0.5 ? '#2ecc71' : '#e74c3c';
       ctx.fillRect(enemy.x, enemy.y - 10, enemy.width * hpPercent, 6);
+    }
+  }
+
+  private updateEnemyAnimation(enemy: Enemy): void {
+    // Increment animation timer
+    enemy.animationTimer += 0.016; // ~60fps
+
+    // Determine animation state based on velocity and shooting
+    if (enemy.isShooting) {
+      enemy.animationState = 'shoot';
+      // Reset shooting flag after animation completes (4 frames at 8fps = 0.5s)
+      if (enemy.animationTimer > 0.5) {
+        enemy.isShooting = false;
+        enemy.animationTimer = 0;
+      }
+    } else if (Math.abs(enemy.vx) > 1) {
+      enemy.animationState = 'walk';
+    } else {
+      enemy.animationState = 'idle';
     }
   }
   
@@ -1105,7 +1174,189 @@ export class GameEngine {
       ctx.fill();
     }
   }
-  
+
+  // ============================================================
+  // ENEMY SPRITE GENERATION - Procedural Pixel Art Soldiers
+  // ============================================================
+  private enemySprites: Map<string, HTMLCanvasElement> = new Map();
+  private enemySpritesGenerated: boolean = false;
+
+  private generateEnemySprites(): void {
+    if (this.enemySpritesGenerated) return;
+
+    // Generate sprites for each enemy type
+    const types: Array<'grunt' | 'soldier' | 'heavy'> = ['grunt', 'soldier', 'heavy'];
+
+    for (const type of types) {
+      // Idle sprite
+      this.enemySprites.set(`${type}_idle`, this.createEnemySprite(type, 'idle'));
+      // Walk sprite 1
+      this.enemySprites.set(`${type}_walk1`, this.createEnemySprite(type, 'walk1'));
+      // Walk sprite 2
+      this.enemySprites.set(`${type}_walk2`, this.createEnemySprite(type, 'walk2'));
+      // Shoot frames (4 frames like in the reference image)
+      for (let i = 0; i < 4; i++) {
+        this.enemySprites.set(`${type}_shoot${i}`, this.createEnemySprite(type, 'shoot', i));
+      }
+    }
+
+    this.enemySpritesGenerated = true;
+  }
+
+  private createEnemySprite(
+    type: 'grunt' | 'soldier' | 'heavy',
+    pose: 'idle' | 'walk1' | 'walk2' | 'shoot',
+    shootFrame: number = 0
+  ): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    const size = type === 'heavy' ? 48 : 36;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+
+    // Color scheme based on type
+    const colors = {
+      grunt: { body: '#2c3e50', vest: '#34495e', helmet: '#1a252f', skin: '#d4a574' },
+      soldier: { body: '#1e3a5f', vest: '#2c4a6e', helmet: '#152a3f', skin: '#c4956a' },
+      heavy: { body: '#2d132c', vest: '#4a2349', helmet: '#1a0f19', skin: '#b0855a' },
+    }[type];
+
+    // Scale factor for pixel art look
+    const pixelSize = size <= 36 ? 2 : 3;
+
+    // Helper to draw a pixel rectangle
+    const drawPixel = (x: number, y: number, w: number, h: number, color: string) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * pixelSize, y * pixelSize, w * pixelSize, h * pixelSize);
+    };
+
+    // Animation offsets for WALKING (forward/back motion, not up/down)
+    let bodyY = 8;
+    let leftLegX = 0;
+    let rightLegX = 0;
+    let legBend = 0;
+    let armOffset = 0;
+    let gunFlash = false;
+
+    if (pose === 'walk1') {
+      // Left leg forward, right leg back
+      leftLegX = 2;
+      rightLegX = -2;
+      bodyY = 7; // Slight bob
+      legBend = 1;
+    } else if (pose === 'walk2') {
+      // Left leg back, right leg forward
+      leftLegX = -2;
+      rightLegX = 2;
+      bodyY = 7; // Slight bob
+      legBend = 1;
+    } else if (pose === 'shoot') {
+      armOffset = -2;
+      gunFlash = shootFrame >= 2;
+    }
+
+    // LEGS (dark tactical pants) - proper marching animation
+    const legColor = '#1a1a2e';
+    const bootColor = '#0f0f1a';
+
+    if (pose === 'walk1' || pose === 'walk2') {
+      // Walking: legs extend forward/back with slight knee bend
+      // Left leg
+      drawPixel(6 + leftLegX, 22, 4, 4, legColor); // Thigh
+      drawPixel(6 + leftLegX * 0.5, 26, 4, 4, legColor); // Knee/shin
+      drawPixel(6, 30, 4, 2, bootColor); // Boot (stays planted or lifts slightly)
+
+      // Right leg
+      drawPixel(14 + rightLegX, 22, 4, 4, legColor); // Thigh
+      drawPixel(14 + rightLegX * 0.5, 26, 4, 4, legColor); // Knee/shin
+      drawPixel(14, 30, 4, 2, bootColor); // Boot
+    } else {
+      // Idle/Shoot: standing position
+      // Left leg
+      drawPixel(6, 22, 4, 10, legColor);
+      drawPixel(6, 30, 4, 2, bootColor);
+      // Right leg
+      drawPixel(14, 22, 4, 10, legColor);
+      drawPixel(14, 30, 4, 2, bootColor);
+    }
+
+    // BODY (tactical vest)
+    drawPixel(4, bodyY + 2, 16, 14, colors.body);
+    // Vest details
+    drawPixel(5, bodyY + 4, 14, 10, colors.vest);
+    // Vest pouches
+    drawPixel(6, bodyY + 6, 3, 3, '#1a1a2e');
+    drawPixel(14, bodyY + 6, 3, 3, '#1a1a2e');
+
+    // HEAD
+    const headY = bodyY - 6;
+    // Helmet
+    drawPixel(5, headY, 14, 8, colors.helmet);
+    // Helmet rim
+    drawPixel(4, headY + 2, 16, 2, '#0f0f1a');
+    // Face
+    drawPixel(8, headY + 3, 8, 4, colors.skin);
+    // Goggles/Visor
+    drawPixel(7, headY + 3, 10, 3, '#0f3460');
+    drawPixel(8, headY + 4, 8, 1, '#1a5fb4');
+    // Helmet detail
+    drawPixel(11, headY, 2, 2, '#4a4a5a');
+
+    // ARMS and GUN
+    const armY = bodyY + 5;
+    // Left arm (holding gun foregrip)
+    drawPixel(2, armY, 4, 8, colors.body);
+    drawPixel(1, armY + 2, 3, 4, colors.skin);
+
+    // Gun (tan/beige rifle like in the image)
+    const gunColor = '#c4a574';
+    const gunDark = '#8b7355';
+    const gunY = armY + 1;
+
+    if (pose === 'shoot') {
+      // Gun recoils up slightly
+      const recoil = shootFrame === 2 ? -1 : shootFrame === 3 ? 0 : 0;
+      // Main rifle body
+      drawPixel(0, gunY + recoil, 20, 3, gunColor);
+      // Handguard
+      drawPixel(2, gunY + recoil, 8, 3, gunDark);
+      // Barrel
+      drawPixel(18, gunY + 1 + recoil, 6, 1, '#5a4a3a');
+      // Magazine
+      drawPixel(6, gunY + 3 + recoil, 3, 5, gunDark);
+      // Stock
+      drawPixel(-4, gunY + recoil, 4, 3, gunDark);
+
+      // Muzzle flash (when shooting)
+      if (gunFlash) {
+        const flashColors = ['#ffff00', '#ff8800', '#ff4400'];
+        const flashColor = flashColors[shootFrame - 2];
+        // Flash bursts
+        drawPixel(24, gunY + recoil, 4, 3, flashColor);
+        drawPixel(26, gunY - 1 + recoil, 3, 2, '#ffffaa');
+        drawPixel(26, gunY + 3 + recoil, 3, 2, '#ffffaa');
+        // Bullet tracer
+        drawPixel(28, gunY + 1 + recoil, 8, 1, '#ffff00');
+      }
+    } else {
+      // Idle/walk gun position
+      drawPixel(0, gunY, 18, 3, gunColor);
+      drawPixel(2, gunY, 8, 3, gunDark);
+      drawPixel(16, gunY + 1, 4, 1, '#5a4a3a');
+      drawPixel(6, gunY + 3, 3, 4, gunDark);
+      drawPixel(-2, gunY, 3, 3, gunDark);
+    }
+
+    // Right arm (holding gun stock)
+    drawPixel(16 + armOffset, armY, 4, 6, colors.body);
+    drawPixel(17 + armOffset, armY + 1, 2, 3, colors.skin);
+
+    return canvas;
+  }
+
+  // ============================================================
+  // PLAYER SPRITES
+  // ============================================================
   private playerSprites: Map<string, HTMLImageElement> = new Map();
   private playerSpritesLoaded: Set<string> = new Set();
   private walkAnimationTimer: number = 0;

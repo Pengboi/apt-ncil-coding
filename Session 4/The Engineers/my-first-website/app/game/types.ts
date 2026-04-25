@@ -111,6 +111,11 @@ export interface Enemy {
   detectionRange: number;
   attackRange: number;
   lastAttackTime: number;
+  
+  // Animation
+  animationState: 'idle' | 'walk' | 'shoot';
+  animationTimer: number;
+  isShooting: boolean;
 }
 
 // ------------------------------------------------------------
