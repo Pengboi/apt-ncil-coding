@@ -21,14 +21,45 @@ export default function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] rounded-lg opacity-80 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute inset-0.5 bg-[var(--depth)] rounded-lg flex items-center justify-center">
-                <span className="font-display font-bold text-lg text-[var(--arcane-cyan)]">A</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#e67e22] to-[#d35400] rounded-lg opacity-80 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0.5 bg-[var(--depth)] rounded-lg flex items-center justify-center overflow-hidden">
+                {/* Knight Helmet SVG */}
+                <svg 
+                  viewBox="0 0 24 24" 
+                  className="w-6 h-6"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Helmet base */}
+                  <path 
+                    d="M12 2C8 2 5 5 5 9v3c0 2 1 4 3 5v3h8v-3c2-1 3-3 3-5V9c0-4-3-7-7-7z" 
+                    fill="#34495e"
+                    stroke="#2c3e50"
+                    strokeWidth="1"
+                  />
+                  {/* Visor */}
+                  <path 
+                    d="M7 10h10v2c0 1-1 2-2 2H9c-1 0-2-1-2-2v-2z" 
+                    fill="#2c3e50"
+                  />
+                  {/* Glowing orange eyes */}
+                  <circle cx="9" cy="12" r="1.5" fill="#e67e22">
+                    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  <circle cx="15" cy="12" r="1.5" fill="#e67e22">
+                    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  {/* Helmet plume/crest */}
+                  <path 
+                    d="M12 2c-1 0-2 1-2 2s1 1 2 1 2 0 2-1-1-2-2-2z" 
+                    fill="#e74c3c"
+                  />
+                </svg>
               </div>
-              <div className="absolute -inset-1 bg-[var(--arcane-cyan)] opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
+              <div className="absolute -inset-1 bg-[#e67e22] opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
             </div>
             <span className="font-display font-bold text-xl tracking-wider text-white">
-              AETHERIA
+              GOPHER KNIGHT
             </span>
           </Link>
 

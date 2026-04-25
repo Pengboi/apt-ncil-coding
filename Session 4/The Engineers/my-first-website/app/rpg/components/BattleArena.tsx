@@ -5,14 +5,16 @@ import { Character } from '../types';
 import { 
   Monster, 
   BattleReward, 
-  getMonstersForRound, 
-  getDifficultyMultiplier, 
-  isBossRound, 
-  BOSS_WARNINGS,
-  calculateRewards,
-  RARITY_COLORS,
-  RARITY_NAMES 
+  getRandomMonster, 
+  calculateRewards, 
+  RARITY_COLORS, 
+  RARITY_NAMES,
+  getMonstersForRound,
+  getDifficultyMultiplier,
+  isBossRound,
+  BOSS_WARNINGS
 } from '../data/monsters';
+import { getItemById } from '../data/items';
 import { 
   getCurrentRound, 
   incrementRound, 
@@ -28,7 +30,6 @@ import {
   checkAchievements,
   Achievement
 } from '../data/storage';
-import { Item, getItemById } from '../data/items';
 
 interface BattleArenaProps {
   character: Character;
@@ -429,46 +430,18 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
   function handleVictory() {
     setBattleState('victory');
     
-    const rewards = calculateRewards(enemies, round, streak, character.level);
-    
-    // Update gold
-    addGold(rewards.gold);
-    
-    // Add items to inventory
-    rewards.items.forEach(itemId => {
-      addItemToInventory(itemId);
-    });
-    
-    // Update round and streak
-    const newRound = incrementRound();
-    const newStreak = incrementStreak();
-    setRound(newRound);
-    setStreak(newStreak);
-    
-    // Record boss defeat
-    if (isBossRound(round)) {
-      recordBossDefeat(round);
-      addLog(`🎉 BOSS DEFEATED! ${enemies[0].name} has fallen!`, 'boss');
-    }
+    const rewards = calculateRewards(enemies[0], character.level, character.stats.luck || 0);
     
     addLog(`Victory! You defeated ${enemies.length > 1 ? 'all enemies' : enemies[0].name}!`, 'system');
     addLog(`Gained ${rewards.experience} XP and ${rewards.gold} gold!`, 'reward');
     
-    if (rewards.items.length > 0) {
+    // Show item drops in battle log
+    if (rewards.items && rewards.items.length > 0) {
       rewards.items.forEach(itemId => {
         const item = getItemById(itemId);
         if (item) {
           addLog(`Found: ${item.name}!`, 'reward');
         }
-      });
-    }
-    
-    // Check achievements
-    const achievements = checkAchievements();
-    if (achievements.length > 0) {
-      setNewAchievements(achievements);
-      achievements.forEach(ach => {
-        addLog(`🏆 Achievement Unlocked: ${ach.name}!`, 'reward');
       });
     }
     

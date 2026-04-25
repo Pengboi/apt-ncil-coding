@@ -75,8 +75,11 @@ export default function CharacterSheet({ character, onLevelUp, isEditable = fals
           {/* Level Up Button */}
           {isEditable && onLevelUp && character.statPoints > 0 && (
             <button 
-              onClick={onLevelUp}
-              className="btn-primary text-sm py-2 px-4 animate-pulse-glow">
+              onClick={(e) => {
+                e.stopPropagation();
+                onLevelUp();
+              }}
+              className="btn-primary text-sm py-2 px-4 animate-pulse-glow relative z-50">
               +{character.statPoints} Points
             </button>
           )}
@@ -107,6 +110,21 @@ export default function CharacterSheet({ character, onLevelUp, isEditable = fals
                 <span className="font-display font-bold text-white w-10 text-right">{value}</span>
               </div>
             ))}
+          </div>
+          
+          {/* Stat Points Info */}
+          <div className="mt-4 p-3 rounded-lg bg-[var(--void)]/50 border border-[var(--edge)]">
+            <div className="flex items-center justify-between">
+              <span className="font-body text-sm text-[var(--text-secondary)]">Available Stat Points</span>
+              <span className={`font-display font-bold ${character.statPoints > 0 ? 'text-[var(--arcane-cyan)]' : 'text-[var(--text-muted)]'}`}>
+                {character.statPoints}
+              </span>
+            </div>
+            {character.statPoints === 0 && (
+              <p className="font-body text-xs text-[var(--text-muted)] mt-1">
+                💡 Gain XP from battles to level up and earn stat points!
+              </p>
+            )}
           </div>
         </div>
 

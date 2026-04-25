@@ -3,6 +3,7 @@
 // ============================================
 
 import { CharacterStats } from '../types';
+import { rollItemDrops } from './items';
 
 export interface Monster {
   id: string;
@@ -685,56 +686,25 @@ export function getMonstersForRound(round: number): Monster[] {
 }
 
 // ============================================
-// REWARD CALCULATION
-// ============================================
-
-export function calculateRewards(
-  enemies: Monster[], 
-  round: number, 
-  streak: number,
-  playerLevel: number
-): BattleReward {
-  // Base rewards
-  let totalXP = enemies.reduce((sum, e) => sum + e.experienceReward, 0);
-  let totalGold = enemies.reduce((sum, e) => sum + e.goldReward, 0);
-  
-  // Difficulty multiplier
-  const multiplier = getDifficultyMultiplier(round);
-  
-  // Streak bonus (+10% per 5 wins)
-  const streakBonus = Math.floor(streak / 5) * 0.1;
-  
-  // Level difference penalty
-  const avgEnemyLevel = enemies.reduce((sum, e) => sum + e.level, 0) / enemies.length;
-  const levelDiff = playerLevel - avgEnemyLevel;
-  const levelMultiplier = Math.max(0.5, 1 - (levelDiff * 0.1));
-  
-  // Final calculation
-  const finalMultiplier = (multiplier + streakBonus) * levelMultiplier;
-  totalXP = Math.floor(totalXP * finalMultiplier);
-  totalGold = Math.floor(totalGold * finalMultiplier);
-  
-  // Item drops
-  const items: string[] = [];
-  enemies.forEach(enemy => {
-    if (Math.random() < enemy.dropChance && enemy.dropTable) {
-      const drop = enemy.dropTable[Math.floor(Math.random() * enemy.dropTable.length)];
-      if (drop) items.push(drop);
-    }
-  });
-  
-  return {
-    experience: totalXP,
-    gold: totalGold,
-    items,
-    roundBonus: Math.floor(streak / 5), // Bonus reward tiers
-  };
-}
-
-// ============================================
 // RARITY DISPLAY
 // ============================================
 
+// Calculate battle rewards
+export function calculateRewards(monster: Monster, playerLevel: number, playerLuck: number = 0): BattleReward {
+  const levelDiff = playerLevel - monster.level;
+  const multiplier = Math.max(0.5, 1 - (levelDiff * 0.1));
+  
+  // Roll for item drops based on monster rarity and player luck
+  const itemDrops = rollItemDrops(monster.rarity, playerLuck);
+  
+  return {
+    experience: Math.floor(monster.experienceReward * multiplier),
+    gold: Math.floor(monster.goldReward * multiplier),
+    items: itemDrops,
+  };
+}
+
+// Rarity colors for UI
 export const RARITY_COLORS: Record<string, string> = {
   common: '#95a5a6',
   uncommon: '#2ecc71',

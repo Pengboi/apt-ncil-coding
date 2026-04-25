@@ -58,12 +58,14 @@ export interface Equipment {
 export interface Item {
   id: string;
   name: string;
-  type: 'weapon' | 'armor' | 'accessory' | 'consumable';
+  type: 'weapon' | 'armor' | 'accessory' | 'consumable' | 'material';
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   stats?: Partial<CharacterStats>;
   effects?: string[];
   description: string;
   value: number;
+  icon?: string;
+  effect?: string;
 }
 
 export const STAT_MIN = 1;

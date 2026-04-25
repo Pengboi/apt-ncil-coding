@@ -5,9 +5,11 @@ import Navigation from '../components/Navigation';
 import CharacterCreator from './components/CharacterCreator';
 import CharacterSheet from './components/CharacterSheet';
 import BattleArena from './components/BattleArena';
-import { Character, calculateDerivedStats, POINTS_PER_LEVEL, BattleReward } from './types';
+import BattleArena from './components/BattleArena';
+import { Character, calculateDerivedStats, POINTS_PER_LEVEL, BattleReward, Item } from './types';
 import { getClassById } from './data/classes';
 import { Monster, getRandomMonster, calculateRewards } from './data/monsters';
+import { getItemById } from './data/items';
 
 export default function RPGPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -17,22 +19,108 @@ export default function RPGPage() {
   const [inBattle, setInBattle] = useState(false);
   const [battleResult, setBattleResult] = useState<{ won: boolean; rewards: BattleReward } | null>(null);
 
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // Load characters from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('rpg-characters');
-    if (saved) {
-      try {
-        setCharacters(JSON.parse(saved));
-      } catch {
-        console.error('Failed to load characters');
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const saved = localStorage.getItem('rpg-characters');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Validate the data is an array
+        if (Array.isArray(parsed)) {
+          setCharacters(parsed);
+        }
       }
+    } catch (error) {
+      console.error('Failed to load characters:', error);
+    } finally {
+      setIsLoaded(true);
     }
   }, []);
 
   // Save characters when they change
   useEffect(() => {
-    localStorage.setItem('rpg-characters', JSON.stringify(characters));
-  }, [characters]);
+    if (!isLoaded || typeof window === 'undefined') return;
+    
+    try {
+      localStorage.setItem('rpg-characters', JSON.stringify(characters));
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error('Failed to save characters:', error);
+      alert('Failed to save game! Local storage may be full or disabled.');
+    }
+  }, [characters, isLoaded]);
+
+  // Manual save function
+  function handleManualSave() {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.setItem('rpg-characters', JSON.stringify(characters));
+      setLastSaved(new Date());
+      alert('Game saved successfully! ✅');
+    } catch (error) {
+      console.error('Failed to save:', error);
+      alert('Failed to save game! Local storage may be full or disabled.');
+    }
+  }
+
+  // Export save to file
+  function handleExportSave() {
+    const dataStr = JSON.stringify(characters, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `rpg-save-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // Import save from file
+  function handleImportSave(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (Array.isArray(data)) {
+          if (confirm(`Import ${data.length} character(s)? This will REPLACE your current save!`)) {
+            setCharacters(data);
+            setSelectedCharacter(null);
+            alert('Save imported successfully! ✅');
+          }
+        } else {
+          alert('Invalid save file format!');
+        }
+      } catch {
+        alert('Failed to read save file!');
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    event.target.value = '';
+  }
+
+  // Clear all saves
+  function handleClearSaves() {
+    if (confirm('⚠️ WARNING: This will DELETE ALL your characters! Are you sure?')) {
+      if (confirm('Really sure? This cannot be undone!')) {
+        setCharacters([]);
+        setSelectedCharacter(null);
+        localStorage.removeItem('rpg-characters');
+        alert('All saves cleared!');
+      }
+    }
+  }
 
   function handleCreateCharacter(character: Character) {
     setCharacters(prev => [...prev, character]);
@@ -50,8 +138,12 @@ export default function RPGPage() {
   }
 
   function handleLevelUp() {
-    if (!selectedCharacter || selectedCharacter.statPoints <= 0) return;
+    if (!selectedCharacter || selectedCharacter.statPoints <= 0) {
+      console.log('Cannot level up: no stat points available');
+      return;
+    }
     
+    console.log('Opening level up modal for', selectedCharacter.name);
     setShowLevelUp(true);
   }
 
@@ -135,6 +227,25 @@ export default function RPGPage() {
         newSkillPoints += 1;
       }
 
+      // Add items to inventory
+      let newInventory = [...char.inventory];
+      if (won && rewards.items && rewards.items.length > 0) {
+        rewards.items.forEach(itemId => {
+          const item = getItemById(itemId);
+          if (item) {
+            // Check if item already exists in inventory (for stacking consumables/materials)
+            const existingIndex = newInventory.findIndex(invItem => invItem.id === itemId);
+            if (existingIndex >= 0) {
+              // Stack the item - for now, we'll just add a quantity property or create a new entry
+              // Since the Item type doesn't have quantity, we add as new entries
+              newInventory.push({ ...item });
+            } else {
+              newInventory.push({ ...item });
+            }
+          }
+        });
+      }
+
       return {
         ...char,
         experience: newExp,
@@ -142,6 +253,7 @@ export default function RPGPage() {
         statPoints: newStatPoints,
         skillPoints: newSkillPoints,
         gold: char.gold + rewards.gold,
+        inventory: newInventory,
       };
     }));
 
@@ -155,6 +267,177 @@ export default function RPGPage() {
 
   function handleFlee() {
     setInBattle(false);
+  }
+
+  // Dismiss battle result notification
+  function dismissBattleResult() {
+    setBattleResult(null);
+  }
+
+  // Inventory management functions
+  function handleUseItem(item: Item) {
+    if (!selectedCharacter) return;
+
+    setCharacters(prev => prev.map(char => {
+      if (char.id !== selectedCharacter.id) return char;
+
+      // Remove item from inventory
+      const itemIndex = char.inventory.findIndex(i => i.id === item.id);
+      if (itemIndex === -1) return char;
+
+      const newInventory = [...char.inventory];
+      newInventory.splice(itemIndex, 1);
+
+      // Apply item effects
+      let newStats = { ...char.stats };
+      let newGold = char.gold;
+
+      if (item.effect?.startsWith('heal:')) {
+        // Healing is handled in battle, not here
+        // But we could add out-of-combat healing
+      } else if (item.effect?.startsWith('permanent:')) {
+        // Permanent stat boosts
+        const parts = item.effect.split(':');
+        if (parts.length === 3) {
+          const stat = parts[1] as keyof typeof newStats;
+          const value = parseInt(parts[2]);
+          if (newStats[stat] !== undefined) {
+            newStats[stat] += value;
+          }
+        }
+      }
+
+      return {
+        ...char,
+        stats: newStats,
+        inventory: newInventory,
+        derivedStats: calculateDerivedStats(newStats, char.level),
+      };
+    }));
+  }
+
+  function handleEquipItem(item: Item) {
+    if (!selectedCharacter) return;
+
+    setCharacters(prev => prev.map(char => {
+      if (char.id !== selectedCharacter.id) return char;
+
+      // Determine equipment slot
+      const slot = item.type as 'weapon' | 'armor' | 'accessory';
+      if (!['weapon', 'armor', 'accessory'].includes(slot)) return char;
+
+      // Remove item from inventory
+      const itemIndex = char.inventory.findIndex(i => i.id === item.id);
+      if (itemIndex === -1) return char;
+
+      const newInventory = [...char.inventory];
+      newInventory.splice(itemIndex, 1);
+
+      // If something is already equipped, unequip it first (add back to inventory)
+      const currentEquipped = char.equipment[slot];
+      if (currentEquipped) {
+        newInventory.push(currentEquipped);
+      }
+
+      // Equip the new item
+      const newEquipment = {
+        ...char.equipment,
+        [slot]: item,
+      };
+
+      // Recalculate derived stats with equipment bonuses
+      const newDerivedStats = calculateDerivedStatsWithEquipment(char.stats, char.level, newEquipment);
+
+      return {
+        ...char,
+        inventory: newInventory,
+        equipment: newEquipment,
+        derivedStats: newDerivedStats,
+      };
+    }));
+  }
+
+  function handleUnequipItem(slot: 'weapon' | 'armor' | 'accessory') {
+    if (!selectedCharacter) return;
+
+    setCharacters(prev => prev.map(char => {
+      if (char.id !== selectedCharacter.id) return char;
+
+      const item = char.equipment[slot];
+      if (!item) return char;
+
+      // Add item back to inventory
+      const newInventory = [...char.inventory, item];
+
+      // Remove from equipment
+      const newEquipment = {
+        ...char.equipment,
+        [slot]: null,
+      };
+
+      // Recalculate derived stats
+      const newDerivedStats = calculateDerivedStatsWithEquipment(char.stats, char.level, newEquipment);
+
+      return {
+        ...char,
+        inventory: newInventory,
+        equipment: newEquipment,
+        derivedStats: newDerivedStats,
+      };
+    }));
+  }
+
+  function handleSellItem(item: Item) {
+    if (!selectedCharacter) return;
+
+    setCharacters(prev => prev.map(char => {
+      if (char.id !== selectedCharacter.id) return char;
+
+      // Remove item from inventory
+      const itemIndex = char.inventory.findIndex(i => i.id === item.id);
+      if (itemIndex === -1) return char;
+
+      const newInventory = [...char.inventory];
+      newInventory.splice(itemIndex, 1);
+
+      // Add gold
+      const newGold = char.gold + item.value;
+
+      return {
+        ...char,
+        inventory: newInventory,
+        gold: newGold,
+      };
+    }));
+  }
+
+  // Helper function to calculate derived stats with equipment bonuses
+  function calculateDerivedStatsWithEquipment(
+    stats: Character['stats'], 
+    level: number, 
+    equipment: Character['equipment']
+  ) {
+    const baseStats = calculateDerivedStats(stats, level);
+
+    // Add equipment bonuses
+    const bonuses = { attack: 0, defense: 0, maxHealth: 0, maxMana: 0 };
+    
+    Object.values(equipment).forEach(item => {
+      if (item?.stats) {
+        bonuses.attack += item.stats.attack || 0;
+        bonuses.defense += item.stats.defense || 0;
+        bonuses.maxHealth += item.stats.health || 0;
+        bonuses.maxMana += item.stats.mana || 0;
+      }
+    });
+
+    return {
+      ...baseStats,
+      attack: baseStats.attack + bonuses.attack,
+      defense: baseStats.defense + bonuses.defense,
+      maxHealth: baseStats.maxHealth + bonuses.maxHealth,
+      maxMana: baseStats.maxMana + bonuses.maxMana,
+    };
   }
 
   const selectedCharData = selectedCharacter ? characters.find(c => c.id === selectedCharacter.id) : null;
@@ -186,22 +469,11 @@ export default function RPGPage() {
 
           {/* Battle Result Notification */}
           {battleResult && (
-            <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 px-8 py-4 rounded-xl border-2 ${
-              battleResult.won 
-                ? 'border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/20' 
-                : 'border-[var(--mystic-magenta)] bg-[var(--mystic-magenta)]/20'
-            } animate-pulse-glow`}>
-              <div className="font-display text-xl font-bold text-white text-center">
-                {battleResult.won ? '⚔️ VICTORY!' : '💀 DEFEAT'}
-              </div>
-              {battleResult.won && (
-                <div className="font-body text-sm text-center mt-1">
-                  <span className="text-[var(--legendary-amber)]">+{battleResult.rewards.experience} XP</span>
-                  {' • '}
-                  <span className="text-[var(--arcane-cyan)]">+{battleResult.rewards.gold} Gold</span>
-                </div>
-              )}
-            </div>
+            <BattleResultNotification 
+              battleResult={battleResult} 
+              onDismiss={dismissBattleResult}
+              getItemById={getItemById}
+            />
           )}
 
           {/* Main Content */}
@@ -300,6 +572,21 @@ export default function RPGPage() {
                       <span>⚔️</span> FIND BATTLE
                     </button>
                     
+
+                    
+                    {/* Save Button */}
+                    <button 
+                      onClick={handleManualSave}
+                      className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#2ecc71] to-[#27ae60] font-display font-bold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                    >
+                      <span>💾</span> SAVE GAME
+                      {lastSaved && (
+                        <span className="text-xs font-normal opacity-75">
+                          ({lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                        </span>
+                      )}
+                    </button>
+                    
                     <div className="grid grid-cols-2 gap-2">
                       <button 
                         onClick={() => gainExperience(selectedCharacter.id, 50)}
@@ -320,6 +607,48 @@ export default function RPGPage() {
                     </button>
                   </div>
                 )}
+
+                {/* Save Management */}
+                <div className="glass-card rounded-xl p-4 space-y-3">
+                  <h4 className="font-display text-sm text-[var(--text-muted)]">SAVE MANAGEMENT</h4>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Export Save */}
+                    <button 
+                      onClick={handleExportSave}
+                      className="py-2 px-3 rounded-lg bg-[var(--surface)] border border-[var(--edge)] font-body text-sm text-[var(--text-secondary)] hover:text-white hover:border-[var(--arcane-cyan)] transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span>📤</span> Export
+                    </button>
+                    
+                    {/* Import Save */}
+                    <label className="py-2 px-3 rounded-lg bg-[var(--surface)] border border-[var(--edge)] font-body text-sm text-[var(--text-secondary)] hover:text-white hover:border-[var(--arcane-cyan)] transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                      <span>📥</span> Import
+                      <input 
+                        type="file" 
+                        accept=".json" 
+                        onChange={handleImportSave}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  
+                  {/* Clear All Saves */}
+                  <button 
+                    onClick={handleClearSaves}
+                    className="w-full py-2 px-3 rounded-lg bg-red-500/10 border border-red-500/30 font-body text-sm text-red-400 hover:bg-red-500/20 transition-colors"
+                  >
+                    🗑️ Clear All Saves
+                  </button>
+                  
+                  {/* Save Status */}
+                  <div className="text-center">
+                    <span className="font-body text-xs text-[var(--text-muted)]">
+                      {characters.length} character(s) saved
+                      {lastSaved && ` • Last save: ${lastSaved.toLocaleTimeString()}`}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Character Detail */}
@@ -333,8 +662,15 @@ export default function RPGPage() {
                     />
 
                     {/* Level Up Modal */}
-                    {showLevelUp && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--void)]/80 backdrop-blur-sm">
+                    {showLevelUp && selectedCharData && (
+                      <div 
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--void)]/90 backdrop-blur-sm"
+                        onClick={(e) => {
+                          if (e.target === e.currentTarget) {
+                            setShowLevelUp(false);
+                          }
+                        }}
+                      >
                         <LevelUpModal 
                           character={selectedCharData}
                           onConfirm={applyLevelUp}
@@ -342,6 +678,8 @@ export default function RPGPage() {
                         />
                       </div>
                     )}
+
+
                   </>
                 ) : (
                   <div className="h-full flex items-center justify-center glass-card rounded-2xl p-12">
@@ -431,40 +769,71 @@ function LevelUpModal({ character, onConfirm, onCancel }: {
   }
 
   const stats = [
-    { key: 'strength', name: 'Strength', icon: '💪' },
-    { key: 'agility', name: 'Agility', icon: '⚡' },
-    { key: 'intelligence', name: 'Intelligence', icon: '🧠' },
-    { key: 'vitality', name: 'Vitality', icon: '❤️' },
-    { key: 'luck', name: 'Luck', icon: '🍀' },
+    { key: 'strength', name: 'Strength', icon: '💪', color: '#ff00a0' },
+    { key: 'agility', name: 'Agility', icon: '⚡', color: '#00f5ff' },
+    { key: 'intelligence', name: 'Intelligence', icon: '🧠', color: '#8b5cf6' },
+    { key: 'vitality', name: 'Vitality', icon: '❤️', color: '#2ecc71' },
+    { key: 'luck', name: 'Luck', icon: '🍀', color: '#ffb800' },
   ];
 
-  return (
-    <div className="glass-card rounded-2xl p-8 max-w-md w-full corner-accent">
-      <h2 className="font-display text-2xl font-bold text-white text-center mb-2">Level Up!</h2>
-      <p className="font-body text-[var(--text-secondary)] text-center mb-6">
-        Allocate <span className="text-[var(--arcane-cyan)] font-bold">{pointsRemaining}</span> stat points
-      </p>
+  const totalAllocated = Object.values(allocations).reduce((a, b) => a + b, 0);
 
+  return (
+    <div 
+      className="glass-card rounded-2xl p-8 max-w-md w-full corner-accent border-2 border-[var(--arcane-cyan)]/30 shadow-2xl shadow-[var(--arcane-cyan)]/20"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Header with icon */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] mb-4">
+          <span className="text-3xl">⭐</span>
+        </div>
+        <h2 className="font-display text-3xl font-bold text-white mb-2">Level Up!</h2>
+        <p className="font-body text-[var(--text-secondary)]">
+          {character.name} is growing stronger!
+        </p>
+      </div>
+
+      {/* Points display */}
+      <div className="bg-[var(--void)]/50 rounded-xl p-4 mb-6 text-center border border-[var(--edge)]">
+        <span className="font-body text-sm text-[var(--text-muted)]">Points Remaining</span>
+        <div className={`font-display text-4xl font-bold ${pointsRemaining === 0 ? 'text-[var(--arcane-cyan)]' : 'text-white'}`}>
+          {pointsRemaining}
+        </div>
+        <div className="w-full h-2 bg-[var(--edge)] rounded-full mt-2 overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] transition-all duration-300"
+            style={{ width: `${(totalAllocated / character.statPoints) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Stats */}
       <div className="space-y-3 mb-6">
         {stats.map((stat) => (
-          <div key={stat.key} className="flex items-center gap-3">
-            <span className="text-xl">{stat.icon}</span>
+          <div key={stat.key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--surface)]/50 transition-colors">
+            <span className="text-2xl">{stat.icon}</span>
             <span className="font-body text-sm text-[var(--text-secondary)] w-28">{stat.name}</span>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => deallocate(stat.key)}
                 disabled={allocations[stat.key] <= 0}
-                className="w-8 h-8 rounded-lg bg-[var(--void)] border border-[var(--edge)] text-[var(--text-secondary)] hover:text-white disabled:opacity-30 font-bold"
+                className="w-10 h-10 rounded-lg bg-[var(--void)] border border-[var(--edge)] text-[var(--text-secondary)] hover:text-white hover:border-[var(--arcane-cyan)] disabled:opacity-30 font-bold text-lg transition-all"
               >
-                -
+                −
               </button>
-              <span className="font-display font-bold text-white w-8 text-center">
-                {character.stats[stat.key as keyof typeof character.stats] + allocations[stat.key]}
-              </span>
+              <div className="w-12 text-center">
+                <span className="font-display font-bold text-xl text-white">
+                  {character.stats[stat.key as keyof typeof character.stats] + allocations[stat.key]}
+                </span>
+                {allocations[stat.key] > 0 && (
+                  <span className="block text-xs text-[var(--arcane-cyan)]">+{allocations[stat.key]}</span>
+                )}
+              </div>
               <button 
                 onClick={() => allocate(stat.key)}
                 disabled={pointsRemaining <= 0}
-                className="w-8 h-8 rounded-lg bg-[var(--arcane-cyan)] text-[var(--void)] hover:bg-[var(--arcane-cyan)]/80 disabled:opacity-30 font-bold"
+                className="w-10 h-10 rounded-lg bg-[var(--arcane-cyan)] text-[var(--void)] hover:bg-[var(--arcane-cyan)]/80 disabled:opacity-30 disabled:bg-[var(--edge)] font-bold text-lg transition-all"
               >
                 +
               </button>
@@ -473,20 +842,108 @@ function LevelUpModal({ character, onConfirm, onCancel }: {
         ))}
       </div>
 
+      {/* Buttons */}
       <div className="flex gap-3">
         <button 
           onClick={onCancel}
-          className="flex-1 btn-secondary py-3"
+          className="flex-1 py-3 px-4 rounded-xl bg-[var(--surface)] border border-[var(--edge)] font-display font-bold text-[var(--text-secondary)] hover:text-white hover:border-[var(--text-muted)] transition-all"
         >
           Cancel
         </button>
         <button 
           onClick={() => onConfirm(allocations)}
           disabled={pointsRemaining > 0}
-          className="flex-1 btn-primary py-3 disabled:opacity-50"
+          className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] font-display font-bold text-white hover:opacity-90 disabled:opacity-30 disabled:bg-[var(--edge)] disabled:bg-none transition-all"
         >
-          Confirm
+          {pointsRemaining > 0 ? `Allocate ${pointsRemaining} More` : 'Confirm'}
         </button>
+      </div>
+    </div>
+  );
+}
+
+// Battle Result Notification Component with auto-dismiss
+function BattleResultNotification({ 
+  battleResult, 
+  onDismiss,
+  getItemById
+}: { 
+  battleResult: { won: boolean; rewards: BattleReward }; 
+  onDismiss: () => void;
+  getItemById: (id: string) => { icon: string; name: string } | undefined;
+}) {
+  const [progress, setProgress] = useState(100);
+  const duration = 5000; // 5 seconds
+
+  useEffect(() => {
+    const startTime = Date.now();
+    
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
+      setProgress(remaining);
+      
+      if (remaining > 0) {
+        requestAnimationFrame(updateProgress);
+      } else {
+        onDismiss();
+      }
+    };
+    
+    const animationFrame = requestAnimationFrame(updateProgress);
+    
+    return () => cancelAnimationFrame(animationFrame);
+  }, [onDismiss]);
+
+  return (
+    <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 rounded-xl border-2 overflow-hidden ${
+      battleResult.won 
+        ? 'border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/20' 
+        : 'border-[var(--mystic-magenta)] bg-[var(--mystic-magenta)]/20'
+    } animate-pulse-glow`}>
+      <div className="px-8 py-4">
+        {/* Close button */}
+        <button 
+          onClick={onDismiss}
+          className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[var(--void)]/50 text-[var(--text-muted)] hover:text-white flex items-center justify-center text-sm transition-colors"
+        >
+          ✕
+        </button>
+        
+        <div className="font-display text-xl font-bold text-white text-center pr-4">
+          {battleResult.won ? '⚔️ VICTORY!' : '💀 DEFEAT'}
+        </div>
+        
+        {battleResult.won && (
+          <div className="font-body text-sm text-center mt-1">
+            <span className="text-[var(--legendary-amber)]">+{battleResult.rewards.experience} XP</span>
+            {' • '}
+            <span className="text-[var(--arcane-cyan)]">+{battleResult.rewards.gold} Gold</span>
+            {battleResult.rewards.items && battleResult.rewards.items.length > 0 && (
+              <div className="mt-2 pt-2 border-t border-[var(--edge)]">
+                <span className="text-[var(--text-muted)] text-xs">Loot:</span>
+                <div className="flex flex-wrap justify-center gap-1 mt-1">
+                  {battleResult.rewards.items.map((itemId, i) => {
+                    const item = getItemById(itemId);
+                    return item ? (
+                      <span key={i} className="text-xs px-2 py-1 rounded bg-[var(--surface)] text-white">
+                        {item.icon} {item.name}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Progress bar */}
+      <div className="h-1 bg-[var(--void)]/50">
+        <div 
+          className="h-full bg-gradient-to-r from-[var(--arcane-cyan)] to-[var(--mystic-magenta)] transition-all duration-100"
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   );
