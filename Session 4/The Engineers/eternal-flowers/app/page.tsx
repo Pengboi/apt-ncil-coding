@@ -13,6 +13,7 @@ interface CartItem extends Product {
   quantity: number;
   selectedColor: string;
   ribbonText: string;
+  glitter: boolean;
 }
 
 export default function Home() {
@@ -30,8 +31,8 @@ export default function Home() {
     : products.filter(p => p.category === activeCategory);
 
   // Add to cart - with safety check
-  const addToCart = (product: Product, color: string, ribbonText: string) => {
-    console.log('addToCart called:', product.id, product.name, 'Color:', color);
+  const addToCart = (product: Product, color: string, ribbonText: string, glitter: boolean = false) => {
+    console.log('addToCart called:', product.id, product.name, 'Color:', color, 'Glitter:', glitter);
     
     // Safety check - ensure we're adding a valid product
     if (!product || !product.id) {
@@ -48,7 +49,8 @@ export default function Home() {
       const existing = prev.find(item => 
         item.id === product.id && 
         item.selectedColor === color && 
-        item.ribbonText === ribbonText
+        item.ribbonText === ribbonText &&
+        item.glitter === glitter
       );
       
       if (existing) {
@@ -56,7 +58,8 @@ export default function Home() {
         return prev.map(item => 
           item.id === product.id && 
           item.selectedColor === color && 
-          item.ribbonText === ribbonText
+          item.ribbonText === ribbonText &&
+          item.glitter === glitter
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -64,7 +67,7 @@ export default function Home() {
       
       console.log('Adding new item to cart. Current cart length:', prev.length);
       // Only add the single product that was requested
-      const newItem = { ...product, quantity: 1, selectedColor: color, ribbonText };
+      const newItem: CartItem = { ...product, quantity: 1, selectedColor: color, ribbonText, glitter };
       return [...prev, newItem];
     });
     setIsCartOpen(true);
@@ -77,14 +80,14 @@ export default function Home() {
   };
 
   // Update quantity
-  const updateQuantity = (id: string, color: string, ribbonText: string, quantity: number) => {
+  const updateQuantity = (id: string, color: string, ribbonText: string, quantity: number, glitter: boolean) => {
     if (quantity === 0) {
       setCart(prev => prev.filter(item => 
-        !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText)
+        !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText && item.glitter === glitter)
       ));
     } else {
       setCart(prev => prev.map(item => 
-        item.id === id && item.selectedColor === color && item.ribbonText === ribbonText
+        item.id === id && item.selectedColor === color && item.ribbonText === ribbonText && item.glitter === glitter
           ? { ...item, quantity } 
           : item
       ));
@@ -92,9 +95,9 @@ export default function Home() {
   };
 
   // Remove from cart
-  const removeFromCart = (id: string, color: string, ribbonText: string) => {
+  const removeFromCart = (id: string, color: string, ribbonText: string, glitter: boolean) => {
     setCart(prev => prev.filter(item => 
-      !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText)
+      !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText && item.glitter === glitter)
     ));
   };
 
@@ -147,7 +150,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                Luxury preserved roses with sparkling crystals, golden butterflies, and personalized ribbons for life&apos;s most precious moments.
+                Luxury artificial roses with sparkling crystals, golden butterflies, and personalized ribbons for life&apos;s most precious moments.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                 <a href="#shop" className="btn-primary text-center">
@@ -201,7 +204,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { icon: '∞', title: 'Lasts 1+ Years', desc: 'Premium preserved roses that maintain their beauty' },
+              { icon: '∞', title: 'Lasts for Eternity', desc: 'Premium artificial roses that maintain their beauty forever' },
               { icon: '✋', title: 'Handcrafted', desc: 'Each arrangement made to order with care' },
               { icon: '🎁', title: 'Gift Ready', desc: 'Beautiful packaging with personalized messages' },
               { icon: '🚚', title: 'Fast Delivery', desc: 'Made to order and shipped within 3-5 days' },
@@ -377,10 +380,14 @@ export default function Home() {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Rose Color</label>
                     <select className="input-field">
                       <option>Choose color...</option>
+                      <option>Pink</option>
+                      <option>Red</option>
                       <option>Royal Blue</option>
-                      <option>Classic Red</option>
-                      <option>Soft Pink</option>
-                      <option>Royal Purple</option>
+                      <option>White</option>
+                      <option>Peach</option>
+                      <option>Emerald Green</option>
+                      <option>Purple</option>
+                      <option>Pink with Gold</option>
                     </select>
                   </div>
                 </div>
@@ -438,7 +445,7 @@ export default function Home() {
                 Crafted with Love & Sparkle
               </h2>
               <p className="text-lg text-gray-600 mb-4">
-                Each Eternal Bloom arrangement is handcrafted to order using premium preserved roses that last for years. We add sparkling crystals, delicate golden butterflies, and personalized touches to create unforgettable gifts.
+                Each Eternal Bloom arrangement is handcrafted to order using premium artificial roses that last for years. We add sparkling crystals, delicate golden butterflies, and personalized touches to create unforgettable gifts.
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 From birthday celebrations with tiaras to romantic Valentine&apos;s surprises, every piece tells a story. Our signature Flower Purses combine fashion with floral art for a truly unique statement piece.
@@ -541,14 +548,18 @@ export default function Home() {
                 <span className="font-display text-2xl font-bold">Eternal Blooms</span>
               </div>
               <p className="text-gray-400 mb-6">
-                Luxury preserved roses that last forever. Handcrafted with love, crystals, and golden butterflies.
+                Luxury artificial roses that last forever. Handcrafted with love, crystals, and golden butterflies.
               </p>
               <div className="flex gap-4">
-                {['instagram', 'facebook', 'pinterest', 'tiktok'].map((social) => (
-                  <a key={social} href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                    <span className="text-lg">{social === 'instagram' ? '📸' : social === 'facebook' ? '👤' : social === 'pinterest' ? '📌' : '🎵'}</span>
-                  </a>
-                ))}
+                <a 
+                  href="https://instagram.com/chloe.eternal.flowers" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                  title="Follow us on Instagram @chloe.eternal.flowers"
+                >
+                  <span className="text-lg">📸</span>
+                </a>
               </div>
             </div>
             

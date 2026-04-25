@@ -3,7 +3,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  category: 'birthday' | 'valentine' | 'bouquet' | 'box' | 'purse' | 'thank-you';
+  category: 'birthday' | 'valentine' | 'bouquet' | 'box' | 'purse';
   colors: ('pink' | 'red' | 'royal-blue' | 'white' | 'peach' | 'emerald-green' | 'purple' | 'pink-gold')[];
   customizable: boolean;
   features: string[];
@@ -14,16 +14,15 @@ export interface Product {
 }
 
 export const products: Product[] = [
-  // BIRTHDAY COLLECTION
   {
     id: 'birthday-princess-pink',
     name: 'Birthday Princess Bouquet - Pink',
-    description: 'A beautiful pink bouquet with 12 sparkling roses, golden tiara, and custom age ribbon. Lasts 1+ years of beauty! The perfect gift to make her feel like royalty on her special day!',
+    description: 'A beautiful pink bouquet with 12 sparkling roses, golden tiara, and custom age ribbon. Eternal beauty that lasts forever! The perfect gift to make her feel like royalty on her special day!',
     price: 30,
     category: 'birthday',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
-    features: ['12 Preserved Roses', 'Golden Tiara', 'Custom Age Ribbon', 'Crystal Centers', 'Designer Wrapping'],
+    features: ['12 Artificial Roses', 'Golden Tiara', 'Custom Age Ribbon', 'Crystal Centers', 'Designer Wrapping'],
     image: '/images/pink-birthday-bouquet.jpg',
     gallery: ['/images/pink-birthday-bouquet.jpg'],
     bestseller: true,
@@ -31,22 +30,20 @@ export const products: Product[] = [
   {
     id: 'birthday-queen-red',
     name: 'Birthday Queen Bouquet - Red',
-    description: 'Our grandest birthday arrangement with 24 deep red sparkling roses, premium crystal tiara, and luxury designer wrapping with custom ribbon. Lasts 1+ years of beauty!',
+    description: 'Our grandest birthday arrangement with 24 deep red sparkling roses, premium crystal tiara, and luxury designer wrapping with custom ribbon. Eternal beauty that lasts forever!',
     price: 35,
     category: 'birthday',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
-    features: ['24 Preserved Roses', 'Crystal Tiara', 'Custom Ribbon Text', 'Golden Butterflies', 'Luxury Designer Paper'],
+    features: ['24 Artificial Roses', 'Crystal Tiara', 'Custom Ribbon Text', 'Golden Butterflies', 'Luxury Designer Paper'],
     image: '/images/red-birthday-bouquet.jpg',
     gallery: ['/images/red-birthday-bouquet.jpg', '/images/red-birthday-detail.jpg'],
     bestseller: true,
   },
-  
-  // VALENTINE'S COLLECTION
   {
     id: 'love-letter-box-blue',
     name: "Mum's Love Letter Box",
-    description: 'A beautiful tribute to Mum with our signature letter box arrangement. Features three sections of sparkling royal blue roses with a delicate butterfly accent. Lasts 1+ years of beauty!',
+    description: 'A beautiful tribute to Mum with our signature letter box arrangement. Features three sections of sparkling royal blue roses with a delicate butterfly accent. Eternal beauty that lasts forever!',
     price: 40,
     category: 'valentine',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
@@ -59,7 +56,7 @@ export const products: Product[] = [
   {
     id: 'valentine-heart-red',
     name: "Valentine's Romance Bouquet",
-    description: 'A romantic heart-shaped arrangement filled with vibrant red sparkling roses, pearl decorations, and a "Happy Valentine\'s Day" tag. Lasts 1+ years of beauty!',
+    description: 'A romantic heart-shaped arrangement filled with vibrant red sparkling roses, pearl decorations, and a "Happy Valentine\'s Day" tag. Eternal beauty that lasts forever!',
     price: 25,
     category: 'valentine',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
@@ -72,34 +69,19 @@ export const products: Product[] = [
   {
     id: 'valentine-bouquet-blue',
     name: 'Eternal Love Blue Bouquet',
-    description: 'Express your eternal love with this stunning blue rose bouquet featuring golden butterflies and crystal centers. Wrapped in elegant gold-trimmed paper. Lasts 1+ years of beauty!',
+    description: 'Express your eternal love with this stunning blue rose bouquet featuring golden butterflies and crystal centers. Wrapped in elegant gold-trimmed paper. Eternal beauty that lasts forever!',
     price: 25,
-    category: 'valentine',
+    category: 'bouquet',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: true,
     features: ['15 Blue Roses', 'Golden Butterflies', 'Crystal Centers', 'Premium Wrapping', 'Gift Card'],
     image: '/images/blue-bouquet-elegant.jpg',
     gallery: ['/images/blue-bouquet-elegant.jpg', '/images/blue-roses-detail.jpg'],
   },
-  
-  // BOUQUETS
-  {
-    id: 'royal-blue-bouquet',
-    name: 'Royal Blue Bouquet',
-    description: 'Majestic royal blue preserved roses with sparkling glitter finish, crystal centers, and golden butterfly accents. A truly regal gift for any occasion. Lasts 1+ years of beauty!',
-    price: 25,
-    category: 'bouquet',
-    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
-    customizable: true,
-    features: ['12 Blue Roses', 'Crystal Centers', 'Golden Butterflies', 'Luxury Wrapping', 'Ribbon Bow'],
-    image: '/images/blue-bouquet-elegant.jpg',
-    gallery: ['/images/blue-bouquet-elegant.jpg'],
-    bestseller: true,
-  },
   {
     id: 'pink-delight-bouquet',
     name: 'Pink Delight Bouquet',
-    description: 'Soft pink roses with gold trim details and delicate golden butterflies. Perfect for thank you gifts, birthdays, or just because. Lasts 1+ years of beauty!',
+    description: 'Soft pink roses with gold trim details and delicate golden butterflies. Perfect for thank you gifts, birthdays, or just because. Eternal beauty that lasts forever!',
     price: 25,
     category: 'bouquet',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
@@ -109,23 +91,9 @@ export const products: Product[] = [
     gallery: ['/images/pink-thankyou-bouquet.jpg'],
   },
   {
-    id: 'red-velvet-bouquet',
-    name: 'Red Velvet Sparkle Bouquet',
-    description: 'Rich red velvet-textured roses with sparkling glitter finish, crystal centers, and designer wrapping. The classic romantic choice. Lasts 1+ years of beauty!',
-    price: 30,
-    category: 'bouquet',
-    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
-    customizable: true,
-    features: ['12 Red Roses', 'Velvet Texture', 'Crystal Centers', 'Premium Wrapping', 'Optional Tiara'],
-    image: '/images/red-birthday-bouquet.jpg',
-    gallery: ['/images/red-birthday-bouquet.jpg'],
-  },
-  
-  // LETTER BOXES
-  {
     id: 'letter-box-purple',
     name: 'Purple Passion Letter Box',
-    description: 'Gorgeous purple roses arranged in our signature letter box style with three sections. Features a beautiful butterfly accent. Lasts 1+ years of beauty!',
+    description: 'Gorgeous purple roses arranged in our signature letter box style with three sections. Features a beautiful butterfly accent. Eternal beauty that lasts forever!',
     price: 45,
     category: 'box',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
@@ -137,7 +105,7 @@ export const products: Product[] = [
   {
     id: 'letter-box-blue',
     name: 'Royal Blue Letter Box',
-    description: 'Stunning blue roses in a sleek black letter box. Perfect for anniversaries, romantic gestures, or expressing gratitude. Lasts 1+ years of beauty!',
+    description: 'Stunning blue roses in a sleek black letter box. Perfect for anniversaries, romantic gestures, or expressing gratitude. Eternal beauty that lasts forever!',
     price: 45,
     category: 'box',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
@@ -146,47 +114,20 @@ export const products: Product[] = [
     image: '/images/blue-letter-box.jpg',
     gallery: ['/images/blue-letter-box.jpg'],
   },
-  
-  // FLOWER PURSES (Your unique product!)
   {
     id: 'flower-purse-purple',
     name: 'Royal Purple Flower Purse',
-    description: 'Our signature flower purse! A stunning wearable accessory featuring 6 purple sparkling roses, golden crown accent, and a chic gold chain strap. Truly unique! Lasts 1+ years of beauty!',
+    description: 'Our signature flower purse! A stunning wearable accessory featuring 6 purple sparkling roses, golden crown accent, and a chic gold chain strap. Truly unique! Eternal beauty that lasts forever!',
     price: 15,
     category: 'purse',
     colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
     customizable: false,
-    features: ['6 Preserved Roses', 'Golden Crown', 'Gold Chain Strap', 'Black Base', 'Purple Ribbon'],
+    features: ['6 Artificial Roses', 'Golden Crown', 'Gold Chain Strap', 'Black Base', 'Purple Ribbon'],
     image: '/images/purple-flower-purse.jpg',
     gallery: ['/images/purple-flower-purse.jpg'],
     new: true,
   },
-  {
-    id: 'flower-purse-pink',
-    name: 'Pink Petal Flower Purse',
-    description: 'A charming pink version of our exclusive flower purse. Features soft pink roses with golden butterfly accents and chain strap. Lasts 1+ years of beauty!',
-    price: 15,
-    category: 'purse',
-    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
-    customizable: false,
-    features: ['6 Pink Roses', 'Butterfly Accents', 'Chain Strap', 'Elegant Design', 'Gift Box'],
-    image: '/images/purple-flower-purse.jpg', // Use purple as placeholder until pink photo added
-    gallery: ['/images/purple-flower-purse.jpg'],
-  },
   
-  // THANK YOU COLLECTION
-  {
-    id: 'thank-you-pink',
-    name: 'Thank You Pink Bouquet',
-    description: 'Show your appreciation with this beautiful pink bouquet featuring golden butterflies and a "Thank You" card. Perfect for gratitude and appreciation. Lasts 1+ years of beauty!',
-    price: 20,
-    category: 'thank-you',
-    colors: ['pink', 'red', 'royal-blue', 'white', 'peach', 'emerald-green', 'purple', 'pink-gold'],
-    customizable: true,
-    features: ['8 Pink Roses', 'Gold Butterflies', 'Thank You Card', 'Elegant Wrapping', 'Crystal Centers'],
-    image: '/images/pink-thankyou-bouquet.jpg',
-    gallery: ['/images/pink-thankyou-bouquet.jpg'],
-  },
 ];
 
 export const categories = [
@@ -196,7 +137,6 @@ export const categories = [
   { id: 'bouquet', name: 'Bouquets', icon: '💐' },
   { id: 'box', name: 'Letter Boxes', icon: '🎁' },
   { id: 'purse', name: 'Flower Purses', icon: '👜' },
-  { id: 'thank-you', name: 'Thank You', icon: '🙏' },
 ];
 
 export const colors = [

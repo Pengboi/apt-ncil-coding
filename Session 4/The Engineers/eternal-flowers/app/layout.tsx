@@ -17,7 +17,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Eternal Blooms | Luxury Forever Flowers",
   description: "Handcrafted eternal roses with sparkling crystals, golden butterflies, and personalized ribbons. Beautiful bouquets, letter boxes, heart boxes, and unique flower purses that last for years.",
-  keywords: ["eternal flowers", "preserved roses", "luxury bouquets", "flower purses", "birthday flowers", "valentines flowers"],
+  keywords: ["eternal flowers", "artificial roses", "luxury bouquets", "flower purses", "birthday flowers", "valentines flowers"],
 };
 
 export default function RootLayout({

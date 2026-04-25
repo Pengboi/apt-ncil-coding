@@ -8,13 +8,14 @@ interface ProductModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (product: Product, color: string, ribbonText: string) => void;
+  onAddToCart: (product: Product, color: string, ribbonText: string, glitter: boolean) => void;
   initialColor?: string;
 }
 
 export default function ProductModal({ product, isOpen, onClose, onAddToCart, initialColor }: ProductModalProps) {
   const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors[0] || '');
   const [ribbonText, setRibbonText] = useState('');
+  const [glitter, setGlitter] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -37,9 +38,10 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
     if (isAdding || !product) return;
     
     setIsAdding(true);
-    console.log('Adding to cart:', product.id, product.name, 'Color:', selectedColor);
-    onAddToCart(product, selectedColor, ribbonText);
+    console.log('Adding to cart:', product.id, product.name, 'Color:', selectedColor, 'Glitter:', glitter);
+    onAddToCart(product, selectedColor, ribbonText, glitter);
     setRibbonText('');
+    setGlitter(false);
     setCurrentImageIndex(0);
     onClose();
   };
@@ -159,13 +161,30 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
               </div>
             )}
 
+            {/* Glitter Option */}
+            <div className="mb-6">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={glitter}
+                  onChange={(e) => setGlitter(e.target.checked)}
+                  className="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500"
+                />
+                <span className="font-semibold text-gray-900">Add Sparkling Glitter Finish</span>
+                <span className="text-purple-600 font-semibold">+£5</span>
+              </label>
+              <p className="text-xs text-gray-500 mt-1 ml-8">
+                Adds a beautiful glitter sparkle to your artificial roses
+              </p>
+            </div>
+
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
               className={`btn-primary w-full text-center ${isAdding ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isAdding ? 'Adding...' : `Add to Cart - £${product.price}`}
+              {isAdding ? 'Adding...' : `Add to Cart - £${product.price + (glitter ? 5 : 0)}`}
             </button>
 
             {/* Additional Info */}

@@ -8,6 +8,7 @@ interface CartItem extends Product {
   quantity: number;
   selectedColor?: string;
   ribbonText?: string;
+  glitter?: boolean;
 }
 
 interface CheckoutModalProps {
@@ -81,7 +82,7 @@ export default function CheckoutModal({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cartItems.reduce((sum, item) => sum + (item.price + (item.glitter ? 5 : 0)) * item.quantity, 0);
   const shippingCost = total >= 50 ? 0 : 4.99;
   const finalTotal = total + shippingCost;
 
@@ -570,10 +571,15 @@ export default function CheckoutModal({
                           Ribbon: "{item.ribbonText}"
                         </p>
                       )}
+                      {item.glitter && (
+                        <p className="text-xs text-purple-600 truncate">
+                          ✨ Glitter Finish (+£5)
+                        </p>
+                      )}
                       <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">£{(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-semibold text-gray-900">£{((item.price + (item.glitter ? 5 : 0)) * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}

@@ -8,14 +8,15 @@ interface CartItem extends Product {
   quantity: number;
   selectedColor?: string;
   ribbonText?: string;
+  glitter?: boolean;
 }
 
 interface ShoppingCartProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
-  onUpdateQuantity: (id: string, color: string, ribbonText: string, quantity: number) => void;
-  onRemoveItem: (id: string, color: string, ribbonText: string) => void;
+  onUpdateQuantity: (id: string, color: string, ribbonText: string, quantity: number, glitter: boolean) => void;
+  onRemoveItem: (id: string, color: string, ribbonText: string, glitter: boolean) => void;
   onClearCart?: () => void;
   onCheckout?: () => void;
 }
@@ -29,7 +30,7 @@ export default function ShoppingCart({
   onClearCart,
   onCheckout
 }: ShoppingCartProps) {
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cartItems.reduce((sum, item) => sum + (item.price + (item.glitter ? 5 : 0)) * item.quantity, 0);
 
   // Debug: Log cart items when they change
   useEffect(() => {
@@ -99,13 +100,18 @@ export default function ShoppingCart({
                         Ribbon: "{item.ribbonText}"
                       </p>
                     )}
-                    <p className="font-bold text-gray-900 mt-1">£{item.price}</p>
+                    {item.glitter && (
+                      <p className="text-sm text-purple-600 truncate">
+                        ✨ Glitter Finish (+£5)
+                      </p>
+                    )}
+                    <p className="font-bold text-gray-900 mt-1">£{item.price + (item.glitter ? 5 : 0)}</p>
                   </div>
 
                   {/* Quantity & Remove */}
                   <div className="flex flex-col items-end justify-between">
                     <button 
-                      onClick={() => onRemoveItem(item.id, item.selectedColor || '', item.ribbonText || '')}
+                      onClick={() => onRemoveItem(item.id, item.selectedColor || '', item.ribbonText || '', item.glitter || false)}
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,14 +120,14 @@ export default function ShoppingCart({
                     </button>
                     <div className="flex items-center gap-2 bg-white rounded-lg border">
                       <button 
-                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', Math.max(0, item.quantity - 1))}
+                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', Math.max(0, item.quantity - 1), item.glitter || false)}
                         className="px-3 py-1 hover:bg-gray-100 transition-colors"
                       >
                         -
                       </button>
                       <span className="w-8 text-center font-medium">{item.quantity}</span>
                       <button 
-                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', item.quantity + 1)}
+                        onClick={() => onUpdateQuantity(item.id, item.selectedColor || '', item.ribbonText || '', item.quantity + 1, item.glitter || false)}
                         className="px-3 py-1 hover:bg-gray-100 transition-colors"
                       >
                         +
