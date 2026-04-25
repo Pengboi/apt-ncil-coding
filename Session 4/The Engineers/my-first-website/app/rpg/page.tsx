@@ -5,7 +5,6 @@ import Navigation from '../components/Navigation';
 import CharacterCreator from './components/CharacterCreator';
 import CharacterSheet from './components/CharacterSheet';
 import BattleArena from './components/BattleArena';
-import BattleArena from './components/BattleArena';
 import { Character, calculateDerivedStats, POINTS_PER_LEVEL, BattleReward, Item } from './types';
 import { getClassById } from './data/classes';
 import { Monster, getRandomMonster, calculateRewards } from './data/monsters';

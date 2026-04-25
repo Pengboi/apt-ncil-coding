@@ -618,6 +618,70 @@ export function generateDrop(round: number, isBoss: boolean = false): Item | nul
   return common[Math.floor(Math.random() * common.length)] || null;
 }
 
+// Roll for item drops based on monster rarity and player luck
+// Returns array of item IDs
+export function rollItemDrops(rarity: string, playerLuck: number = 0): string[] {
+  const drops: string[] = [];
+  
+  // Base drop chances by monster rarity
+  const baseChances: Record<string, number> = {
+    common: 0.15,
+    uncommon: 0.25,
+    rare: 0.40,
+    epic: 0.60,
+    boss: 1.0, // Guaranteed drops from bosses
+  };
+  
+  const baseChance = baseChances[rarity] || 0.1;
+  const luckBonus = playerLuck * 0.005; // Each luck point adds 0.5% chance
+  const finalChance = Math.min(0.95, baseChance + luckBonus);
+  
+  // Roll for drop
+  if (Math.random() < finalChance) {
+    // Determine what rarity of item drops
+    const rarityRoll = Math.random();
+    let dropRarity: ItemRarity;
+    
+    if (rarity === 'boss') {
+      // Bosses drop better items
+      if (rarityRoll < 0.3) dropRarity = 'rare';
+      else if (rarityRoll < 0.6) dropRarity = 'epic';
+      else dropRarity = 'legendary';
+    } else {
+      // Regular drops
+      if (rarityRoll < 0.5) dropRarity = 'common';
+      else if (rarityRoll < 0.8) dropRarity = 'uncommon';
+      else if (rarityRoll < 0.95) dropRarity = 'rare';
+      else dropRarity = 'epic';
+    }
+    
+    // Get items of that rarity (not materials)
+    const possibleItems = ALL_ITEMS.filter(
+      item => item.rarity === dropRarity && item.type !== 'material'
+    );
+    
+    if (possibleItems.length > 0) {
+      const droppedItem = possibleItems[Math.floor(Math.random() * possibleItems.length)];
+      if (droppedItem) {
+        drops.push(droppedItem.id);
+      }
+    }
+  }
+  
+  // Bosses get a second roll for extra drops
+  if (rarity === 'boss' && Math.random() < 0.5) {
+    const extraDrop = ALL_ITEMS.filter(
+      item => (item.rarity === 'epic' || item.rarity === 'legendary') && item.type !== 'material'
+    );
+    if (extraDrop.length > 0) {
+      const item = extraDrop[Math.floor(Math.random() * extraDrop.length)];
+      if (item) drops.push(item.id);
+    }
+  }
+  
+  return drops;
+}
+
 // Rarity colors for UI
 export const RARITY_COLORS: Record<ItemRarity, string> = {
   common: '#95a5a6',
