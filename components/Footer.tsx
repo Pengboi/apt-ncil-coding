@@ -130,8 +130,8 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-[#2563eb] flex-shrink-0" />
-                <a href="mailto:hello@visionelectric.co.uk" className="hover:text-[#2563eb] transition-colors">
-                  hello@visionelectric.co.uk
+                <a href="mailto:info@visionelectric.co.uk" className="hover:text-[#2563eb] transition-colors">
+                  info@visionelectric.co.uk
                 </a>
               </li>
             </ul>
