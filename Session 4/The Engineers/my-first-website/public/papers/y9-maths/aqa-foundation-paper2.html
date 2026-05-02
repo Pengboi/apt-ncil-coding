@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 9 Maths - AQA Foundation Paper 2 (Calculator)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #000;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        .exam-header {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .exam-header h1 { font-size: 18px; margin-bottom: 10px; text-transform: uppercase; }
+        .exam-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .instructions {
+            border: 1px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+        .instructions h2 { font-size: 14px; margin-bottom: 10px; }
+        .instructions ul { margin-left: 20px; font-size: 13px; }
+        .instructions li { margin-bottom: 5px; }
+        .question { margin-bottom: 25px; page-break-inside: avoid; }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .question-number { font-weight: bold; font-size: 14px; }
+        .marks { background: #000; color: #fff; padding: 2px 8px; font-size: 12px; }
+        .question-text { font-size: 14px; margin-bottom: 10px; }
+        .answer-space { border: 1px solid #ddd; min-height: 80px; background: #fafafa; margin-top: 10px; }
+        .diagram { text-align: center; margin: 15px 0; padding: 20px; border: 1px solid #ddd; font-style: italic; color: #666; }
+        @media print {
+            body { padding: 10px; }
+            .question { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="exam-header">
+        <h1>Year 9 Mathematics</h1>
+        <h2>AQA Style Practice Paper</h2>
+        <div class="exam-details">
+            <span><strong>Paper 2:</strong> Calculator</span>
+            <span><strong>Time:</strong> 1 hour</span>
+            <span><strong>Marks:</strong> 60</span>
+            <span><strong>Tier:</strong> Foundation</span>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>Instructions</h2>
+        <ul>
+            <li>Use black ink or black ball-point pen. You may use pencil for diagrams.</li>
+            <li>Answer all questions.</li>
+            <li>You must answer the questions in the spaces provided.</li>
+            <li>Do all rough work in this book. Cross through any work you do not want to be marked.</li>
+            <li>You may use a calculator for this paper.</li>
+            <li>The marks for questions are shown in brackets.</li>
+            <li>The maximum mark for this paper is 60.</li>
+        </ul>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 1</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Use your calculator to work out: √144 + 5²</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 2</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A cuboid has dimensions 8 cm × 5 cm × 4 cm.</p>
+            <p>(a) Calculate the volume.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) Calculate the surface area.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 3</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Calculate the area of a circle with radius 6 cm. (Use π = 3.14)</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 4</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>(a) Convert 2.5 kg to grams.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) Convert 4500 metres to kilometres.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 5</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A triangle has base 12 cm and height 7 cm.</p>
+            <p>(a) Calculate the area of the triangle.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) A similar triangle has base 18 cm. Calculate its height.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 6</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Here are the test scores of 10 students: 45, 52, 48, 61, 55, 52, 49, 58, 52, 48</p>
+            <p>(a) Calculate the mean score.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) Find the median score.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 7</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A car travels 180 miles in 3 hours 45 minutes. Calculate the average speed.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 8</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Work out: 3.6 × 2.5</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">Work out: 12.6 ÷ 0.3</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 9</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A rectangular garden is 15 m long and 8 m wide. A path of width 1 m goes around the edge.</p>
+            <p>Calculate the area of the path.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 10</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Calculate the circumference of a circle with diameter 10 cm. (Use π = 3.14)</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 11</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Sarah buys 8 books for £3.99 each and 5 pens for £1.25 each.</p>
+            <p>How much does she spend altogether?</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 12</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A train leaves at 14:30 and arrives at 17:45. How long is the journey?</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 13</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Find the size of each interior angle of a regular hexagon.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 14</span>
+            <span class="marks">5 marks</span>
+        </div>
+        <div class="question-text">
+            <p>In a right-angled triangle, the two shorter sides are 6 cm and 8 cm.</p>
+            <p>(a) Calculate the length of the hypotenuse.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) Another right-angled triangle has sides 9 cm and 12 cm. Calculate the hypotenuse.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 15</span>
+            <span class="marks">3 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A bag contains 5 red, 3 blue, and 2 green counters. A counter is picked at random. What is the probability it is not red?</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 16</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Draw a reflection of the shape in the mirror line.</p>
+            <div class="diagram">[Diagram: Shape with mirror line - triangle with vertices at (1,1), (3,1), (2,3) with mirror line x=4]</div>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 17</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>A recipe for 6 people needs 300g of flour. How much flour is needed for 15 people?</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-header">
+            <span class="question-number">Question 18</span>
+            <span class="marks">4 marks</span>
+        </div>
+        <div class="question-text">
+            <p>Plot the points A(2, 3), B(5, 3), and C(5, 7) on a coordinate grid.</p>
+            <p>(a) Join the points to form a triangle.</p>
+            <div class="answer-space"></div>
+            <p style="margin-top: 15px;">(b) Calculate the area of the triangle.</p>
+            <div class="answer-space"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #000;">
+        <p><strong>END OF PAPER</strong></p>
+        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+            Total marks: 60<br>
+            Time allowed: 1 hour<br>
+            Remember to check all your answers!
+        </p>
+    </div>
+
+    <div style="page-break-before: always; margin-top: 40px;">
+        <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px;">
+            MARK SCHEME
+        </h2>
+        <div style="font-size: 13px;">
+            <p><strong>Question 1 (3 marks)</strong></p>
+            <p>√144 = 12 ✓, 5² = 25 ✓, 12 + 25 = 37 ✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 2 (4 marks)</strong></p>
+            <p>(a) 8 × 5 × 4 = 160 cm³ ✓✓ (2)</p>
+            <p>(b) 2(8×5 + 8×4 + 5×4) = 2(40 + 32 + 20) = 184 cm² ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 3 (3 marks)</strong></p>
+            <p>Area = π × 6² = 3.14 × 36 = 113.04 cm² ✓✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 4 (4 marks)</strong></p>
+            <p>(a) 2500 g ✓✓ (2)</p>
+            <p>(b) 4.5 km ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 5 (4 marks)</strong></p>
+            <p>(a) ½ × 12 × 7 = 42 cm² ✓✓ (2)</p>
+            <p>(b) Scale factor = 18/12 = 1.5, height = 7 × 1.5 = 10.5 cm ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 6 (4 marks)</strong></p>
+            <p>(a) Sum = 520, mean = 520/10 = 52 ✓✓ (2)</p>
+            <p>(b) Ordered: 45, 48, 48, 49, 52, 52, 52, 55, 58, 61, median = (52+52)/2 = 52 ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 7 (3 marks)</strong></p>
+            <p>3 hours 45 minutes = 3.75 hours ✓, speed = 180/3.75 = 48 mph ✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 8 (4 marks)</strong></p>
+            <p>3.6 × 2.5 = 9 ✓✓ (2)</p>
+            <p>12.6 ÷ 0.3 = 42 ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 9 (4 marks)</strong></p>
+            <p>Outer rectangle = 17 × 10 = 170 m² ✓, inner = 15 × 8 = 120 m² ✓, path = 50 m² ✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 10 (3 marks)</strong></p>
+            <p>Circumference = π × 10 = 3.14 × 10 = 31.4 cm ✓✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 11 (4 marks)</strong></p>
+            <p>Books: 8 × £3.99 = £31.92 ✓, pens: 5 × £1.25 = £6.25 ✓, total = £38.17 ✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 12 (3 marks)</strong></p>
+            <p>14:30 to 17:30 = 3 hours ✓, to 17:45 = 15 minutes ✓, total 3 hours 15 minutes ✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 13 (4 marks)</strong></p>
+            <p>Sum of interior angles = (6-2) × 180 = 720° ✓✓, each angle = 720/6 = 120° ✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 14 (5 marks)</strong></p>
+            <p>(a) √(6² + 8²) = √(36 + 64) = √100 = 10 cm ✓✓✓ (3)</p>
+            <p>(b) √(9² + 12²) = √(81 + 144) = √225 = 15 cm ✓✓ (2)</p>
+
+            <p style="margin-top: 15px;"><strong>Question 15 (3 marks)</strong></p>
+            <p>Total = 10, not red = 5 ✓, probability = 5/10 = ½ ✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 16 (4 marks)</strong></p>
+            <p>Correct reflection with vertices at (5,1), (7,1), (6,3) ✓✓✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 17 (4 marks)</strong></p>
+            <p>300g ÷ 6 = 50g per person ✓, 15 × 50g = 750g ✓✓✓</p>
+
+            <p style="margin-top: 15px;"><strong>Question 18 (4 marks)</strong></p>
+            <p>(a) Points plotted correctly ✓✓ (2)</p>
+            <p>(b) Base = 3, height = 4, area = ½ × 3 × 4 = 6 units² ✓✓ (2)</p>
+        </div>
+
+        <div style="margin-top: 30px; padding: 15px; background: #f0f0f0; border: 1px solid #ccc;">
+            <p><strong>Grade Boundaries (estimated for Year 9):</strong></p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Grade 3: 15-20 marks</li>
+                <li>Grade 4: 21-28 marks</li>
+                <li>Grade 5: 29-36 marks</li>
+                <li>Grade 6: 37-45 marks</li>
+                <li>Grade 7+: 46+ marks</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
