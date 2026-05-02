@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Julieta - Professional Hair Styling Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --soft-pink: #FFB6C1;
+            --lavender: #E6E6FA;
+            --mint: #98FF98;
+            --peach: #FFDAB9;
+            --bold-pink: #FF69B4;
+            --bold-lavender: #9370DB;
+            --bold-mint: #3CB371;
+            --text-dark: #2C2C2C;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--white) 0%, var(--soft-pink) 50%, var(--lavender) 100%);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,182,193,0.3) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 3px 3px 0px var(--bold-pink),
+                         6px 6px 0px rgba(147, 112, 219, 0.3);
+            letter-spacing: 3px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-top: 0.5rem;
+            font-weight: 300;
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--white);
+            padding: 1rem;
+            box-shadow: 0 2px 20px rgba(255, 105, 180, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: var(--soft-pink);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--white) 0%, var(--lavender) 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--bold-pink);
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        /* Services Section - Leaflet Style */
+        .services {
+            padding: 4rem 2rem;
+            background: var(--white);
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .services-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .services-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .leaflet {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.15);
+            overflow: hidden;
+            border: 3px solid var(--soft-pink);
+        }
+
+        .leaflet-header {
+            background: linear-gradient(135deg, var(--soft-pink) 0%, var(--lavender) 50%, var(--mint) 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .leaflet-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--white);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .leaflet-content {
+            padding: 2rem;
+        }
+
+        .service-category {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(255,182,193,0.1) 0%, rgba(230,230,250,0.1) 100%);
+            border-radius: 15px;
+            border-left: 5px solid var(--bold-pink);
+            transition: all 0.3s ease;
+        }
+
+        .service-category:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .service-category:nth-child(2) {
+            border-left-color: var(--bold-lavender);
+        }
+
+        .service-category:nth-child(3) {
+            border-left-color: var(--bold-mint);
+        }
+
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-item {
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .service-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .service-price {
+            font-weight: 600;
+            color: var(--bold-pink);
+            font-size: 1.1rem;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--soft-pink) 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+        }
+
+        .contact-info {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .contact-item {
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .contact-item strong {
+            color: var(--bold-pink);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px) rotate(10deg);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+
+            .services-header h2 {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+            }
+
+            nav a {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .service-list {
+                grid-template-columns: 1fr;
+            }
+
+            .leaflet {
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>HAIR BY JULIETA</h1>
+            <p class="tagline">Where Beauty Meets Artistry</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="welcome.html">Welcome</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="leaflet.html">Services</a></li>
+            <li><a href="events-booking.html">Events & Parties 🎉</a></li>
+            <li><a href="booking.html">Book Now</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="home">
+        <h2>Transform Your Look</h2>
+        <p>Experience the magic of professional hair styling with Julieta. From classic cuts to modern color techniques, we create looks that make you feel confident and beautiful.</p>
+        <a href="#contact" class="cta-button">Book Your Appointment</a>
+    </section>
+
+    <section class="services" id="services">
+        <div class="services-header">
+            <h2>Our Services</h2>
+            <p>Professional hair care tailored to your unique style</p>
+        </div>
+
+        <div class="leaflet">
+            <div class="leaflet-header">
+                <h3>Service Menu</h3>
+            </div>
+            <div class="leaflet-content">
+                <!-- Cuts Section -->
+                <div class="service-category">
+                    <div class="category-title">
+                        <span class="category-icon">✂️</span>
+                        Cuts
+                    </div>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <span class="service-name">Trims</span>
+                            <span class="service-price">From £20</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Layers</span>
+                            <span class="service-price">From £35</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Bob Cut</span>
+                            <span class="service-price">From £30</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Pixie Cut</span>
+                            <span class="service-price">From £25</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Fringe Trim</span>
+                            <span class="service-price">£10</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Restyle Cut</span>
+                            <span class="service-price">From £45</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colour Section -->
+                <div class="service-category">
+                    <div class="category-title">
+                        <span class="category-icon">🎨</span>
+                        Colour & Dye
+                    </div>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <span class="service-name">Highlights</span>
+                            <span class="service-price">From £60</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Balayage</span>
+                            <span class="service-price">From £85</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Full Head Colour</span>
+                            <span class="service-price">From £70</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Root Touch Up</span>
+                            <span class="service-price">From £45</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Ombre</span>
+                            <span class="service-price">From £80</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Colour Correction</span>
+                            <span class="service-price">From £100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Styling Section -->
+                <div class="service-category">
+                    <div class="category-title">
+                        <span class="category-icon">💇‍♀️</span>
+                        Styling
+                    </div>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <span class="service-name">Blow Dry</span>
+                            <span class="service-price">From £25</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Curls</span>
+                            <span class="service-price">From £30</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Straightening</span>
+                            <span class="service-price">From £30</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Wash & Blow Dry</span>
+                            <span class="service-price">From £20</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Updo / Special Occasion</span>
+                            <span class="service-price">From £50</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Bridal Hair</span>
+                            <span class="service-price">From £80</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Deep Conditioning Treatment</span>
+                            <span class="service-price">From £25</span>
+                        </div>
+                        <div class="service-item">
+                            <span class="service-name">Hair Mask Treatment</span>
+                            <span class="service-price">From £20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <h2>Get In Touch</h2>
+        <div class="contact-info">
+            <div class="contact-item">
+                <strong>📞 Phone</strong>
+                [Your Phone Number]
+            </div>
+            <div class="contact-item">
+                <strong>📧 Email</strong>
+                [Your Email Address]
+            </div>
+            <div class="contact-item">
+                <strong>📍 Location</strong>
+                [Your Salon Address]
+            </div>
+            <div class="contact-item">
+                <strong>🕒 Opening Hours</strong>
+                Monday - Saturday: 9:00 AM - 6:00 PM<br>
+                Sunday: Closed
+            </div>
+            
+            <div class="social-links">
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="Facebook">👥</a>
+                <a href="#" title="WhatsApp">💬</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Hair by Julieta. All rights reserved. | Professional Hair Styling Services</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe service categories
+        document.querySelectorAll('.service-category').forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Julieta - Book Events, Parties & Birthdays</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --soft-pink: #FFB6C1;
+            --lavender: #E6E6FA;
+            --mint: #98FF98;
+            --bold-pink: #FF69B4;
+            --bold-lavender: #9370DB;
+            --bold-mint: #3CB371;
+            --text-dark: #2C2C2C;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--soft-pink) 50%, var(--mint) 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .events-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+        }
+
+        .events-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 
+                4px 4px 0px var(--bold-pink),
+                8px 8px 0px rgba(147, 112, 219, 0.3);
+            letter-spacing: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .events-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text-dark);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+
+        /* Event Cards */
+        .events-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .event-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .event-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            border: 4px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 105, 180, 0.4);
+        }
+
+        .event-card:nth-child(1) {
+            border-color: var(--bold-pink);
+        }
+
+        .event-card:nth-child(2) {
+            border-color: var(--bold-lavender);
+        }
+
+        .event-card:nth-child(3) {
+            border-color: var(--bold-mint);
+        }
+
+        .event-card:nth-child(4) {
+            border-color: var(--bold-pink);
+        }
+
+        .event-card:nth-child(5) {
+            border-color: var(--bold-lavender);
+        }
+
+        .event-card:nth-child(6) {
+            border-color: var(--bold-mint);
+        }
+
+        .event-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .event-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-desc {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .event-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--bold-pink);
+            font-weight: 700;
+        }
+
+        .select-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .select-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .select-btn.selected {
+            background: var(--bold-mint);
+        }
+
+        /* Booking Form Container */
+        .booking-form-container {
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.2);
+            overflow: hidden;
+            border: 5px solid var(--soft-pink);
+            max-width: 900px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .booking-form-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--white);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .form-body {
+            padding: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label span {
+            color: var(--bold-pink);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 3px solid var(--lavender);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--bold-pink);
+            box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .datetime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            padding: 1.2rem 4rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.6);
+        }
+
+        /* Back Link */
+        .back-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--white);
+            color: var(--bold-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 3px solid var(--bold-pink);
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .back-link:hover {
+            background: var(--bold-pink);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, var(--bold-mint) 0%, #2E8B57 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .success-message h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .events-title {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+
+            .events-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .event-types {
+                grid-template-columns: 1fr;
+            }
+
+            .datetime-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="events-header">
+        <h1 class="events-title">HAIR BY JULIETA</h1>
+        <p class="events-subtitle">Special Events & Party Bookings</p>
+    </div>
+
+    <div class="events-container">
+        <!-- Event Type Cards -->
+        <div class="event-types">
+            <div class="event-card" onclick="selectEvent('Birthday Party', 'birthday')">
+                <div class="event-icon">🎂</div>
+                <h3 class="event-name">Birthday Party</h3>
+                <p class="event-desc">Make your special day even more memorable with a stunning birthday hairstyle!</p>
+                <p class="event-price">From £45</p>
+                <button class="select-btn" id="btn-birthday">Select</button>
+            </div>
+
+            <div class="event-card" onclick="selectEvent('Prom Night', 'prom')">
+                <div class="event-icon">👗</div>
+                <h3 class="event-name">Prom Night</h3>
+                <p class="event-desc">Turn heads at your prom with an elegant updo or glamorous curls!</p>
+                <p class="event-price">From £60</p>
+                <button class="select-btn" id="btn-prom">Select</button>
+            </div>
+
+            <div class="event-card" onclick="selectEvent('Wedding Party', 'wedding')">
+                <div class="event-icon">💍</div>
+                <h3 class="event-name">Wedding Party</h3>
+                <p class="event-desc">Bridal hair, bridesmaids styles, and mother of the bride looks!</p>
+                <p class="event-price">From £65</p>
+                <button class="select-btn" id="btn-wedding">Select</button>
+            </div>
+
+            <div class="event-card" onclick="selectEvent('Graduation', 'graduation')">
+                <div class="event-icon">🎓</div>
+                <h3 class="event-name">Graduation</h3>
+                <p class="event-desc">Celebrate your achievement with a sophisticated style for your big day!</p>
+                <p class="event-price">From £50</p>
+                <button class="select-btn" id="btn-graduation">Select</button>
+            </div>
+
+            <div class="event-card" onclick="selectEvent('Sweet 16', 'sweet16')">
+                <div class="event-icon">🎉</div>
+                <h3 class="event-name">Sweet 16</h3>
+                <p class="event-desc">Fabulous styles for the most important birthday of your teenage years!</p>
+                <p class="event-price">From £55</p>
+                <button class="select-btn" id="btn-sweet16">Select</button>
+            </div>
+
+            <div class="event-card" onclick="selectEvent('Group Party', 'group')">
+                <div class="event-icon">👯‍♀️</div>
+                <h3 class="event-name">Group Party</h3>
+                <p class="event-desc">Hen parties, girls night out, or any group celebration - special group rates!</p>
+                <p class="event-price">From £40/person</p>
+                <button class="select-btn" id="btn-group">Select</button>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form-container" id="bookingFormContainer">
+            <div class="form-header">
+                <h2>✨ Complete Your Booking ✨</h2>
+            </div>
+
+            <div class="form-body">
+                <div class="success-message" id="successMessage">
+                    <h3>🎉 Booking Request Sent!</h3>
+                    <p>Thank you! We'll contact you shortly to confirm your event booking.</p>
+                </div>
+
+                <form id="eventBookingForm">
+                    <input type="hidden" id="selectedEvent" name="eventType">
+
+                    <div class="form-group">
+                        <label class="form-label">Selected Event</label>
+                        <input type="text" class="form-input" id="displayEvent" readonly style="background: linear-gradient(135deg, rgba(255,182,193,0.1) 0%, rgba(230,230,250,0.1) 100%); font-weight: 600; color: var(--bold-pink);">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Name <span>*</span></label>
+                        <input type="text" class="form-input" name="fullName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number <span>*</span></label>
+                        <input type="tel" class="form-input" name="phone" required placeholder="Enter your phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" name="email" placeholder="Enter your email (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Number of People</label>
+                        <select class="form-select" name="people">
+                            <option value="1">Just me</option>
+                            <option value="2">2 people</option>
+                            <option value="3">3 people</option>
+                            <option value="4">4 people</option>
+                            <option value="5">5 people</option>
+                            <option value="6+">6+ people</option>
+                        </select>
+                    </div>
+
+                    <div class="datetime-grid">
+                        <div class="form-group">
+                            <label class="form-label">Event Date <span>*</span></label>
+                            <input type="date" class="form-input" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Preferred Time <span>*</span></label>
+                            <select class="form-select" name="time" required>
+                                <option value="">Select a time...</option>
+                                <option value="8:00 AM">8:00 AM</option>
+                                <option value="9:00 AM">9:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="1:00 PM">1:00 PM</option>
+                                <option value="2:00 PM">2:00 PM</option>
+                                <option value="3:00 PM">3:00 PM</option>
+                                <option value="4:00 PM">4:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Event Location</label>
+                        <select class="form-select" name="location">
+                            <option value="salon">At the Salon</option>
+                            <option value="venue">At Your Venue (Additional Fee)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hair Style Preference</label>
+                        <select class="form-select" name="style">
+                            <option value="">Select style...</option>
+                            <option value="updo">Elegant Updo</option>
+                            <option value="curls">Glamorous Curls</option>
+                            <option value="straight">Sleek & Straight</option>
+                            <option value="halfup">Half Up Half Down</option>
+                            <option value="braids">Braided Style</option>
+                            <option value="custom">Custom (discuss with stylist)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Details</label>
+                        <textarea class="form-textarea" name="notes" placeholder="Tell us more about your event, theme, dress colour, or any special requests..."></textarea>
+                    </div>
+
+                    <div class="submit-section">
+                        <button type="submit" class="submit-btn">✨ Confirm Booking ✨</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-section">
+        <a href="welcome.html" class="back-link">← Back to Welcome</a>
+        <a href="booking.html" class="back-link">Regular Booking →</a>
+        <a href="leaflet.html" class="back-link">View Services →</a>
+    </div>
+
+    <script>
+        function selectEvent(eventName, eventId) {
+            // Update hidden input
+            document.getElementById('selectedEvent').value = eventName;
+            document.getElementById('displayEvent').value = eventName;
+            
+            // Show booking form
+            document.getElementById('bookingFormContainer').classList.add('active');
+            
+            // Update button states
+            document.querySelectorAll('.select-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.textContent = 'Select';
+            });
+            
+            const selectedBtn = document.getElementById('btn-' + eventId);
+            selectedBtn.classList.add('selected');
+            selectedBtn.textContent = 'Selected ✓';
+            
+            // Scroll to form
+            document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('eventBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Scroll to top of form
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+            
+            // Reset form after 5 seconds
+            setTimeout(() => {
+                this.reset();
+                document.getElementById('successMessage').style.display = 'none';
+                document.querySelectorAll('.select-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.textContent = 'Select';
+                });
+                document.getElementById('bookingFormContainer').classList.remove('active');
+            }, 5000);
+        });
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[type="date"]').min = today;
+    </script>
+</body>
+</html>

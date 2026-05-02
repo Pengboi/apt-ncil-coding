@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Julieta - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --soft-pink: #FFB6C1;
+            --lavender: #E6E6FA;
+            --mint: #98FF98;
+            --bold-pink: #FF69B4;
+            --bold-lavender: #9370DB;
+            --bold-mint: #3CB371;
+            --text-dark: #2C2C2C;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--white) 0%, var(--soft-pink) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Welcome Hero */
+        .welcome-hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background Elements */
+        .welcome-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,182,193,0.4) 0%, transparent 70%);
+            animation: rotate 25s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: var(--soft-pink);
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            background: var(--lavender);
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background: var(--mint);
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(4) {
+            width: 50px;
+            height: 50px;
+            background: var(--bold-pink);
+            top: 40%;
+            right: 25%;
+            animation-delay: 1s;
+        }
+
+        .shape:nth-child(5) {
+            width: 70px;
+            height: 70px;
+            background: var(--peach);
+            bottom: 40%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        /* Content */
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 
+                5px 5px 0px var(--bold-pink),
+                10px 10px 0px rgba(147, 112, 219, 0.3),
+                15px 15px 30px rgba(0,0,0,0.1);
+            letter-spacing: 8px;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--bold-pink);
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .welcome-message {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Introduction Section */
+        .intro-section {
+            background: var(--white);
+            padding: 4rem 2rem;
+            margin-top: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.15);
+            max-width: 900px;
+            width: 100%;
+            animation: fadeInUp 1s ease-out 0.6s backwards;
+        }
+
+        .intro-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--bold-pink);
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            line-height: 1.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Services Overview */
+        .services-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .service-box {
+            background: linear-gradient(135deg, rgba(255,182,193,0.2) 0%, rgba(230,230,250,0.2) 100%);
+            padding: 1.5rem;
+            border-radius: 20px;
+            text-align: left;
+            border-left: 5px solid var(--bold-pink);
+            transition: all 0.3s ease;
+        }
+
+        .service-box:nth-child(2) {
+            border-left-color: var(--bold-lavender);
+        }
+
+        .service-box:nth-child(3) {
+            border-left-color: var(--bold-mint);
+        }
+
+        .service-box:nth-child(4) {
+            border-left-color: var(--bold-pink);
+        }
+
+        .service-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
+        }
+
+        .service-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-box ul {
+            list-style: none;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .service-box li {
+            margin: 0.5rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .service-box li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Button Group */
+        .button-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            animation: fadeInUp 1s ease-out 0.8s backwards;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--bold-pink);
+            border: 3px solid var(--bold-pink);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bold-pink);
+            color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .btn-events {
+            background: linear-gradient(135deg, var(--bold-lavender) 0%, var(--bold-mint) 100%);
+            color: var(--white);
+            border: 3px solid var(--bold-lavender);
+        }
+
+        .btn-events:hover {
+            background: linear-gradient(135deg, var(--bold-mint) 0%, var(--bold-lavender) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.5);
+        }
+
+        /* Features Preview */
+        .features-preview {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            padding: 2rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            color: var(--text-dark);
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3rem;
+                letter-spacing: 3px;
+            }
+
+            .subtitle {
+                font-size: 1.5rem;
+            }
+
+            .welcome-message {
+                font-size: 1.1rem;
+            }
+
+            .intro-title {
+                font-size: 1.8rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .features-preview {
+                gap: 1rem;
+            }
+
+            .services-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-hero">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <div class="welcome-content">
+            <div class="welcome-badge">✨ Welcome ✨</div>
+            
+            <h1 class="main-title">HAIR BY<br>JULIETA</h1>
+            
+            <p class="subtitle">Where Your Beauty Journey Begins</p>
+            
+            <p class="welcome-message">
+                Welcome to Hair by Julieta! This is your one-stop destination for all things hair. 
+                Whether you're looking for a fresh trim, stunning highlights, or a complete transformation, 
+                you've come to the right place. Browse our complete service menu and book your appointment 
+                today to experience the magic of professional hair styling!
+            </p>
+            
+            <!-- Introduction Section -->
+            <div class="intro-section">
+                <h2 class="intro-title">What We Offer 💕</h2>
+                
+                <p class="intro-text">
+                    At Hair by Julieta, we specialize in creating beautiful, confidence-boosting hairstyles 
+                    tailored just for you. From classic cuts to the latest colour trends, our comprehensive 
+                    range of services covers everything you need to look and feel your best. Explore our 
+                    service categories below and discover how we can help you achieve your dream hair!
+                </p>
+
+                <div class="services-overview">
+                    <div class="service-box">
+                        <h3>✂️ Cuts & Styles</h3>
+                        <ul>
+                            <li>Trims & Maintenance</li>
+                            <li>Layers & Textured Cuts</li>
+                            <li>Bobs & Pixie Cuts</li>
+                            <li>Side Bangs & Fringes</li>
+                            <li>Complete Restyles</li>
+                            <li>Men's & Children's Cuts</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-box">
+                        <h3>🎨 Colour & Dye</h3>
+                        <ul>
+                            <li>Highlights & Lowlights</li>
+                            <li>Balayage & Ombre</li>
+                            <li>Full Head Colour</li>
+                            <li>Root Touch-ups</li>
+                            <li>Fashion Colours</li>
+                            <li>Colour Correction</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-box">
+                        <h3>💇‍♀️ Styling & Care</h3>
+                        <ul>
+                            <li>Blow Dries & Curls</li>
+                            <li>Straightening</li>
+                            <li>Wash & Style</li>
+                            <li>Deep Conditioning</li>
+                            <li>Hair Treatments</li>
+                            <li>Scalp Treatments</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-box">
+                        <h3>👰 Special Occasions</h3>
+                        <ul>
+                            <li>Bridal Hair</li>
+                            <li>Wedding Party Styling</li>
+                            <li>Prom & Event Hair</li>
+                            <li>Elegant Updos</li>
+                            <li>Vintage Styles</li>
+                            <li>Braiding Services</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <a href="booking.html" class="btn btn-primary">✨ Book Your Appointment</a>
+                    <a href="events-booking.html" class="btn btn-events">🎉 Book Events & Parties</a>
+                    <a href="leaflet.html" class="btn btn-secondary">📋 View Full Price List</a>
+                    <a href="index.html" class="btn btn-secondary">🏠 Visit Home Page</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-preview">
+            <div class="feature-item">
+                <div class="feature-icon">✂️</div>
+                <div class="feature-text">Expert Cuts</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-text">Beautiful Colours</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💇‍♀️</div>
+                <div class="feature-text">Styling</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">👰</div>
+                <div class="feature-text">Bridal</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✨</div>
+                <div class="feature-text">Treatments</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

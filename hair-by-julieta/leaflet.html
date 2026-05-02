@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Julieta - Service Leaflet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --soft-pink: #FFB6C1;
+            --lavender: #E6E6FA;
+            --mint: #98FF98;
+            --bold-pink: #FF69B4;
+            --bold-lavender: #9370DB;
+            --bold-mint: #3CB371;
+            --text-dark: #2C2C2C;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--white) 0%, var(--soft-pink) 50%, var(--lavender) 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .leaflet-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.2);
+            overflow: hidden;
+            border: 5px solid var(--soft-pink);
+        }
+
+        .leaflet-header {
+            background: linear-gradient(135deg, var(--soft-pink) 0%, var(--lavender) 50%, var(--mint) 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leaflet-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .business-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 
+                4px 4px 0px var(--bold-pink),
+                8px 8px 0px rgba(147, 112, 219, 0.3),
+                12px 12px 0px rgba(255, 182, 193, 0.2);
+            letter-spacing: 5px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--white);
+            text-shadow: 2px 2px 0px rgba(147, 112, 219, 0.5);
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--white);
+            margin-top: 1rem;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .leaflet-body {
+            padding: 3rem;
+        }
+
+        .service-section {
+            margin-bottom: 2.5rem;
+            background: linear-gradient(135deg, rgba(255,182,193,0.1) 0%, rgba(230,230,250,0.1) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border-left: 8px solid var(--bold-pink);
+            transition: all 0.3s ease;
+        }
+
+        .service-section:nth-child(2) {
+            border-left-color: var(--bold-lavender);
+        }
+
+        .service-section:nth-child(3) {
+            border-left-color: var(--bold-mint);
+        }
+
+        .service-section:nth-child(4) {
+            border-left-color: var(--bold-pink);
+        }
+
+        .service-section:nth-child(5) {
+            border-left-color: var(--bold-lavender);
+        }
+
+        .service-section:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.15);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--white);
+            text-shadow: 3px 3px 0px var(--bold-pink);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.25);
+            border-color: var(--soft-pink);
+        }
+
+        .service-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        .service-price {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--bold-pink);
+            font-size: 1.3rem;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+
+        .footer-section {
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--soft-pink) 100%);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .contact-info {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .contact-details {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .special-note {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .business-name {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+
+            .subtitle {
+                font-size: 1.3rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .leaflet-body {
+                padding: 1.5rem;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .leaflet-container {
+                box-shadow: none;
+                border: 2px solid var(--soft-pink);
+            }
+
+            .back-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="leaflet-container">
+        <div class="leaflet-header">
+            <h1 class="business-name">HAIR BY JULIETA</h1>
+            <p class="subtitle">Service Leaflet</p>
+            <p class="tagline">Complete Hair Services Menu</p>
+        </div>
+
+        <div class="leaflet-body">
+            <!-- CUTS SECTION -->
+            <div class="service-section">
+                <div class="section-title">
+                    <span class="section-icon">✂️</span>
+                    CUTS
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <span class="service-name">Side Bangs / Fringe</span>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Clipper Cut</span>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Split Ends Trim</span>
+                        <span class="service-price">£28</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Men's Cut</span>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Trims</span>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Pixie Cut</span>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Children's Cut</span>
+                        <span class="service-price">£32</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Bob Cut</span>
+                        <span class="service-price">£38</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Layers</span>
+                        <span class="service-price">£40</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Textured Cut</span>
+                        <span class="service-price">£42</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Long Layers</span>
+                        <span class="service-price">£45</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Restyle / Transformation</span>
+                        <span class="service-price">£55</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLOUR & DYE SECTION -->
+            <div class="service-section">
+                <div class="section-title">
+                    <span class="section-icon">🎨</span>
+                    COLOUR & DYE
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <span class="service-name">Toner / Gloss</span>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Root Touch Up</span>
+                        <span class="service-price">£125</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Highlights (T-Section)</span>
+                        <span class="service-price">£140</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Full Head Colour</span>
+                        <span class="service-price">£155</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Highlights (Half Head)</span>
+                        <span class="service-price">£170</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Ombre</span>
+                        <span class="service-price">£185</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Sombré</span>
+                        <span class="service-price">£200</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Balayage</span>
+                        <span class="service-price">£220</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Highlights (Full Head)</span>
+                        <span class="service-price">£240</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Bleach & Tone</span>
+                        <span class="service-price">£260</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Fashion Colour</span>
+                        <span class="service-price">£275+</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Colour Correction</span>
+                        <span class="service-price">£300+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STYLING SECTION -->
+            <div class="service-section">
+                <div class="section-title">
+                    <span class="section-icon">💇‍♀️</span>
+                    STYLING
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <span class="service-name">Blow Dry</span>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Blow Dry with Curls</span>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Straightening</span>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Wash & Blow Dry</span>
+                        <span class="service-price">£20</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Deep Conditioning</span>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Hair Mask Treatment</span>
+                        <span class="service-price">£20</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Hot Oil Treatment</span>
+                        <span class="service-price">£28</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Scalp Treatment</span>
+                        <span class="service-price">£30</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPECIAL OCCASION SECTION -->
+            <div class="service-section">
+                <div class="section-title">
+                    <span class="section-icon">👰</span>
+                    SPECIAL OCCASION
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <span class="service-name">Updo</span>
+                        <span class="service-price">£55</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Bridal Hair</span>
+                        <span class="service-price">£85</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Bridal Party (per person)</span>
+                        <span class="service-price">£65</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Prom / Event Hair</span>
+                        <span class="service-price">£60</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Pin Curls / Vintage</span>
+                        <span class="service-price">£45</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Braiding</span>
+                        <span class="service-price">£35+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TREATMENTS SECTION -->
+            <div class="service-section">
+                <div class="section-title">
+                    <span class="section-icon">✨</span>
+                    TREATMENTS
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <span class="service-name">Keratin Treatment</span>
+                        <span class="service-price">£150+</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Brazilian Blow Dry</span>
+                        <span class="service-price">£130</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Perm</span>
+                        <span class="service-price">£80</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Relaxer</span>
+                        <span class="service-price">£75</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Hair Botox</span>
+                        <span class="service-price">£120</span>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-name">Olaplex Treatment</span>
+                        <span class="service-price">£35</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="special-note">
+                💕 All services include a complimentary consultation to achieve your perfect look! 💕
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <div class="contact-info">Get in Touch</div>
+            <div class="contact-details">
+                📞 Phone: [Your Number]<br>
+                📧 Email: [Your Email]<br>
+                📍 Address: [Your Location]<br>
+                🕒 Open: Mon-Sat 9am-6pm
+            </div>
+            <br>
+            <a href="welcome.html" class="back-link">← Welcome</a>
+            <a href="index.html" class="back-link">Home</a>
+            <a href="events-booking.html" class="back-link">🎉 Events</a>
+            <a href="booking.html" class="back-link">Book Now →</a>
+        </div>
+    </div>
+</body>
+</html>

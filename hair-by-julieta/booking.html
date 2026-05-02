@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair by Julieta - Book Your Appointment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --white: #FFFFFF;
+            --soft-pink: #FFB6C1;
+            --lavender: #E6E6FA;
+            --mint: #98FF98;
+            --bold-pink: #FF69B4;
+            --bold-lavender: #9370DB;
+            --bold-mint: #3CB371;
+            --text-dark: #2C2C2C;
+            --text-light: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--soft-pink) 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .booking-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+        }
+
+        .booking-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--white);
+            text-shadow: 
+                4px 4px 0px var(--bold-pink),
+                8px 8px 0px rgba(147, 112, 219, 0.3);
+            letter-spacing: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+
+        /* Container */
+        .booking-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.2);
+            overflow: hidden;
+            border: 5px solid var(--soft-pink);
+        }
+
+        /* Form Header */
+        .form-header {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--white);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .form-header p {
+            color: rgba(255,255,255,0.9);
+            margin-top: 0.5rem;
+        }
+
+        /* Form Body */
+        .form-body {
+            padding: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label span {
+            color: var(--bold-pink);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 3px solid var(--lavender);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--bold-pink);
+            box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Service Selection */
+        .service-category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--bold-pink);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--soft-pink);
+        }
+
+        .service-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(255,182,193,0.1) 0%, rgba(230,230,250,0.1) 100%);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .service-option:hover {
+            border-color: var(--bold-pink);
+            transform: translateY(-2px);
+        }
+
+        .service-option input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 1rem;
+            accent-color: var(--bold-pink);
+            cursor: pointer;
+        }
+
+        .service-option label {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        .service-price {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--bold-pink);
+            font-size: 1.1rem;
+        }
+
+        /* Date and Time */
+        .datetime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 3px solid var(--soft-pink);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--bold-pink) 0%, var(--bold-lavender) 100%);
+            color: var(--white);
+            padding: 1.2rem 4rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.6);
+        }
+
+        /* Back Link */
+        .back-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--white);
+            color: var(--bold-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 3px solid var(--bold-pink);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: var(--bold-pink);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Contact Info */
+        .contact-info-box {
+            background: linear-gradient(135deg, var(--lavender) 0%, var(--soft-pink) 100%);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .contact-info-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .contact-info-box p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, var(--bold-mint) 0%, #2E8B57 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .success-message h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .booking-title {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+
+            .booking-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .datetime-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-options {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-header">
+        <h1 class="booking-title">HAIR BY JULIETA</h1>
+        <p class="booking-subtitle">Book Your Appointment</p>
+    </div>
+
+    <div class="booking-container">
+        <div class="form-header">
+            <h2>✨ Schedule Your Visit ✨</h2>
+            <p>Fill in your details and we'll confirm your booking soon!</p>
+        </div>
+
+        <div class="form-body">
+            <div class="success-message" id="successMessage">
+                <h3>🎉 Booking Request Sent!</h3>
+                <p>Thank you! We'll contact you shortly to confirm your appointment.</p>
+            </div>
+
+            <form id="bookingForm">
+                <!-- Personal Details -->
+                <div class="form-group">
+                    <label class="form-label">Full Name <span>*</span></label>
+                    <input type="text" class="form-input" name="fullName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span>*</span></label>
+                    <input type="tel" class="form-input" name="phone" required placeholder="Enter your phone number">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" name="email" placeholder="Enter your email (optional)">
+                </div>
+
+                <!-- Service Selection -->
+                <h3 class="service-category-title">✂️ Choose Your Services</h3>
+                
+                <h4 style="color: var(--bold-pink); margin-bottom: 1rem;">Cuts</h4>
+                <div class="service-options">
+                    <div class="service-option">
+                        <input type="checkbox" id="sidebangs" name="services" value="Side Bangs">
+                        <label for="sidebangs">Side Bangs / Fringe</label>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="clipper" name="services" value="Clipper Cut">
+                        <label for="clipper">Clipper Cut</label>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="splitends" name="services" value="Split Ends Trim">
+                        <label for="splitends">Split Ends Trim</label>
+                        <span class="service-price">£28</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="mens" name="services" value="Men's Cut">
+                        <label for="mens">Men's Cut</label>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="trim" name="services" value="Trim">
+                        <label for="trim">Trims</label>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="pixie" name="services" value="Pixie Cut">
+                        <label for="pixie">Pixie Cut</label>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="childrens" name="services" value="Children's Cut">
+                        <label for="childrens">Children's Cut</label>
+                        <span class="service-price">£32</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="bob" name="services" value="Bob Cut">
+                        <label for="bob">Bob Cut</label>
+                        <span class="service-price">£38</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="layers" name="services" value="Layers">
+                        <label for="layers">Layers</label>
+                        <span class="service-price">£40</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="textured" name="services" value="Textured Cut">
+                        <label for="textured">Textured Cut</label>
+                        <span class="service-price">£42</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="longlayers" name="services" value="Long Layers">
+                        <label for="longlayers">Long Layers</label>
+                        <span class="service-price">£45</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="restyle" name="services" value="Restyle">
+                        <label for="restyle">Restyle / Transformation</label>
+                        <span class="service-price">£55</span>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--bold-pink); margin: 1.5rem 0 1rem;">🎨 Colour & Dye</h4>
+                <div class="service-options">
+                    <div class="service-option">
+                        <input type="checkbox" id="toner" name="services" value="Toner/Gloss">
+                        <label for="toner">Toner / Gloss</label>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="roots" name="services" value="Root Touch Up">
+                        <label for="roots">Root Touch Up</label>
+                        <span class="service-price">£125</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="fullcolour" name="services" value="Full Head Colour">
+                        <label for="fullcolour">Full Head Colour</label>
+                        <span class="service-price">£155</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="highlights-half" name="services" value="Highlights Half Head">
+                        <label for="highlights-half">Highlights (Half Head)</label>
+                        <span class="service-price">£170</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="ombre" name="services" value="Ombre">
+                        <label for="ombre">Ombre</label>
+                        <span class="service-price">£185</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="balayage" name="services" value="Balayage">
+                        <label for="balayage">Balayage</label>
+                        <span class="service-price">£220</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="highlights-full" name="services" value="Highlights Full Head">
+                        <label for="highlights-full">Highlights (Full Head)</label>
+                        <span class="service-price">£240</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="bleach" name="services" value="Bleach and Tone">
+                        <label for="bleach">Bleach & Tone</label>
+                        <span class="service-price">£260</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="fashion" name="services" value="Fashion Colour">
+                        <label for="fashion">Fashion Colour</label>
+                        <span class="service-price">£275+</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="correction" name="services" value="Colour Correction">
+                        <label for="correction">Colour Correction</label>
+                        <span class="service-price">£300+</span>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--bold-pink); margin: 1.5rem 0 1rem;">💇‍♀️ Styling & Washes</h4>
+                <div class="service-options">
+                    <div class="service-option">
+                        <input type="checkbox" id="blowdry" name="services" value="Blow Dry">
+                        <label for="blowdry">Blow Dry</label>
+                        <span class="service-price">£25</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="curls" name="services" value="Curls">
+                        <label for="curls">Curls</label>
+                        <span class="service-price">£35</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="straightening" name="services" value="Straightening">
+                        <label for="straightening">Straightening</label>
+                        <span class="service-price">£30</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="wash" name="services" value="Wash & Blow Dry">
+                        <label for="wash">Wash & Blow Dry</label>
+                        <span class="service-price">£20</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="treatment" name="services" value="Treatment">
+                        <label for="treatment">Deep Conditioning</label>
+                        <span class="service-price">£25</span>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--bold-pink); margin: 1.5rem 0 1rem;">👰 Special Occasion</h4>
+                <div class="service-options">
+                    <div class="service-option">
+                        <input type="checkbox" id="updo" name="services" value="Updo">
+                        <label for="updo">Updo</label>
+                        <span class="service-price">£55</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="bridal" name="services" value="Bridal Hair">
+                        <label for="bridal">Bridal Hair</label>
+                        <span class="service-price">£85</span>
+                    </div>
+                    <div class="service-option">
+                        <input type="checkbox" id="prom" name="services" value="Prom/Event">
+                        <label for="prom">Prom / Event Hair</label>
+                        <span class="service-price">£60</span>
+                    </div>
+                </div>
+
+                <!-- Date and Time -->
+                <h3 class="service-category-title">📅 Select Date & Time</h3>
+                <div class="datetime-grid">
+                    <div class="form-group">
+                        <label class="form-label">Preferred Date <span>*</span></label>
+                        <input type="date" class="form-input" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Preferred Time <span>*</span></label>
+                        <select class="form-select" name="time" required>
+                            <option value="">Select a time...</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Additional Notes -->
+                <div class="form-group">
+                    <label class="form-label">Additional Notes</label>
+                    <textarea class="form-textarea" name="notes" placeholder="Tell us about your hair, any allergies, or special requests..."></textarea>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">✨ Book My Appointment ✨</button>
+                </div>
+            </form>
+
+            <!-- Contact Info -->
+            <div class="contact-info-box">
+                <h3>📞 Questions?</h3>
+                <p>
+                    Call or WhatsApp: [Your Phone Number]<br>
+                    Email: [Your Email]<br>
+                    Location: [Your Address]<br>
+                    Open: Monday - Saturday, 9:00 AM - 6:00 PM
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-section">
+        <a href="welcome.html" class="back-link">← Back to Welcome Page</a>
+        <a href="events-booking.html" class="back-link">🎉 Book Events & Parties</a>
+    </div>
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Scroll to top
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+            
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                this.reset();
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        });
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[type="date"]').min = today;
+    </script>
+</body>
+</html>
