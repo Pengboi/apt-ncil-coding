@@ -48,22 +48,24 @@ export interface BattleReward {
 // ============================================
 
 export function getDifficultyMultiplier(round: number): number {
-  if (round <= 5) return 1.0;
-  if (round <= 9) return 1.1;
-  if (round === 10) return 1.0; // Boss 1 base
-  if (round <= 15) return 1.3;
-  if (round <= 19) return 1.4;
-  if (round === 20) return 1.3; // Boss 2 scaled
-  if (round <= 25) return 1.6;
-  if (round <= 29) return 1.8;
-  if (round === 30) return 1.6; // Boss 3 scaled
-  if (round <= 35) return 2.0;
-  if (round <= 39) return 2.2;
-  if (round === 40) return 2.0; // Boss 4 scaled
-  if (round <= 45) return 2.5;
-  if (round <= 49) return 2.8;
-  if (round === 50) return 2.5; // Boss 5 scaled
-  return 2.5 + (Math.floor((round - 50) / 5) * 0.1); // Endless scaling
+  // REVISED: Early rounds now have better scaling so enemies aren't pushovers
+  if (round === 1) return 1.0; // Starting round - normal
+  if (round <= 5) return 1.1 + (round * 0.05); // Rounds 2-5: 1.15, 1.2, 1.25, 1.3
+  if (round <= 9) return 1.3 + ((round - 5) * 0.05); // Gradual increase
+  if (round === 10) return 1.5; // Boss 1 - stronger
+  if (round <= 15) return 1.6;
+  if (round <= 19) return 1.8;
+  if (round === 20) return 2.0; // Boss 2
+  if (round <= 25) return 2.2;
+  if (round <= 29) return 2.5;
+  if (round === 30) return 2.8; // Boss 3
+  if (round <= 35) return 3.0;
+  if (round <= 39) return 3.3;
+  if (round === 40) return 3.5; // Boss 4
+  if (round <= 45) return 3.8;
+  if (round <= 49) return 4.0;
+  if (round === 50) return 4.5; // Boss 5 - ultimate challenge
+  return 4.5 + (Math.floor((round - 50) / 5) * 0.2); // Endless scaling - faster increase
 }
 
 export function getEnemyCountForRound(round: number): number {
@@ -299,24 +301,24 @@ export const BOSSES: Record<number, Monster> = {
 // ============================================
 
 export const REGULAR_MONSTERS: Monster[] = [
-  // COMMON - Level 1-5
+  // COMMON - Level 1-5 (BUFFED: Higher base stats for challenge)
   {
     id: 'bug_slime',
     name: 'Bug Slime',
     description: 'A glitched blob of corrupted code. The most basic enemy in the digital realm.',
     icon: '🐛',
     level: 1,
-    stats: { strength: 5, agility: 3, intelligence: 2, vitality: 4, luck: 3 },
-    maxHealth: 30,
-    attack: 8,
-    defense: 2,
-    speed: 3,
-    experienceReward: 15,
-    goldReward: 5,
-    dropChance: 0.15,
+    stats: { strength: 8, agility: 5, intelligence: 3, vitality: 6, luck: 4 },
+    maxHealth: 60,
+    attack: 15,
+    defense: 5,
+    speed: 5,
+    experienceReward: 20,
+    goldReward: 8,
+    dropChance: 0.20,
     dropTable: ['hp_potion_small'],
     abilities: [
-      { name: 'Glitch', description: 'Basic attack', damage: 8, cooldown: 0 },
+      { name: 'Glitch', description: 'Basic attack', damage: 15, cooldown: 0 },
     ],
     rarity: 'common',
     color: '#2ecc71',
@@ -327,17 +329,17 @@ export const REGULAR_MONSTERS: Monster[] = [
     description: 'A wild semicolon that escaped its line. Annoying but harmless.',
     icon: '❌',
     level: 2,
-    stats: { strength: 6, agility: 5, intelligence: 4, vitality: 5, luck: 4 },
-    maxHealth: 45,
-    attack: 12,
-    defense: 3,
-    speed: 5,
-    experienceReward: 25,
-    goldReward: 8,
-    dropChance: 0.18,
+    stats: { strength: 10, agility: 8, intelligence: 6, vitality: 8, luck: 5 },
+    maxHealth: 85,
+    attack: 20,
+    defense: 8,
+    speed: 8,
+    experienceReward: 35,
+    goldReward: 12,
+    dropChance: 0.25,
     dropTable: ['hp_potion_small', 'mp_potion_small'],
     abilities: [
-      { name: 'Missing Semicolon', description: 'Confuses the target', damage: 12, cooldown: 0 },
+      { name: 'Missing Semicolon', description: 'Confuses the target', damage: 20, cooldown: 0 },
     ],
     rarity: 'common',
     color: '#e74c3c',
@@ -348,18 +350,18 @@ export const REGULAR_MONSTERS: Monster[] = [
     description: 'Consumes more memory than it should. Hits harder than it looks.',
     icon: '📦',
     level: 3,
-    stats: { strength: 8, agility: 4, intelligence: 3, vitality: 7, luck: 2 },
-    maxHealth: 70,
-    attack: 15,
-    defense: 5,
-    speed: 2,
-    experienceReward: 40,
-    goldReward: 12,
-    dropChance: 0.20,
+    stats: { strength: 12, agility: 6, intelligence: 5, vitality: 10, luck: 3 },
+    maxHealth: 110,
+    attack: 25,
+    defense: 10,
+    speed: 5,
+    experienceReward: 50,
+    goldReward: 18,
+    dropChance: 0.28,
     dropTable: ['hp_potion_small'],
     abilities: [
-      { name: 'Stack Smash', description: 'Heavy hitting attack', damage: 18, cooldown: 2 },
-      { name: 'Memory Leak', description: 'Drains health over time', damage: 5, effect: 'dot', effectValue: 5, cooldown: 3 },
+      { name: 'Stack Smash', description: 'Heavy hitting attack', damage: 30, cooldown: 2 },
+      { name: 'Memory Leak', description: 'Drains health over time', damage: 8, effect: 'dot', effectValue: 8, cooldown: 3 },
     ],
     rarity: 'common',
     color: '#f39c12',
@@ -370,11 +372,11 @@ export const REGULAR_MONSTERS: Monster[] = [
     description: 'Never stops attacking. You must break the cycle!',
     icon: '🔄',
     level: 4,
-    stats: { strength: 6, agility: 8, intelligence: 5, vitality: 6, luck: 5 },
-    maxHealth: 55,
-    attack: 14,
-    defense: 4,
-    speed: 8,
+    stats: { strength: 10, agility: 12, intelligence: 7, vitality: 9, luck: 6 },
+    maxHealth: 95,
+    attack: 22,
+    defense: 8,
+    speed: 12,
     experienceReward: 55,
     goldReward: 15,
     dropChance: 0.22,
@@ -630,36 +632,41 @@ export const REGULAR_MONSTERS: Monster[] = [
 // SCALING FUNCTIONS
 // ============================================
 
-export function scaleMonster(monster: Monster, round: number): Monster {
-  const multiplier = getDifficultyMultiplier(round);
+export function scaleMonster(monster: Monster, round: number, playerLevel?: number): Monster {
+  const roundMultiplier = getDifficultyMultiplier(round);
+  
+  // NEW: Player level scaling - enemies get stronger as you level up
+  // This ensures enemies stay challenging throughout the game
+  const playerLevelMultiplier = playerLevel ? 1 + (playerLevel * 0.15) : 1; // +15% per player level
+  const combinedMultiplier = roundMultiplier * playerLevelMultiplier;
   
   return {
     ...monster,
-    maxHealth: Math.floor(monster.maxHealth * multiplier),
-    attack: Math.floor(monster.attack * multiplier),
-    defense: Math.floor(monster.defense * multiplier),
-    speed: Math.floor(monster.speed * (multiplier * 0.8)), // Speed scales slower
-    experienceReward: Math.floor(monster.experienceReward * multiplier),
-    goldReward: Math.floor(monster.goldReward * multiplier),
+    maxHealth: Math.floor(monster.maxHealth * combinedMultiplier),
+    attack: Math.floor(monster.attack * combinedMultiplier),
+    defense: Math.floor(monster.defense * combinedMultiplier),
+    speed: Math.floor(monster.speed * (combinedMultiplier * 0.8)), // Speed scales slower
+    experienceReward: Math.floor(monster.experienceReward * roundMultiplier), // XP only scales by round
+    goldReward: Math.floor(monster.goldReward * roundMultiplier), // Gold only scales by round
     // Higher multiplier = better item drop chance
-    dropChance: Math.min(0.9, monster.dropChance * (1 + (multiplier - 1) * 0.5)),
+    dropChance: Math.min(0.9, monster.dropChance * (1 + (combinedMultiplier - 1) * 0.5)),
     abilities: monster.abilities.map(a => ({
       ...a,
-      damage: a.damage ? Math.floor(a.damage * multiplier) : undefined,
-      healing: a.healing ? Math.floor(a.healing * multiplier) : undefined,
+      damage: a.damage ? Math.floor(a.damage * combinedMultiplier) : undefined,
+      healing: a.healing ? Math.floor(a.healing * combinedMultiplier) : undefined,
     })),
   };
 }
 
-export function getBossForRound(round: number): Monster | null {
+export function getBossForRound(round: number, playerLevel?: number): Monster | null {
   const boss = BOSSES[round];
   if (!boss) return null;
-  return scaleMonster(boss, round);
+  return scaleMonster(boss, round, playerLevel);
 }
 
-export function getMonstersForRound(round: number): Monster[] {
+export function getMonstersForRound(round: number, playerLevel?: number): Monster[] {
   if (isBossRound(round)) {
-    const boss = getBossForRound(round);
+    const boss = getBossForRound(round, playerLevel);
     return boss ? [boss] : [];
   }
   
@@ -673,13 +680,13 @@ export function getMonstersForRound(round: number): Monster[] {
   
   if (available.length === 0) {
     // Fallback to all monsters if no filter matches
-    return [scaleMonster(REGULAR_MONSTERS[0], round)];
+    return [scaleMonster(REGULAR_MONSTERS[0], round, playerLevel)];
   }
   
   const selected: Monster[] = [];
   for (let i = 0; i < count; i++) {
     const baseMonster = available[Math.floor(Math.random() * available.length)];
-    selected.push(scaleMonster(baseMonster, round));
+    selected.push(scaleMonster(baseMonster, round, playerLevel));
   }
   
   return selected;

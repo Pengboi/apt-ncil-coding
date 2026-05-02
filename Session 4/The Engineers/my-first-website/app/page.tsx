@@ -51,9 +51,9 @@ export default function Home() {
                     Enter the Realm
                   </button>
                 </Link>
-                <Link href="/projects">
+                <Link href="/about">
                   <button className="btn-secondary text-base">
-                    View Quests
+                    Read the Lore
                   </button>
                 </Link>
               </div>
@@ -62,15 +62,15 @@ export default function Home() {
               <div className="flex gap-8 pt-4">
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--arcane-cyan)] text-glow-cyan">
-                    30
+                    50+
                   </div>
-                  <div className="font-body text-sm text-[var(--text-muted)]">Epic Quests</div>
+                  <div className="font-body text-sm text-[var(--text-muted)]">Epic Rounds</div>
                 </div>
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--mystic-magenta)] text-glow-magenta">
                     5
                   </div>
-                  <div className="font-body text-sm text-[var(--text-muted)]">Sacred Disciplines</div>
+                  <div className="font-body text-sm text-[var(--text-muted)]">Hero Classes</div>
                 </div>
                 <div>
                   <div className="font-display text-3xl font-bold text-[var(--legendary-amber)] text-glow-amber">
@@ -180,15 +180,15 @@ export default function Home() {
                 href: "/rpg",
               },
               {
-                title: "Weapon Forge",
-                description: "Design legendary weapons with custom attributes and powerful enchantments.",
+                title: "Character Classes",
+                description: "Choose from 5 unique hero classes: Warrior, Rogue, Mage, Engineer, and Ranger.",
                 icon: "⚔️",
                 color: "var(--mystic-magenta)",
-                href: "/projects",
+                href: "/rpg",
               },
               {
-                title: "Quest Log",
-                description: "Track your coding quests and achievements throughout the camp sessions.",
+                title: "Epic Lore",
+                description: "Discover the history of Syntaxia and the Adventurers Academy.",
                 icon: "📜",
                 color: "var(--legendary-amber)",
                 href: "/about",

@@ -96,7 +96,8 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
   };
 
   const spawnEnemies = (currentRound: number) => {
-    const monsterData = getMonstersForRound(currentRound);
+    // NEW: Pass player level so enemies scale with you!
+    const monsterData = getMonstersForRound(currentRound, character.level);
     const activeMonsters = monsterData.map(m => ({
       ...m,
       currentHealth: m.maxHealth,
@@ -106,12 +107,18 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
     setEnemiesShake(new Array(activeMonsters.length).fill(false));
     setSelectedTarget(0);
     
+    // Log enemy stats for debugging
+    activeMonsters.forEach(m => {
+      console.log(`Enemy spawned: ${m.name} (HP: ${m.maxHealth}, ATK: ${m.attack}, DEF: ${m.defense})`);
+    });
+    
     if (isBossRound(currentRound)) {
       addLog(`⚠️ BOSS BATTLE: ${activeMonsters[0].name} appears!`, 'boss');
+      addLog(`BOSS HP: ${activeMonsters[0].maxHealth} | ATK: ${activeMonsters[0].attack}`, 'boss');
       recordBossAttempt(currentRound);
     } else {
       if (activeMonsters.length === 1) {
-        addLog(`A wild ${activeMonsters[0].name} appears!`, 'system');
+        addLog(`A wild ${activeMonsters[0].name} appears! (HP: ${activeMonsters[0].maxHealth})`, 'system');
       } else {
         addLog(`${activeMonsters.length} enemies appear!`, 'system');
       }

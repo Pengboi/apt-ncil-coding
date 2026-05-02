@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import CharacterCreator from './components/CharacterCreator';
 import CharacterSheet from './components/CharacterSheet';
@@ -593,7 +594,23 @@ export default function RPGPage() {
                       <span>⚔️</span> FIND BATTLE
                     </button>
                     
-
+                    {/* Inventory Button */}
+                    <Link href="/rpg/inventory" className="w-full">
+                      <button 
+                        className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[var(--arcane-cyan)] to-[#2980b9] font-display font-bold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      >
+                        <span>🎒</span> INVENTORY ({storageInventory.length})
+                      </button>
+                    </Link>
+                    
+                    {/* Shop Button */}
+                    <Link href="/rpg/shop" className="w-full">
+                      <button 
+                        className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[var(--legendary-amber)] to-[#d4ac0d] font-display font-bold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      >
+                        <span>🏪</span> MERCHANT (🪙{storageGold})
+                      </button>
+                    </Link>
                     
                     {/* Save Button */}
                     <button 

@@ -200,7 +200,19 @@ export const CONSUMABLE_ITEMS: Item[] = [
 // ============================================
 
 export const EQUIPMENT_ITEMS: Item[] = [
-  // Weapons
+  // Starter Weapons
+  {
+    id: 'wood_sword',
+    name: 'Wood Sword',
+    description: 'A basic wooden sword. Perfect for beginners.',
+    type: 'weapon',
+    rarity: 'common',
+    icon: '🗡️',
+    stats: { attack: 8 },
+    buyPrice: 50,
+    sellPrice: 25,
+    maxStack: 1,
+  },
   {
     id: 'keyboard_of_power',
     name: 'Keyboard of Power',
@@ -264,6 +276,18 @@ export const EQUIPMENT_ITEMS: Item[] = [
   
   // Armor
   {
+    id: 'wood_armor_plate',
+    name: 'Wood Armor Plate',
+    description: 'Basic wooden armor. Increases your health.',
+    type: 'armor',
+    rarity: 'common',
+    icon: '🛡️',
+    stats: { defense: 3, maxHealth: 30 },
+    buyPrice: 50,
+    sellPrice: 25,
+    maxStack: 1,
+  },
+  {
     id: 'monitor_shield',
     name: 'Monitor Shield',
     description: 'Blocks incoming damage',
@@ -325,6 +349,18 @@ export const EQUIPMENT_ITEMS: Item[] = [
   },
   
   // Accessories
+  {
+    id: 'silver_ring',
+    name: 'Silver Ring',
+    description: 'A simple silver ring that enhances your magical energy.',
+    type: 'accessory',
+    rarity: 'common',
+    icon: '💍',
+    stats: { maxMana: 25 },
+    buyPrice: 50,
+    sellPrice: 25,
+    maxStack: 1,
+  },
   {
     id: 'mouse_amulet',
     name: 'Mouse Amulet',
