@@ -343,7 +343,7 @@ export default function Home() {
       {/* Custom Order Section */}
       <section id="custom" className="section-padding">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-2xl mx-auto">
             <div>
               <p className="text-emerald-600 font-semibold mb-2">Personalized</p>
               <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -382,7 +382,6 @@ export default function Home() {
                       <option>Choose color...</option>
                       <option>Pink</option>
                       <option>Red</option>
-                      <option>Royal Blue</option>
                       <option>White</option>
                       <option>Peach</option>
                       <option>Emerald Green</option>
@@ -408,19 +407,7 @@ export default function Home() {
               </form>
             </div>
 
-            {/* Image Side */}
-            <div className="relative">
-              <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
-                <ProductImage 
-                  src="/images/blue-letter-box.jpg" 
-                  alt="Custom arrangement example"
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-amber-400 rounded-2xl flex items-center justify-center shadow-xl">
-                <span className="text-5xl">🎨</span>
-              </div>
-            </div>
+
           </div>
         </div>
       </section>
@@ -488,7 +475,7 @@ export default function Home() {
               },
               {
                 stars: 5,
-                text: "The blue roses in the letter box were absolutely stunning. My wife cried when she saw the 'I Love You' arrangement!",
+                text: "The purple roses in the letter box were absolutely stunning. My wife cried when she saw the beautiful arrangement!",
                 author: "Michael R.",
                 product: "Anniversary Gift"
               },
@@ -550,15 +537,28 @@ export default function Home() {
               <p className="text-gray-400 mb-6">
                 Luxury artificial roses that last forever. Handcrafted with love, crystals, and golden butterflies.
               </p>
-              <div className="flex gap-4">
-                <a 
-                  href="https://instagram.com/chloe.eternal.flowers" 
-                  target="_blank" 
+              <div className="flex items-center gap-4">
+                <span className="text-gray-400 text-sm">Follow us:</span>
+                <a
+                  href="https://instagram.com/chloe.eternal.flowers"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                  className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 rounded-full hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-300"
                   title="Follow us on Instagram @chloe.eternal.flowers"
                 >
-                  <span className="text-lg">📸</span>
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 12.685 2h.63zm-.081 1.802h-.468c-3.264 0-3.48.012-4.632.062-.878.04-1.353.188-1.67.312a2.999 2.999 0 00-1.108.721 2.999 2.999 0 00-.72 1.107c-.124.317-.272.792-.312 1.67-.05 1.153-.062 1.369-.062 4.632v.468c0 3.264.012 3.48.062 4.632.04.878.188 1.353.312 1.67.16.41.356.723.72 1.107.384.364.697.56 1.107.72.317.124.792.272 1.67.312 1.153.05 1.369.062 4.632.062h.468c3.264 0 3.48-.012 4.632-.062.878-.04 1.353-.188 1.67-.312a2.999 2.999 0 001.108-.721 2.999 2.999 0 00.72-1.107c.124-.317.272-.792.312-1.67.05-1.153.062-1.369.062-4.632v-.468c0-3.264-.012-3.48-.062-4.632-.04-.878-.188-1.353-.312-1.67a2.999 2.999 0 00-.721-1.108 2.999 2.999 0 00-1.107-.72c-.317-.124-.792-.272-1.67-.312-1.153-.05-1.369-.062-4.632-.062zM12 7.837a4.163 4.163 0 110 8.326 4.163 4.163 0 010-8.326zm0 1.802a2.361 2.361 0 100 4.722 2.361 2.361 0 000-4.722zm4.722-3.083a1.082 1.082 0 110 2.164 1.082 1.082 0 010-2.164z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-white font-semibold text-sm">Instagram</span>
                 </a>
               </div>
             </div>
