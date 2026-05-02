@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Great_Vibes, Poppins } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({ 
+const greatVibes = Great_Vibes({ 
   subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ["400", "500", "600", "700"]
+  variable: "--font-title",
+  weight: ["400"]
 });
 
 const poppins = Poppins({ 
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} ${poppins.variable} font-[family-name:var(--font-poppins)]`}>
+      <body className={`${greatVibes.variable} ${poppins.variable} font-[family-name:var(--font-poppins)]`}>
         {children}
       </body>
     </html>

@@ -1,151 +1,228 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+
+  const services = [
+    "Trims", "Layers", "Bobs", "Pixie Cuts", "Side Bangs", "Restyle",
+    "Highlights", "Balayage", "Ombre", "Root Touch Up", "Full Head Colour",
+    "Blow Dry", "Curls", "Straightening", "Deep Conditioning",
+    "Bridal Hair", "Wedding Styling", "Prom Hair", "Updos"
+  ];
+
+  const filteredServices = services.filter(service =>
+    service.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-[#FFB6C1] to-[#E6E6FA] flex flex-col justify-center items-center text-center p-8 relative overflow-hidden">
-      {/* Floating Shapes */}
-      <div className="absolute w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute w-20 h-20 rounded-full bg-[#FFB6C1] opacity-60 top-[20%] left-[10%] animate-[float_8s_ease-in-out_infinite]"></div>
-        <div className="absolute w-16 h-16 rounded-full bg-[#E6E6FA] opacity-60 top-[60%] right-[15%] animate-[float_8s_ease-in-out_infinite_2s]"></div>
-        <div className="absolute w-24 h-24 rounded-full bg-[#98FF98] opacity-60 bottom-[20%] left-[20%] animate-[float_8s_ease-in-out_infinite_4s]"></div>
-        <div className="absolute w-12 h-12 rounded-full bg-[#FF69B4] opacity-60 top-[40%] right-[25%] animate-[float_8s_ease-in-out_infinite_1s]"></div>
-        <div className="absolute w-16 h-16 rounded-full bg-[#FFDAB9] opacity-60 bottom-[40%] right-[10%] animate-[float_8s_ease-in-out_infinite_3s]"></div>
-      </div>
-
-      {/* Welcome Content */}
-      <div className="relative z-10 max-w-3xl animate-[fadeInUp_1s_ease-out]">
-        <div className="inline-block bg-gradient-to-r from-[#FF69B4] to-[#9370DB] text-white px-8 py-3 rounded-full font-semibold text-lg mb-8 shadow-lg animate-[bounce_2s_infinite]">
-          ✨ Welcome ✨
+    <div className="min-h-screen bg-[#F5EDE0] flex flex-col">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b-2 border-[#E8DDD0] px-6 py-4">
+        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <Link href="/" className="font-[family-name:var(--font-title)] text-4xl text-[#8B7355] hover:text-[#6B5344] transition-colors">
+            Hair by Julieta
+          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <button 
+              onClick={() => setShowSearch(!showSearch)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-[#D4C4B0] text-[#8B7355] rounded-full font-medium hover:bg-[#D4C4B0] hover:text-white transition-all shadow-sm"
+            >
+              <span>🔍</span>
+              Search
+            </button>
+            <Link 
+              href="/booking"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#A0826D] to-[#8B7355] text-white rounded-full font-medium hover:shadow-lg hover:translate-y-[-2px] transition-all"
+            >
+              <span>✨</span>
+              Book Now
+            </Link>
+            <Link 
+              href="/prices"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-[#8B7355] text-[#8B7355] rounded-full font-medium hover:bg-[#8B7355] hover:text-white transition-all shadow-sm"
+            >
+              <span>📋</span>
+              Price List
+            </Link>
+            <Link 
+              href="/events"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-[#8B7355] text-[#8B7355] rounded-full font-medium hover:bg-[#8B7355] hover:text-white transition-all shadow-sm"
+            >
+              <span>🎉</span>
+              Events
+            </Link>
+          </div>
         </div>
+      </nav>
 
-        <h1 className="font-[family-name:var(--font-playfair)] text-6xl md:text-8xl font-bold text-white mb-4 tracking-wider leading-tight"
-            style={{textShadow: '5px 5px 0px #FF69B4, 10px 10px 0px rgba(147, 112, 219, 0.3), 15px 15px 30px rgba(0,0,0,0.1)'}}>
-          HAIR BY<br/>JULIETA
-        </h1>
+      {/* Search Bar */}
+      {showSearch && (
+        <div className="bg-[#E8DDD0] px-6 py-4 border-b-2 border-[#D4C4B0]">
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search for services..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-4 pl-12 bg-white border-2 border-[#D4C4B0] rounded-full text-[#5D4037] placeholder-[#A0826D] focus:outline-none focus:border-[#8B7355] focus:ring-2 focus:ring-[rgba(160,130,109,0.2)]"
+              />
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#A0826D] text-xl">🔍</span>
+            </div>
+            {searchQuery && (
+              <div className="mt-3 bg-white rounded-2xl shadow-lg border border-[#E8DDD0] max-h-60 overflow-y-auto">
+                {filteredServices.length > 0 ? (
+                  filteredServices.map((service, index) => (
+                    <Link
+                      key={index}
+                      href="/prices"
+                      className="block px-6 py-3 text-[#5D4037] hover:bg-[#F5EDE0] border-b border-[#E8DDD0] last:border-0 transition-colors"
+                    >
+                      {service}
+                    </Link>
+                  ))
+                ) : (
+                  <div className="px-6 py-4 text-[#8D6E63]">No services found</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-        <p className="font-[family-name:var(--font-playfair)] text-2xl md:text-4xl text-[#FF69B4] mb-6"
-           style={{textShadow: '2px 2px 0px rgba(255,255,255,0.8)'}}>
-          Where Your Beauty Journey Begins
-        </p>
+      {/* Hero Section */}
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-16 bg-gradient-to-b from-[#E8DDD0] via-[#F5EDE0] to-[#FFFCF8]">
+        {/* Main Content */}
+        <div className="max-w-4xl">
+          {/* Welcome Badge */}
+          <div className="inline-block bg-white/80 backdrop-blur-sm border-2 border-[#D4C4B0] text-[#8B7355] px-8 py-3 rounded-full font-medium text-lg mb-8 shadow-lg">
+            ✨ Welcome to Our Salon ✨
+          </div>
 
-        <p className="text-lg md:text-xl text-[#2C2C2C] max-w-2xl mx-auto mb-12 leading-relaxed animate-[fadeInUp_1s_ease-out_0.4s_both]">
-          Welcome to Hair by Julieta! This is your one-stop destination for all things hair. 
-          Whether you're looking for a fresh trim, stunning highlights, or a complete transformation, 
-          you've come to the right place. Browse our complete service menu and book your appointment 
-          today to experience the magic of professional hair styling!
-        </p>
+          {/* Title - White Pastel Font */}
+          <h1 className="font-[family-name:var(--font-title)] text-8xl md:text-[10rem] text-white mb-6 leading-tight drop-shadow-2xl"
+              style={{textShadow: '0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(255,255,255,0.4), 4px 4px 0px rgba(139,115,85,0.1)'}}>
+            Hair by Julieta
+          </h1>
 
-        {/* Introduction Section */}
-        <div className="bg-white rounded-[30px] shadow-xl p-8 md:p-12 mt-8 animate-[fadeInUp_1s_ease-out_0.6s_both]">
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl text-[#FF69B4] mb-8"
-              style={{textShadow: '2px 2px 0px rgba(255,255,255,0.8)'}}>
-            What We Offer 💕
-          </h2>
-
-          <p className="text-base md:text-lg text-[#2C2C2C] leading-relaxed mb-8">
-            At Hair by Julieta, we specialize in creating beautiful, confidence-boosting hairstyles 
-            tailored just for you. From classic cuts to the latest colour trends, our comprehensive 
-            range of services covers everything you need to look and feel your best. Explore our 
-            service categories below and discover how we can help you achieve your dream hair!
+          {/* Subtitle */}
+          <p className="font-[family-name:var(--font-poppins)] text-2xl md:text-3xl text-[#8B7355] mb-8 font-light">
+            Where Your Beauty Journey Begins
           </p>
 
-          {/* Services Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-[rgba(255,182,193,0.2)] to-[rgba(230,230,250,0.2)] p-6 rounded-[20px] text-left border-l-8 border-[#FF69B4] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-              <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#2C2C2C] mb-3 flex items-center gap-2">
-                ✂️ Cuts & Styles
-              </h3>
-              <ul className="text-sm text-[#666666] list-none space-y-2">
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Trims & Maintenance - £30</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Layers & Textured Cuts - £40</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Bobs & Pixie Cuts - £35-38</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Side Bangs & Fringes - £25</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Complete Restyles - £55</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Men's & Children's Cuts - £30</li>
-              </ul>
-            </div>
+          {/* Welcome Description */}
+          <p className="text-lg md:text-xl text-[#6D4C41] max-w-2xl mx-auto mb-12 leading-relaxed bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-[#E8DDD0]">
+            Step into a world of beauty and elegance at Hair by Julieta. We specialize in creating 
+            stunning hairstyles that bring out your natural beauty. From precision cuts to vibrant colours, 
+            from everyday styling to special occasion glamour – we're here to make you look and feel 
+            absolutely fabulous! 💕
+          </p>
 
-            <div className="bg-gradient-to-br from-[rgba(255,182,193,0.2)] to-[rgba(230,230,250,0.2)] p-6 rounded-[20px] text-left border-l-8 border-[#9370DB] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-              <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#2C2C2C] mb-3 flex items-center gap-2">
-                🎨 Colour & Dye
-              </h3>
-              <ul className="text-sm text-[#666666] list-none space-y-2">
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Toner / Gloss - £35</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Root Touch-ups - £125</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Highlights - £140-240</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Full Head Colour - £155</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Balayage & Ombre - £185-220</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Fashion Colours - £275+</li>
-              </ul>
-            </div>
-
-            <div className="bg-gradient-to-br from-[rgba(255,182,193,0.2)] to-[rgba(230,230,250,0.2)] p-6 rounded-[20px] text-left border-l-8 border-[#3CB371] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-              <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#2C2C2C] mb-3 flex items-center gap-2">
-                💇‍♀️ Styling & Care
-              </h3>
-              <ul className="text-sm text-[#666666] list-none space-y-2">
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Blow Dries & Curls - £25-35</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Straightening - £30</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Wash & Style - £20</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Deep Conditioning - £25</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Hair Treatments - £20-35</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Scalp Treatments - £30</li>
-              </ul>
-            </div>
-
-            <div className="bg-gradient-to-br from-[rgba(255,182,193,0.2)] to-[rgba(230,230,250,0.2)] p-6 rounded-[20px] text-left border-l-8 border-[#FF69B4] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-              <h3 className="font-[family-name:var(--font-playfair)] text-xl text-[#2C2C2C] mb-3 flex items-center gap-2">
-                👰 Special Occasions
-              </h3>
-              <ul className="text-sm text-[#666666] list-none space-y-2">
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Bridal Hair - £85</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Wedding Party Styling - £65</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Prom & Event Hair - £60</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Elegant Updos - £55</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Vintage Styles - £45</li>
-                <li className="pl-4 relative before:content-['✨'] before:absolute before:left-0">Braiding Services - £35+</li>
-              </ul>
+          {/* Welcome Message */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border-2 border-[#E8DDD0] p-8 mb-12 max-w-3xl mx-auto">
+            <h2 className="font-[family-name:var(--font-title)] text-4xl text-[#8B7355] mb-4">
+              Welcome!
+            </h2>
+            <p className="text-[#6D4C41] leading-relaxed mb-6">
+              Whether you're preparing for a special event, need a fresh new look, or simply want to 
+              treat yourself to some pampering, you've come to the right place. Browse our services, 
+              check our prices, or book your appointment today!
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Link 
+                href="/prices"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#F5EDE0] border-2 border-[#D4C4B0] text-[#8B7355] rounded-full font-medium hover:bg-[#D4C4B0] hover:text-white transition-all"
+              >
+                <span>📋</span>
+                Browse Services
+              </Link>
+              <Link 
+                href="/booking"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#A0826D] to-[#8B7355] text-white rounded-full font-medium hover:shadow-lg transition-all"
+              >
+                <span>✨</span>
+                Book Now
+              </Link>
             </div>
           </div>
 
-          {/* Button Group */}
-          <div className="flex flex-wrap gap-6 justify-center">
-            <Link href="/booking" className="inline-block px-8 py-4 rounded-full font-semibold text-lg bg-gradient-to-r from-[#FF69B4] to-[#9370DB] text-white shadow-lg hover:translate-y-[-5px] hover:shadow-xl transition-all">
-              ✨ Book Your Appointment
+          {/* Main Action Buttons */}
+          <div className="flex flex-wrap gap-4 justify-center mb-16">
+            <Link 
+              href="/booking"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#A0826D] to-[#8B7355] text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl hover:translate-y-[-3px] transition-all"
+            >
+              <span className="text-2xl">✨</span>
+              Book Appointment
             </Link>
-            <Link href="/events" className="inline-block px-8 py-4 rounded-full font-semibold text-lg bg-gradient-to-r from-[#9370DB] to-[#3CB371] text-white shadow-lg hover:translate-y-[-5px] hover:shadow-xl transition-all border-2 border-[#9370DB]">
-              🎉 Book Events & Parties
+            <Link 
+              href="/prices"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-[#8B7355] text-[#8B7355] rounded-full font-semibold text-lg shadow-md hover:bg-[#8B7355] hover:text-white hover:shadow-lg hover:translate-y-[-3px] transition-all"
+            >
+              <span className="text-2xl">📋</span>
+              View Prices
             </Link>
-            <Link href="/prices" className="inline-block px-8 py-4 rounded-full font-semibold text-lg bg-white text-[#FF69B4] shadow-lg hover:translate-y-[-5px] hover:shadow-xl transition-all border-2 border-[#FF69B4] hover:bg-[#FF69B4] hover:text-white">
-              📋 View Full Price List
+            <Link 
+              href="/events"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-[#A0826D] text-[#A0826D] rounded-full font-semibold text-lg shadow-md hover:bg-[#A0826D] hover:text-white hover:shadow-lg hover:translate-y-[-3px] transition-all"
+            >
+              <span className="text-2xl">🎉</span>
+              Events & Parties
+            </Link>
+          </div>
+
+          {/* Service Categories Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <Link href="/prices" className="group">
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-[#E8DDD0] hover:border-[#A0826D] hover:shadow-lg hover:translate-y-[-5px] transition-all text-center">
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">✂️</div>
+                <h3 className="font-semibold text-[#5D4037]">Hair Cuts</h3>
+                <p className="text-sm text-[#8D6E63] mt-1">From £25</p>
+              </div>
+            </Link>
+            <Link href="/prices" className="group">
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-[#E8DDD0] hover:border-[#8B7355] hover:shadow-lg hover:translate-y-[-5px] transition-all text-center">
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🎨</div>
+                <h3 className="font-semibold text-[#5D4037]">Colour & Dye</h3>
+                <p className="text-sm text-[#8D6E63] mt-1">From £125</p>
+              </div>
+            </Link>
+            <Link href="/prices" className="group">
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-[#E8DDD0] hover:border-[#A0826D] hover:shadow-lg hover:translate-y-[-5px] transition-all text-center">
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">💇‍♀️</div>
+                <h3 className="font-semibold text-[#5D4037]">Styling</h3>
+                <p className="text-sm text-[#8D6E63] mt-1">From £20</p>
+              </div>
+            </Link>
+            <Link href="/events" className="group">
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-[#E8DDD0] hover:border-[#8B7355] hover:shadow-lg hover:translate-y-[-5px] transition-all text-center">
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">👰</div>
+                <h3 className="font-semibold text-[#5D4037]">Special Events</h3>
+                <p className="text-sm text-[#8D6E63] mt-1">From £55</p>
+              </div>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Features Preview */}
-      <div className="flex flex-wrap gap-6 justify-center mt-12 p-8">
-        <div className="text-center text-[#2C2C2C] bg-white p-6 rounded-[15px] shadow-md min-w-[120px] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-          <div className="text-4xl mb-2">✂️</div>
-          <div className="text-sm font-semibold">Expert Cuts</div>
+      {/* Footer */}
+      <footer className="bg-white border-t-2 border-[#E8DDD0] px-6 py-8">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="font-[family-name:var(--font-title)] text-3xl text-[#8B7355] mb-4">
+            Hair by Julieta
+          </p>
+          <p className="text-[#8D6E63] mb-4">
+            📞 [Your Phone] | 📧 [Your Email] | 📍 [Your Location]
+          </p>
+          <p className="text-sm text-[#A0826D]">
+            © 2026 Hair by Julieta. All rights reserved. | Open Mon-Sat 9am-6pm
+          </p>
         </div>
-        <div className="text-center text-[#2C2C2C] bg-white p-6 rounded-[15px] shadow-md min-w-[120px] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-          <div className="text-4xl mb-2">🎨</div>
-          <div className="text-sm font-semibold">Beautiful Colours</div>
-        </div>
-        <div className="text-center text-[#2C2C2C] bg-white p-6 rounded-[15px] shadow-md min-w-[120px] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-          <div className="text-4xl mb-2">💇‍♀️</div>
-          <div className="text-sm font-semibold">Styling</div>
-        </div>
-        <div className="text-center text-[#2C2C2C] bg-white p-6 rounded-[15px] shadow-md min-w-[120px] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-          <div className="text-4xl mb-2">👰</div>
-          <div className="text-sm font-semibold">Bridal</div>
-        </div>
-        <div className="text-center text-[#2C2C2C] bg-white p-6 rounded-[15px] shadow-md min-w-[120px] hover:translate-y-[-5px] hover:shadow-lg transition-all">
-          <div className="text-4xl mb-2">✨</div>
-          <div className="text-sm font-semibold">Treatments</div>
-        </div>
-      </div>
+      </footer>
     </div>
   );
 }

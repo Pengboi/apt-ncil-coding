@@ -2,28 +2,29 @@
 
 :root {
   --white: #FFFFFF;
-  --soft-pink: #FFB6C1;
-  --lavender: #E6E6FA;
-  --mint: #98FF98;
-  --peach: #FFDAB9;
-  --bold-pink: #FF69B4;
-  --bold-lavender: #9370DB;
-  --bold-mint: #3CB371;
-  --text-dark: #2C2C2C;
-  --text-light: #666666;
-  --background: #ffffff;
-  --foreground: #2C2C2C;
+  --cream: #FFFCF8;
+  --beige: #FFF8F0;
+  --soft-brown: #D4C4B0;
+  --warm-brown: #B8956C;
+  --medium-brown: #A0826D;
+  --dark-brown: #8B6914;
+  --chocolate: #6B5344;
+  --text-dark: #5D4037;
+  --text-light: #8D6E63;
+  --background: #FFFFFF;
+  --foreground: #5D4037;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-soft-pink: var(--soft-pink);
-  --color-lavender: var(--lavender);
-  --color-mint: var(--mint);
-  --color-bold-pink: var(--bold-pink);
-  --color-bold-lavender: var(--bold-lavender);
-  --color-bold-mint: var(--bold-mint);
+  --color-cream: var(--cream);
+  --color-beige: var(--beige);
+  --color-soft-brown: var(--soft-brown);
+  --color-warm-brown: var(--warm-brown);
+  --color-medium-brown: var(--medium-brown);
+  --color-dark-brown: var(--dark-brown);
+  --color-chocolate: var(--chocolate);
   --color-text-dark: var(--text-dark);
   --color-text-light: var(--text-light);
   --font-sans: var(--font-geist-sans);
