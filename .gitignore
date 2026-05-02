@@ -72,3 +72,35 @@ my_*.py
 # OS
 Thumbs.db
 .DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn
+.pnp.*
+package-lock.json
+yarn.lock
+
+# Build outputs
+.next/
+out/
+.nuxt/
+dist/
+build/
+
+# Frontend frameworks
+*.local
+.vite/
+.cache/
+.parcel-cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.tgz
+*.tar.gz
