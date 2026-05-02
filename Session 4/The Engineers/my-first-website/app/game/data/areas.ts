@@ -207,7 +207,7 @@ export const cityArea: Area = {
     createPickup('medkit', 810, 600),
     createWeaponPickup('shotgun', 650, 520),   // Shotgun pickup
     createPickup('medkit', 1800, 520),
-    createWeaponPickup('sniper', 2550, 520),   // Sniper Rifle pickup
+    createWeaponPickup('sniper', 2570, 500),   // Sniper Rifle pickup - MOVED to top platform at y=500
   ],
   
   savePoints: [
