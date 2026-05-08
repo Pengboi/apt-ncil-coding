@@ -5,22 +5,23 @@ import CardGallery from "../../CardGallery";
 
 interface CardGalleryButtonProps {
   name: string;
+  searchName?: string;
 }
 
-export default function CardGalleryButton({ name }: CardGalleryButtonProps) {
+export default function CardGalleryButton({ name, searchName }: CardGalleryButtonProps) {
   const [showGallery, setShowGallery] = useState(false);
 
   return (
     <>
       <button
         onClick={() => setShowGallery(true)}
-        className="w-full glass rounded-xl p-4 text-left hover:border-cyan-500/50 transition-colors group"
+        className="w-full glass rounded-lg p-3 text-left hover:border-cyan-500/50 transition-colors group"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-white"
+                className="w-4 h-4 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -37,13 +38,13 @@ export default function CardGalleryButton({ name }: CardGalleryButtonProps) {
               <h3 className="font-display text-sm font-semibold text-white group-hover:text-cyan-400 transition-colors">
                 TCG Cards
               </h3>
-              <p className="font-data text-xs text-slate-500">
+              <p className="font-data text-[10px] text-slate-500">
                 View trading cards
               </p>
             </div>
           </div>
           <svg
-            className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 transition-colors"
+            className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-colors"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -59,7 +60,7 @@ export default function CardGalleryButton({ name }: CardGalleryButtonProps) {
       </button>
 
       {showGallery && (
-        <CardGallery name={name} onClose={() => setShowGallery(false)} />
+        <CardGallery name={name} searchName={searchName} onClose={() => setShowGallery(false)} />
       )}
     </>
   );

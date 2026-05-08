@@ -26,8 +26,8 @@ export default function FormSelector({ forms, baseName, currentId }: FormSelecto
   };
 
   return (
-    <div className="glass rounded-xl p-4 mt-4">
-      <h3 className="font-display text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wider">
+    <div className="glass rounded-lg p-2">
+      <h3 className="font-display text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
         Forms ({forms.length})
       </h3>
       <div className="flex gap-2 flex-wrap">
@@ -35,14 +35,14 @@ export default function FormSelector({ forms, baseName, currentId }: FormSelecto
           <Link
             key={form.id}
             href={`/pokemon/${form.id}`}
-            className="group relative"
+            className="group relative flex flex-col items-center"
             title={getFormDisplayName(form.name)}
           >
             <div
               className={`
-                w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-200
+                w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200
                 ${form.id === currentId
-                  ? "border-cyan-400 shadow-[0_0_12px_rgba(0,212,255,0.4)] scale-105"
+                  ? "border-cyan-400 shadow-[0_0_8px_rgba(0,212,255,0.4)] scale-105"
                   : "border-slate-600 hover:border-slate-400 hover:scale-105"
                 }
               `}
@@ -50,16 +50,15 @@ export default function FormSelector({ forms, baseName, currentId }: FormSelecto
               <img
                 src={form.img}
                 alt={getFormDisplayName(form.name)}
-                className="w-full h-full object-contain bg-slate-800/50 p-1"
+                className="w-full h-full object-contain bg-slate-800/50 p-0.5"
                 loading="lazy"
               />
             </div>
             
             {/* Form Name Label */}
             <span className={`
-              absolute -bottom-5 left-1/2 -translate-x-1/2 
-              font-data text-[10px] whitespace-nowrap
-              transition-opacity
+              mt-1 font-data text-[9px] whitespace-nowrap
+              transition-colors
               ${form.id === currentId ? "text-cyan-400" : "text-slate-500 group-hover:text-slate-300"}
             `}>
               {getFormDisplayName(form.name)}

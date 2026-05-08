@@ -183,10 +183,11 @@ function TCGCard({ card, index }: TCGCardProps) {
 
 interface CardGalleryProps {
   name: string;
+  searchName?: string;
   onClose: () => void;
 }
 
-export default function CardGallery({ name, onClose }: CardGalleryProps) {
+export default function CardGallery({ name, searchName, onClose }: CardGalleryProps) {
   const [loading, setLoading] = useState(true);
   const [cards, setCards] = useState<Card[]>([]);
   const [sets, setSets] = useState<SetInfo[]>([]);
@@ -204,7 +205,9 @@ export default function CardGallery({ name, onClose }: CardGalleryProps) {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const q = encodeURIComponent(name);
+        // Use searchName for API if provided, otherwise fall back to name
+        const searchQuery = searchName || name;
+        const q = encodeURIComponent(searchQuery);
         const res = await fetch(`/api/tcg/cards?name=${q}`);
         if (!res.ok) throw new Error("Cards fetch failed");
         const json = await res.json();
@@ -223,7 +226,7 @@ export default function CardGallery({ name, onClose }: CardGalleryProps) {
     return () => {
       cancelled = true;
     };
-  }, [name]);
+  }, [name, searchName]);
 
   useEffect(() => {
     if (cards.length === 0) return;

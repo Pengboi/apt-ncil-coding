@@ -25,7 +25,7 @@ const typeColors: Record<string, string> = {
 
 interface TypeBadgeProps {
   type: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   glow?: boolean;
 }
 
@@ -33,6 +33,7 @@ export default function TypeBadge({ type, size = "md", glow = true }: TypeBadgeP
   const color = typeColors[type.toLowerCase()] || "#888888";
   
   const sizeClasses = {
+    xs: "px-1.5 py-0.5 text-[8px]",
     sm: "px-2 py-0.5 text-[10px]",
     md: "px-3 py-1 text-xs",
     lg: "px-4 py-1.5 text-sm",
