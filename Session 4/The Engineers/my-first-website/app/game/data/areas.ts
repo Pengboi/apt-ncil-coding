@@ -2,7 +2,7 @@ import { Area, Platform, Enemy, Pickup, SavePoint } from '../types';
 import { AREA_THEMES, ENEMY_CONFIGS } from '../constants';
 
 // ============================================================
-// AREA DEFINITIONS - All 5 Game Areas
+// AREA DEFINITIONS - All 8 Game Areas (5 original + 3 expansion)
 // ============================================================
 
 // Helper to create platforms
@@ -17,7 +17,7 @@ function createPlatform(x: number, y: number, width: number, height: number, col
 }
 
 // Helper to create enemies
-function createEnemy(type: 'grunt' | 'soldier' | 'drone' | 'heavy', x: number, y: number): Enemy {
+function createEnemy(type: 'grunt' | 'soldier' | 'drone' | 'heavy' | 'boss', x: number, y: number): Enemy {
   const config = ENEMY_CONFIGS[type];
   return {
     x,
@@ -395,142 +395,125 @@ export const mountainArea: Area = {
   
   platforms: [
     // ============================================================
-    // BASE CAMP - Starting area (safe zone)
+    // BASE CAMP - Starting area
     // ============================================================
-    createPlatform(0, 600, 300, 100),     // Start platform
-    createPlatform(340, 600, 200, 100),   // 40px gap
+    createPlatform(0, 600, 280, 100),
+    createPlatform(320, 600, 200, 100),   // 40px gap
     
     // ============================================================
-    // UPPER RIDGE PATH - High route across the mountain
+    // MAIN ASCENT - Climbing the mountain
     // ============================================================
-    // First ascent - climbing up
-    createPlatform(580, 550, 150, 20),    // Step up
-    createPlatform(770, 500, 120, 20),    // 40px gap - higher
-    createPlatform(930, 450, 150, 20),    // 40px gap - ridge start
+    // Stepping stones going up
+    createPlatform(560, 550, 140, 30),    // Step up
+    createPlatform(740, 500, 120, 25),    // 60px gap - higher
+    createPlatform(920, 450, 160, 25),    // 60px gap - ridge level
     
-    // Ridge walk - main high path
-    createPlatform(1120, 450, 200, 20),   // 40px gap
-    createPlatform(1360, 430, 180, 20),   // 40px gap - slight dip
-    createPlatform(1580, 400, 200, 20),   // 40px gap - higher
-    createPlatform(1820, 380, 250, 20),   // 40px gap - near summit
-    createPlatform(2110, 350, 180, 20),   // 40px gap - summit area
-    createPlatform(2330, 350, 200, 20),   // 40px gap
-    createPlatform(2570, 380, 150, 20),   // 40px gap - descending
-    createPlatform(2760, 420, 120, 20),   // 40px gap
-    createPlatform(2920, 450, 150, 20),   // 40px gap - exit approach
+    // Ridge traverse - main path across top
+    createPlatform(1140, 450, 220, 30),
+    createPlatform(1400, 420, 180, 25),   // 60px gap - slight climb
+    createPlatform(1640, 380, 200, 30),   // 60px gap - near summit
+    createPlatform(1880, 350, 240, 30),   // 60px gap - summit
     
-    // Exit platform
-    createPlatform(3110, 470, 90, 50),    // Final exit
+    // Descent to exit
+    createPlatform(2180, 380, 160, 25),   // 60px gap - going down
+    createPlatform(2400, 420, 140, 30),   // 60px gap
+    createPlatform(2620, 460, 180, 30),   // 60px gap - exit approach
+    createPlatform(2860, 480, 120, 40),   // 60px gap
     
-    // ============================================================
-    // LOWER CAVE PATH - Underground/lower route
-    // ============================================================
-    // Drop down to lower level
-    createPlatform(560, 650, 180, 50),    // Down from base
-    createPlatform(780, 700, 200, 50),    // 40px gap
-    createPlatform(1020, 720, 180, 50),   // 40px gap - cave depths
-    createPlatform(1240, 700, 220, 50),   // 40px gap
-    createPlatform(1500, 680, 180, 50),   // 40px gap
-    createPlatform(1700, 700, 200, 50),   // 40px gap
-    createPlatform(1940, 720, 150, 50),   // 40px gap
-    createPlatform(2130, 700, 180, 50),   // 40px gap - cave climb starts
-    
-    // Cave climb back up
-    createPlatform(2350, 650, 120, 50),   // 40px gap - climbing
-    createPlatform(2510, 600, 100, 50),   // 40px gap - back to mid level
+    // Exit
+    createPlatform(3040, 500, 100, 50),
     
     // ============================================================
-    // ICE PLATFORMS - Tricky mid-level route
+    // LOWER TRAIL - Safer but longer path
     // ============================================================
-    // Ice bridge connecting routes (slippery platforms)
-    createPlatform(480, 500, 80, 15),     // Small ice ledge
-    createPlatform(600, 480, 60, 15),     // 40px gap
-    createPlatform(720, 520, 80, 15),     // 40px gap - dips
-    createPlatform(1300, 520, 100, 15),   // Ice section 2
-    createPlatform(1450, 500, 70, 15),    // 40px gap
-    createPlatform(2000, 500, 80, 15),    // Ice section 3
-    createPlatform(2150, 480, 60, 15),    // 40px gap
+    createPlatform(540, 700, 200, 50),
+    createPlatform(780, 720, 220, 50),    // 40px gap
+    createPlatform(1060, 700, 180, 50),   // 60px gap
+    createPlatform(1320, 680, 200, 50),   // 60px gap
+    createPlatform(1580, 700, 160, 50),   // 60px gap
+    createPlatform(1800, 720, 180, 50),   // 60px gap
+    
+    // Lower path rejoins at exit area
+    createPlatform(2040, 680, 140, 50),   // 60px gap
+    createPlatform(2260, 620, 120, 40),   // 60px gap - climbing back up
     
     // ============================================================
-    // MID-LEVEL CONNECTORS - Between upper and lower
+    // OPTIONAL LEDGES - Risk/Reward shortcuts
     // ============================================================
-    createPlatform(850, 580, 100, 20),    // Connector 1
-    createPlatform(1200, 550, 80, 20),    // Connector 2
-    createPlatform(1680, 550, 100, 20),   // Connector 3
-    createPlatform(2400, 520, 80, 20),    // Connector 4
+    // Tricky jumps for pickups
+    createPlatform(660, 400, 60, 20),     // Floating ledge - early
+    createPlatform(1280, 350, 70, 20),   // High ledge - mid
+    createPlatform(2500, 350, 60, 20),   // Summit side ledge
     
-    // Shortcut ledges
-    createPlatform(350, 480, 80, 20),     // Early shortcut
-    createPlatform(1880, 450, 80, 20),     // Mid shortcut
-    createPlatform(2650, 480, 70, 20),    // Late shortcut
+    // Connection between upper and lower
+    createPlatform(850, 600, 80, 20),
+    createPlatform(1700, 550, 100, 20),
   ],
   
   enemies: [
-    // Base camp guards
-    createEnemy('grunt', 400, 560),
-    createEnemy('soldier', 650, 500),
+    // Base camp
+    createEnemy('grunt', 200, 560),
+    createEnemy('grunt', 450, 560),
     
-    // Upper ridge sentries
-    createEnemy('soldier', 920, 410),
-    createEnemy('drone', 1220, 410),
-    createEnemy('soldier', 1470, 390),
-    createEnemy('drone', 1720, 360),
-    createEnemy('soldier', 2020, 330),
-    createEnemy('drone', 2340, 310),
+    // Upper ridge - main path guards
+    createEnemy('soldier', 620, 510),
+    createEnemy('drone', 800, 460),
+    createEnemy('soldier', 1000, 410),
+    createEnemy('drone', 1250, 410),
+    createEnemy('soldier', 1490, 380),
+    createEnemy('soldier', 1740, 340),
     
-    // Summit heavy guard!
-    createEnemy('heavy', 2660, 330),
-    createEnemy('soldier', 2900, 410),
+    // Summit heavy!
+    createEnemy('heavy', 2000, 310),
+    createEnemy('drone', 2260, 340),
+    createEnemy('soldier', 2520, 430),
     
-    // Lower cave patrols
-    createEnemy('grunt', 880, 650),
-    createEnemy('soldier', 1120, 670),
-    createEnemy('grunt', 1360, 650),
-    createEnemy('soldier', 1600, 630),
-    createEnemy('grunt', 1850, 670),
-    createEnemy('soldier', 2090, 650),
-    createEnemy('grunt', 2290, 600),
+    // Exit guard
+    createEnemy('soldier', 2920, 440),
     
-    // Ice platform drones (flying sentries)
-    createEnemy('drone', 520, 460),
-    createEnemy('drone', 640, 440),
-    createEnemy('drone', 760, 480),
-    createEnemy('drone', 1340, 480),
-    createEnemy('drone', 1485, 460),
-    createEnemy('drone', 2040, 460),
-    createEnemy('drone', 2190, 440),
+    // Lower trail patrols
+    createEnemy('grunt', 640, 650),
+    createEnemy('grunt', 890, 670),
+    createEnemy('soldier', 1160, 650),
+    createEnemy('grunt', 1440, 630),
+    createEnemy('soldier', 1680, 670),
+    createEnemy('grunt', 1930, 670),
+    createEnemy('soldier', 2160, 580),
     
-    // Mid-level guards
-    createEnemy('soldier', 900, 540),
-    createEnemy('drone', 1720, 520),
-    createEnemy('soldier', 2440, 480),
+    // Optional ledge sentries
+    createEnemy('drone', 690, 360),
+    createEnemy('drone', 1315, 310),
+    createEnemy('drone', 2530, 310),
   ],
   
   pickups: [
-    // Lower cave pickups
-    createPickup('medkit', 880, 650),
-    createPickup('medkit', 1700, 630),
-    createWeaponPickup('shotgun', 2200, 650),  // Shotgun in caves
+    // Lower trail pickups
+    createPickup('medkit', 890, 670),
+    createWeaponPickup('shotgun', 1440, 630),
+    createPickup('medkit', 1930, 670),
     
-    // Ridge path pickups
+    // Main ridge pickups
     createPickup('medkit', 1000, 410),
-    createWeaponPickup('sniper', 1710, 350),   // Sniper on ridge
-    createPickup('medkit', 2200, 310),
+    createWeaponPickup('sniper', 1530, 350),   // Sniper at ridge high point
+    createPickup('medkit', 1960, 310),
     
-    // Ice platform pickup (tricky to reach)
-    createPickup('medkit', 390, 440),
+    // Optional ledge rewards (tricky jumps)
+    createWeaponPickup('rifle', 690, 360),     // Early shortcut reward
+    createPickup('medkit', 1315, 310),         // Mid shortcut reward
+    createWeaponPickup('lmg', 2530, 310),      // Late shortcut reward
     
-    // Summit/Exit area
-    createWeaponPickup('lmg', 2850, 410),      // LMG before exit
-    createPickup('medkit', 3060, 430),
+    // Connector area
+    createPickup('medkit', 1740, 550),
+    
+    // Exit area
+    createPickup('medkit', 3090, 460),
   ],
   
   savePoints: [
     createSavePoint(50, 540, 'mountain'),      // Base camp
-    createSavePoint(620, 500, 'mountain'),     // After first climb
-    createSavePoint(1190, 400, 'mountain'),    // Ridge midpoint
-    createSavePoint(2060, 310, 'mountain'),    // Near summit
-    createSavePoint(2900, 390, 'mountain'),    // Exit area
+    createSavePoint(1030, 410, 'mountain'),    // Ridge start
+    createSavePoint(1760, 320, 'mountain'),    // Summit
+    createSavePoint(2700, 430, 'mountain'),    // Exit approach
   ],
   
   connections: [
@@ -564,69 +547,126 @@ export const hqArea: Area = {
   playerSpawn: { x: 100, y: 500 },
   
   platforms: [
-    // Entry hall - CONNECTED
-    createPlatform(0, 600, 420, 100),
-    createPlatform(440, 600, 380, 100),  // Small gap
+    // ============================================================
+    // ENTRY - Infiltration point
+    // ============================================================
+    createPlatform(0, 600, 240, 80),
+    createPlatform(300, 600, 180, 80),    // 60px gap
     
-    // Security checkpoint - CONNECTED
-    createPlatform(840, 550, 430, 50),   // Small gap
-    createPlatform(1290, 550, 330, 50),  // Small gap
+    // ============================================================
+    // UPPER ASSAULT PATH - Direct but dangerous
+    // ============================================================
+    // Vertical climb to upper level
+    createPlatform(540, 550, 100, 25),    // Step up
+    createPlatform(700, 500, 80, 20),     // 60px gap - thin ledge
+    createPlatform(860, 450, 120, 25),    // 80px gap - higher
+    createPlatform(1060, 400, 100, 20),   // 80px gap - thin
     
-    // Command center
-    createPlatform(1640, 500, 550, 50),  // Small gap
+    // Upper facility traverse
+    createPlatform(1260, 380, 180, 30),
+    createPlatform(1500, 360, 140, 25),  // 60px gap
+    createPlatform(1720, 340, 160, 25),   // 60px gap - command deck
+    createPlatform(1960, 360, 120, 20),   // 80px gap
+    createPlatform(2160, 400, 100, 25),   // 80px gap - descending
     
-    // Upper levels - Easy walkway
-    createPlatform(600, 560, 220, 20),
-    createPlatform(840, 560, 100, 20),   // Small gap
-    createPlatform(960, 560, 220, 20),   // Small gap
-    createPlatform(1200, 560, 220, 20),  // Small gap
+    // ============================================================
+    // BOSS ARENA - Final confrontation
+    // ============================================================
+    createPlatform(2320, 450, 80, 30),      // Arena entry
+    createPlatform(2480, 480, 200, 40),   // 80px gap - main arena
+    createPlatform(2760, 500, 140, 50),   // 80px gap - victory platform
     
-    // Boss platform (final)
-    createPlatform(1850, 520, 350, 50),  // Small gap
+    // ============================================================
+    // LOWER STEALTH PATH - Longer but safer
+    // ============================================================
+    createPlatform(500, 700, 200, 50),
+    createPlatform(760, 720, 180, 50),   // 60px gap
+    createPlatform(1000, 700, 220, 50),   // 60px gap
+    createPlatform(1280, 720, 160, 50),    // 60px gap
+    createPlatform(1520, 700, 200, 50),   // 60px gap
     
-    // Side passages - CONNECTED
-    createPlatform(300, 750, 430, 50),
-    createPlatform(750, 750, 480, 50),   // Small gap
+    // Lower path rejoins
+    createPlatform(1780, 680, 140, 40),   // 60px gap
+    createPlatform(1980, 620, 100, 30),   // 60px gap - climbing
+    
+    // ============================================================
+    // VENT/MAINTENANCE LEDGES - Risk shortcuts
+    // ============================================================
+    createPlatform(620, 480, 50, 15),     // Early vent
+    createPlatform(1380, 300, 60, 15),    // High vent - mid
+    createPlatform(2260, 320, 50, 15),    // Pre-boss shortcut
+    
+    // Connection between paths
+    createPlatform(1140, 550, 80, 20),
+    createPlatform(1660, 580, 70, 20),
   ],
   
   enemies: [
-    // Entry
-    createEnemy('soldier', 630, 560),
-    createEnemy('soldier', 730, 560),
+    // Entry guards
+    createEnemy('soldier', 200, 560),
+    createEnemy('soldier', 400, 560),
     
-    // Security
-    createEnemy('drone', 1055, 510),
-    createEnemy('heavy', 1365, 500),
-    createEnemy('drone', 1555, 500),
+    // Upper assault path - heavily fortified
+    createEnemy('soldier', 590, 515),
+    createEnemy('drone', 740, 460),
+    createEnemy('soldier', 920, 410),
+    createEnemy('drone', 1110, 360),
+    createEnemy('soldier', 1350, 345),
+    createEnemy('soldier', 1600, 325),
+    createEnemy('drone', 1800, 315),
+    createEnemy('soldier', 2100, 365),
     
-    // Command center
-    createEnemy('soldier', 1950, 450),
-    createEnemy('soldier', 2050, 450),
-    createEnemy('heavy', 2200, 470),
+    // Command deck elites
+    createEnemy('heavy', 1800, 290),
+    createEnemy('soldier', 2230, 365),
     
-    // Upper levels
-    createEnemy('drone', 710, 540),
-    createEnemy('drone', 1070, 540),
-    createEnemy('drone', 1310, 540),
+    // Boss arena - Final confrontation!
+    createEnemy('heavy', 2550, 440),
+    createEnemy('soldier', 2680, 450),
+    createEnemy('soldier', 2450, 450),
     
-    // Side passages
-    createEnemy('grunt', 430, 710),
-    createEnemy('soldier', 640, 710),
-    createEnemy('grunt', 1050, 710),
+    // Lower stealth path - lighter security
+    createEnemy('grunt', 600, 650),
+    createEnemy('grunt', 850, 670),
+    createEnemy('soldier', 1120, 650),
+    createEnemy('grunt', 1380, 670),
+    createEnemy('soldier', 1640, 650),
+    createEnemy('grunt', 1930, 590),
+    
+    // Vent sentries (flying drones)
+    createEnemy('drone', 645, 445),
+    createEnemy('drone', 1410, 275),
+    createEnemy('drone', 2285, 295),
   ],
   
   pickups: [
-    createPickup('medkit', 1055, 510),
-    createWeaponPickup('lmg', 1455, 510),      // LMG pickup
-    createPickup('medkit', 1915, 540),
-    createWeaponPickup('shotgun', 2025, 490), // Shotgun pickup
+    // Lower stealth path
+    createPickup('medkit', 850, 670),
+    createPickup('medkit', 1380, 670),
+    createWeaponPickup('shotgun', 1650, 650),
+    
+    // Upper assault path
+    createPickup('medkit', 920, 410),
+    createPickup('medkit', 1600, 325),
+    createWeaponPickup('lmg', 1350, 345),
+    
+    // Vent shortcuts - high risk rewards
+    createWeaponPickup('rifle', 645, 445),
+    createWeaponPickup('sniper', 1410, 275),
+    
+    // Command deck - before heavy fight
+    createPickup('medkit', 1800, 290),
+    
+    // Boss arena
+    createWeaponPickup('lmg', 2580, 440),
+    createPickup('medkit', 2830, 460),
   ],
   
   savePoints: [
-    createSavePoint(50, 540, 'hq'),
-    createSavePoint(1100, 500, 'hq'),
-    createSavePoint(1750, 450, 'hq'),
-    createSavePoint(2025, 460, 'hq'),
+    createSavePoint(350, 540, 'hq'),         // After entry - moved forward
+    createSavePoint(800, 460, 'hq'),      // Upper path checkpoint
+    createSavePoint(1620, 310, 'hq'),     // Command deck
+    createSavePoint(2400, 420, 'hq'),     // Pre-boss
   ],
   
   connections: [
@@ -634,10 +674,442 @@ export const hqArea: Area = {
       toAreaId: 'mountain',
       fromX: 50,
       fromY: 600,
-      toSpawnX: 3100,
-      toSpawnY: 300,
+      toSpawnX: 3040,
+      toSpawnY: 500,
+    },
+    {
+      toAreaId: 'skyfortress',
+      fromX: 3100,
+      fromY: 500,
+      toSpawnX: 100,
+      toSpawnY: 500,
     },
   ],
+};
+
+// ------------------------------------------------------------
+// AREA 6: SKY FORTRESS - High above the clouds
+// ------------------------------------------------------------
+export const skyFortressArea: Area = {
+  id: 'skyfortress',
+  name: 'Sky Fortress',
+  theme: 'skyfortress',
+  width: 3000,
+  height: 1000,
+  backgroundColor: AREA_THEMES.skyfortress.backgroundColor,
+  playerSpawn: { x: 100, y: 500 },
+  
+  platforms: [
+    // Entry - Floating dock
+    createPlatform(0, 600, 240, 80),
+    createPlatform(300, 580, 180, 60),
+    
+    // Main ascent - Wind-swept platforms
+    createPlatform(520, 520, 120, 25),
+    createPlatform(700, 460, 100, 20),
+    createPlatform(880, 400, 140, 25),
+    createPlatform(1100, 340, 100, 20),
+    createPlatform(1280, 280, 160, 30),
+    
+    // Upper fortress traverse
+    createPlatform(1520, 260, 200, 25),
+    createPlatform(1800, 240, 140, 20),
+    createPlatform(2020, 280, 180, 30),
+    createPlatform(2280, 320, 120, 25),
+    
+    // Exit approach
+    createPlatform(2480, 360, 160, 30),
+    createPlatform(2720, 400, 140, 40),
+    createPlatform(2900, 450, 100, 50),
+    
+    // Lower cloud path (safer but longer)
+    createPlatform(480, 700, 200, 50),
+    createPlatform(740, 720, 180, 50),
+    createPlatform(980, 700, 220, 50),
+    createPlatform(1260, 680, 160, 50),
+    createPlatform(1480, 700, 200, 50),
+    createPlatform(1720, 680, 180, 50),
+    
+    // Rejoin point
+    createPlatform(1960, 620, 140, 40),
+    
+    // Wind current shortcuts (small floating platforms)
+    createPlatform(620, 450, 60, 15),
+    createPlatform(1420, 200, 70, 15),
+    createPlatform(2380, 280, 60, 15),
+    
+    // Connection bridges
+    createPlatform(860, 600, 80, 20),
+    createPlatform(1620, 580, 100, 20),
+  ],
+  
+  enemies: [
+    // Entry patrol
+    createEnemy('soldier', 150, 560),
+    createEnemy('drone', 400, 530),
+    
+    // Main ascent guards
+    createEnemy('soldier', 580, 480),
+    createEnemy('drone', 750, 420),
+    createEnemy('soldier', 950, 360),
+    createEnemy('drone', 1180, 300),
+    createEnemy('soldier', 1400, 245),
+    createEnemy('drone', 1660, 225),
+    createEnemy('soldier', 1920, 215),
+    
+    // Fortress elite
+    createEnemy('heavy', 2100, 235),
+    createEnemy('soldier', 2340, 290),
+    
+    // Exit defense
+    createEnemy('drone', 2640, 330),
+    createEnemy('soldier', 2850, 410),
+    
+    // Lower path
+    createEnemy('grunt', 580, 650),
+    createEnemy('soldier', 830, 670),
+    createEnemy('grunt', 1100, 650),
+    createEnemy('soldier', 1380, 630),
+    createEnemy('grunt', 1620, 650),
+    createEnemy('soldier', 1860, 630),
+    
+    // Shortcut sentries
+    createEnemy('drone', 650, 415),
+    createEnemy('drone', 1455, 180),
+    createEnemy('drone', 2410, 260),
+  ],
+  
+  pickups: [
+    // Lower path
+    createPickup('medkit', 830, 670),
+    createWeaponPickup('rifle', 1100, 650),
+    createPickup('medkit', 1620, 650),
+    
+    // Upper ascent
+    createPickup('medkit', 750, 420),
+    createWeaponPickup('sniper', 1180, 300),
+    createPickup('medkit', 1660, 225),
+    
+    // Shortcut rewards
+    createWeaponPickup('lmg', 650, 415),
+    createPickup('medkit', 1455, 180),
+    
+    // Fortress loot
+    createWeaponPickup('shotgun', 2100, 235),
+    createPickup('medkit', 2780, 400),
+    
+    // Pre-exit
+    createPickup('medkit', 2960, 420),
+  ],
+  
+  savePoints: [
+    createSavePoint(50, 540, 'skyfortress'),
+    createSavePoint(980, 400, 'skyfortress'),
+    createSavePoint(1680, 210, 'skyfortress'),
+    createSavePoint(2580, 330, 'skyfortress'),
+  ],
+  
+  connections: [
+    {
+      toAreaId: 'hq',
+      fromX: 50,
+      fromY: 600,
+      toSpawnX: 2760,
+      toSpawnY: 500,
+    },
+    {
+      toAreaId: 'volcanolab',
+      fromX: 2950,
+      fromY: 450,
+      toSpawnX: 100,
+      toSpawnY: 500,
+    },
+  ],
+};
+
+// ------------------------------------------------------------
+// AREA 7: VOLCANO LAB - Beneath the burning mountain
+// ------------------------------------------------------------
+export const volcanoLabArea: Area = {
+  id: 'volcanolab',
+  name: 'Volcano Lab',
+  theme: 'volcanolab',
+  width: 3200,
+  height: 900,
+  backgroundColor: AREA_THEMES.volcanolab.backgroundColor,
+  playerSpawn: { x: 100, y: 500 },
+  
+  platforms: [
+    // Entry tunnel
+    createPlatform(0, 600, 200, 80),
+    createPlatform(280, 620, 160, 60),
+    
+    // Magma chamber crossing - thin precarious bridges
+    createPlatform(500, 540, 100, 20),
+    createPlatform(680, 480, 80, 15),
+    createPlatform(860, 420, 120, 20),
+    createPlatform(1060, 360, 80, 15),
+    createPlatform(1240, 300, 140, 20),
+    createPlatform(1460, 260, 100, 15),
+    createPlatform(1640, 280, 160, 25),
+    createPlatform(1880, 320, 120, 20),
+    
+    // Research facility upper deck
+    createPlatform(2080, 300, 200, 20),
+    createPlatform(2340, 340, 140, 20),
+    createPlatform(2560, 380, 180, 25),
+    createPlatform(2820, 420, 120, 30),
+    
+    // Exit chamber
+    createPlatform(3000, 470, 200, 50),
+    
+    // Lower magma tunnel (safer ground route)
+    createPlatform(460, 720, 220, 50),
+    createPlatform(740, 740, 180, 50),
+    createPlatform(1000, 720, 200, 50),
+    createPlatform(1280, 700, 160, 50),
+    createPlatform(1520, 680, 180, 50),
+    createPlatform(1780, 700, 200, 50),
+    createPlatform(2060, 680, 160, 50),
+    
+    // Climb back to upper
+    createPlatform(2300, 620, 120, 40),
+    createPlatform(2500, 560, 100, 30),
+    
+    // Lava rock shortcuts (tiny platforms over magma)
+    createPlatform(600, 500, 50, 15),
+    createPlatform(1380, 240, 60, 15),
+    createPlatform(2200, 260, 50, 15),
+    
+    // Mid connections
+    createPlatform(920, 640, 80, 20),
+    createPlatform(1700, 600, 100, 20),
+  ],
+  
+  enemies: [
+    // Entry security
+    createEnemy('soldier', 180, 560),
+    createEnemy('soldier', 400, 580),
+    
+    // Bridge sentries (very dangerous positions)
+    createEnemy('soldier', 550, 500),
+    createEnemy('drone', 720, 445),
+    createEnemy('soldier', 920, 385),
+    createEnemy('drone', 1100, 325),
+    createEnemy('soldier', 1320, 270),
+    createEnemy('drone', 1540, 230),
+    
+    // Facility guards
+    createEnemy('heavy', 1700, 240),
+    createEnemy('soldier', 1980, 290),
+    createEnemy('drone', 2180, 275),
+    createEnemy('soldier', 2440, 315),
+    createEnemy('drone', 2700, 355),
+    
+    // Exit defense
+    createEnemy('heavy', 2920, 430),
+    createEnemy('soldier', 3100, 430),
+    
+    // Lower tunnel patrols
+    createEnemy('grunt', 570, 670),
+    createEnemy('soldier', 830, 690),
+    createEnemy('grunt', 1120, 670),
+    createEnemy('soldier', 1400, 650),
+    createEnemy('grunt', 1660, 630),
+    createEnemy('soldier', 1920, 650),
+    
+    // Shortcut drones
+    createEnemy('drone', 625, 475),
+    createEnemy('drone', 1410, 215),
+    createEnemy('drone', 2225, 235),
+  ],
+  
+  pickups: [
+    // Lower tunnel
+    createPickup('medkit', 830, 690),
+    createPickup('medkit', 1660, 630),
+    createWeaponPickup('shotgun', 1920, 650),
+    
+    // Bridge crossing rewards
+    createPickup('medkit', 720, 445),
+    createWeaponPickup('sniper', 1100, 325),
+    createPickup('medkit', 1540, 230),
+    
+    // Shortcut treasures
+    createWeaponPickup('lmg', 625, 475),
+    createPickup('medkit', 1410, 215),
+    
+    // Facility loot
+    createWeaponPickup('rifle', 2180, 275),
+    createPickup('medkit', 2620, 370),
+    
+    // Pre-boss
+    createPickup('medkit', 3080, 430),
+  ],
+  
+  savePoints: [
+    createSavePoint(50, 540, 'volcanolab'),
+    createSavePoint(900, 400, 'volcanolab'),
+    createSavePoint(1560, 230, 'volcanolab'),
+    createSavePoint(2740, 350, 'volcanolab'),
+  ],
+  
+  connections: [
+    {
+      toAreaId: 'skyfortress',
+      fromX: 50,
+      fromY: 600,
+      toSpawnX: 2900,
+      toSpawnY: 450,
+    },
+    {
+      toAreaId: 'voidcore',
+      fromX: 3150,
+      fromY: 470,
+      toSpawnX: 100,
+      toSpawnY: 500,
+    },
+  ],
+};
+
+// ------------------------------------------------------------
+// AREA 8: VOID CORE - The final dimension
+// Final boss level
+// ------------------------------------------------------------
+export const voidCoreArea: Area = {
+  id: 'voidcore',
+  name: 'Void Core',
+  theme: 'voidcore',
+  width: 2800,
+  height: 1000,
+  backgroundColor: AREA_THEMES.voidcore.backgroundColor,
+  playerSpawn: { x: 100, y: 500 },
+  
+  platforms: [
+    // Entry void platform
+    createPlatform(0, 600, 180, 80),
+    createPlatform(260, 580, 140, 60),
+    
+    // Reality shards - floating platforms in void
+    createPlatform(480, 500, 100, 20),
+    createPlatform(660, 440, 80, 15),
+    createPlatform(840, 380, 120, 20),
+    createPlatform(1040, 320, 80, 15),
+    createPlatform(1220, 260, 140, 20),
+    createPlatform(1440, 220, 100, 15),
+    
+    // Boss arena approach
+    createPlatform(1640, 240, 160, 25),
+    createPlatform(1880, 280, 120, 20),
+    createPlatform(2100, 340, 100, 25),
+    
+    // BOSS ARENA - Large platform for final battle
+    createPlatform(2300, 400, 500, 60),
+    
+    // Lower void path (more stable but longer)
+    createPlatform(440, 720, 200, 50),
+    createPlatform(700, 740, 180, 50),
+    createPlatform(960, 720, 220, 50),
+    createPlatform(1220, 700, 180, 50),
+    createPlatform(1480, 680, 200, 50),
+    createPlatform(1740, 700, 160, 50),
+    createPlatform(1960, 660, 140, 40),
+    
+    // Climb to boss arena
+    createPlatform(2160, 600, 100, 30),
+    createPlatform(2320, 520, 80, 25),
+    
+    // Void shortcuts (very risky tiny platforms)
+    createPlatform(580, 480, 50, 15),
+    createPlatform(1340, 190, 60, 15),
+    createPlatform(2060, 310, 50, 15),
+    
+    // Emergency connections
+    createPlatform(880, 640, 80, 20),
+    createPlatform(1580, 620, 100, 20),
+  ],
+  
+  enemies: [
+    // Entry void sentries
+    createEnemy('soldier', 140, 560),
+    createEnemy('drone', 350, 540),
+    
+    // Shard guardians
+    createEnemy('soldier', 530, 460),
+    createEnemy('drone', 700, 405),
+    createEnemy('soldier', 900, 345),
+    createEnemy('drone', 1100, 285),
+    createEnemy('soldier', 1300, 235),
+    createEnemy('drone', 1520, 195),
+    
+    // Arena approach elites
+    createEnemy('heavy', 1720, 210),
+    createEnemy('soldier', 1960, 250),
+    createEnemy('heavy', 2160, 310),
+    
+    // LOWER PATH GUARDIANS
+    createEnemy('grunt', 540, 670),
+    createEnemy('soldier', 790, 690),
+    createEnemy('grunt', 1070, 670),
+    createEnemy('soldier', 1350, 650),
+    createEnemy('heavy', 1620, 630),
+    createEnemy('soldier', 1880, 650),
+    createEnemy('grunt', 2100, 620),
+    
+    // Shortcut sentries
+    createEnemy('drone', 605, 455),
+    createEnemy('drone', 1370, 165),
+    createEnemy('drone', 2085, 285),
+    
+    // FINAL BOSS - Placed on boss arena
+    createEnemy('boss', 2550, 300),
+  ],
+  
+  pickups: [
+    // Lower path supplies
+    createPickup('medkit', 790, 690),
+    createWeaponPickup('shotgun', 1350, 650),
+    createPickup('medkit', 1880, 650),
+    
+    // Shard crossing rewards
+    createPickup('medkit', 700, 405),
+    createWeaponPickup('sniper', 1100, 285),
+    createPickup('medkit', 1520, 195),
+    
+    // Shortcut treasures
+    createWeaponPickup('rifle', 605, 455),
+    createWeaponPickup('lmg', 1370, 165),
+    createPickup('medkit', 2085, 285),
+    
+    // Pre-boss preparation
+    createPickup('medkit', 1980, 250),
+    createPickup('medkit', 2200, 310),
+    
+    // Arena supplies
+    createWeaponPickup('lmg', 2400, 360),
+    createPickup('medkit', 2700, 360),
+  ],
+  
+  savePoints: [
+    createSavePoint(50, 540, 'voidcore'),
+    createSavePoint(780, 360, 'voidcore'),
+    createSavePoint(1380, 180, 'voidcore'),
+    createSavePoint(2240, 350, 'voidcore'),  // Pre-boss save
+  ],
+  
+  connections: [
+    {
+      toAreaId: 'volcanolab',
+      fromX: 50,
+      fromY: 600,
+      toSpawnX: 3100,
+      toSpawnY: 470,
+    },
+    // No exit - boss must be defeated
+  ],
+  
+  isBossLevel: true,
+  bossDefeated: false,
 };
 
 // ------------------------------------------------------------
@@ -649,6 +1121,9 @@ export const ALL_AREAS: Area[] = [
   bunkerArea,
   mountainArea,
   hqArea,
+  skyFortressArea,
+  volcanoLabArea,
+  voidCoreArea,
 ];
 
 // Helper to get area by ID

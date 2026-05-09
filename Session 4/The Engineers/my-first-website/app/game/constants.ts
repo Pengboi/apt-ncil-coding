@@ -171,6 +171,18 @@ export const ENEMY_CONFIGS = {
     detectionRange: 250,
     attackRange: 40,
   },
+  boss: {
+    width: 80,
+    height: 100,
+    hp: 800,
+    damage: 40,
+    speed: 90,
+    xpValue: 1000,
+    color: '#c0392b',
+    respawnOnReenter: false,
+    detectionRange: 400,
+    attackRange: 100,
+  },
 };
 
 // ------------------------------------------------------------
@@ -254,6 +266,21 @@ export const AREA_THEMES = {
     platformColor: '#4a4a5a',
     groundColor: '#16213e',
   },
+  skyfortress: {
+    backgroundColor: '#4a69bd',
+    platformColor: '#95a5a6',
+    groundColor: '#576574',
+  },
+  volcanolab: {
+    backgroundColor: '#5c1919',
+    platformColor: '#8b4513',
+    groundColor: '#3d0e0e',
+  },
+  voidcore: {
+    backgroundColor: '#0c0c1a',
+    platformColor: '#2d1b4e',
+    groundColor: '#1a0b2e',
+  },
 };
 
 // ------------------------------------------------------------
@@ -279,6 +306,7 @@ export const COLORS = {
   enemySoldier: '#c0392b',
   enemyDrone: '#e67e22',
   enemyHeavy: '#8e44ad',
+  enemyBoss: '#c0392b',
   platform: '#7f8c8d',
   savePoint: '#3498db',
   savePointActive: '#2ecc71',

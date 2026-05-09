@@ -81,7 +81,7 @@ export interface Weapon {
 // ------------------------------------------------------------
 // Enemy Types
 // ------------------------------------------------------------
-export type EnemyType = 'grunt' | 'soldier' | 'drone' | 'heavy';
+export type EnemyType = 'grunt' | 'soldier' | 'drone' | 'heavy' | 'boss';
 
 export interface Enemy {
   // Position & Physics
@@ -181,7 +181,7 @@ export interface AreaConnection {
 export interface Area {
   id: string;
   name: string;
-  theme: 'bootcamp' | 'city' | 'bunker' | 'mountain' | 'hq';
+  theme: 'bootcamp' | 'city' | 'bunker' | 'mountain' | 'hq' | 'skyfortress' | 'volcanolab' | 'voidcore';
   width: number;
   height: number;
   backgroundColor: string;
@@ -191,6 +191,8 @@ export interface Area {
   savePoints: SavePoint[];
   connections: AreaConnection[];
   playerSpawn: Vector2;
+  isBossLevel?: boolean;
+  bossDefeated?: boolean;
 }
 
 // ------------------------------------------------------------
@@ -208,7 +210,7 @@ export interface SaveData {
 // ------------------------------------------------------------
 // Game State Types
 // ------------------------------------------------------------
-export type GameScreen = 'menu' | 'playing' | 'paused' | 'gameOver' | 'levelUp' | 'map';
+export type GameScreen = 'menu' | 'playing' | 'paused' | 'gameOver' | 'levelUp' | 'map' | 'victory';
 
 export interface GameState {
   screen: GameScreen;
@@ -217,6 +219,8 @@ export interface GameState {
   enemiesKilled: number;
   areasDiscovered: string[];
   playTime: number;
+  respawnCount: number;
+  bossDefeated: boolean;
 }
 
 // ------------------------------------------------------------

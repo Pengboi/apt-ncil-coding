@@ -25,6 +25,9 @@ export class GameEngine {
   enemiesKilled: number;
   areasDiscovered: string[];
   playTime: number;
+  respawnCount: number;
+  bossDefeated: boolean;
+  victoryStats: { finalTime: number; totalRespawns: number; totalKills: number; completionDate: string } | null;
   
   // Input
   input: InputState;
@@ -70,6 +73,9 @@ export class GameEngine {
     this.enemiesKilled = 0;
     this.areasDiscovered = [this.currentArea.id];
     this.playTime = 0;
+    this.respawnCount = 0;
+    this.bossDefeated = false;
+    this.victoryStats = null;
     
     // Initialize input
     this.input = this.getDefaultInput();
@@ -138,30 +144,36 @@ export class GameEngine {
   }
   
   handleMenuClick(mouseX: number, mouseY: number): void {
+    if (this.screen === 'victory') {
+      // Click anywhere on victory screen returns to menu
+      this.returnToMenu();
+      return;
+    }
+
     if (this.screen !== 'menu') return;
-    
+
     const centerX = CANVAS_WIDTH / 2;
     const centerY = CANVAS_HEIGHT / 2;
-    
+
     // Button dimensions
     const btnWidth = 250;
     const btnHeight = 50;
-    
+
     // New Game button position
     const newGameY = centerY - 20;
     const newGameX = centerX - btnWidth / 2;
-    
+
     // Load Game button position
     const loadGameY = centerY + 50;
     const loadGameX = centerX - btnWidth / 2;
-    
+
     // Check New Game button click
     if (mouseX >= newGameX && mouseX <= newGameX + btnWidth &&
         mouseY >= newGameY && mouseY <= newGameY + btnHeight) {
       this.startNewGame();
       return;
     }
-    
+
     // Check Load Game button click
     if (mouseX >= loadGameX && mouseX <= loadGameX + btnWidth &&
         mouseY >= loadGameY && mouseY <= loadGameY + btnHeight) {
@@ -169,6 +181,12 @@ export class GameEngine {
         this.loadSavedGame();
       }
     }
+  }
+
+  private returnToMenu(): void {
+    this.screen = 'menu';
+    this.victoryStats = null;
+    this.bossDefeated = false;
   }
   
   // ----------------------------------------------------------
@@ -484,18 +502,21 @@ export class GameEngine {
   // ----------------------------------------------------------
   private handlePlayerDeath(): void {
     if (!this.lastSavePoint) return;
-    
+
+    // Increment respawn counter
+    this.respawnCount++;
+
     // Clear enemy bullets
     this.enemyBullets = [];
     this.bullets = [];
-    
+
     // Load last save point area
     const saveArea = getAreaById(this.lastSavePoint.areaId);
     if (saveArea) {
       this.currentArea = saveArea;
       this.camera.setWorldBounds(saveArea.width, saveArea.height);
     }
-    
+
     // Respawn player
     this.player.respawn(this.lastSavePoint.x, this.lastSavePoint.y);
     this.camera.centerOn(this.player.x, this.player.y, this.player.width, this.player.height);
@@ -600,10 +621,28 @@ export class GameEngine {
   private killEnemy(enemy: Enemy): void {
     enemy.isDead = true;
     this.enemiesKilled++;
-    
+
+    // Check if boss was defeated
+    if (enemy.type === 'boss') {
+      this.bossDefeated = true;
+      this.currentArea.bossDefeated = true;
+
+      // Store victory stats
+      this.victoryStats = {
+        finalTime: this.playTime,
+        totalRespawns: this.respawnCount,
+        totalKills: this.enemiesKilled,
+        completionDate: new Date().toLocaleString(),
+      };
+
+      // Switch to victory screen
+      this.screen = 'victory';
+      console.log('BOSS DEFEATED! Victory screen triggered.');
+    }
+
     // Give XP
     const leveledUp = this.player.gainXp(enemy.xpValue);
-    
+
     if (leveledUp) {
       // Could show level up notification here
       console.log(`Level Up! Now level ${this.player.level}`);
@@ -615,23 +654,23 @@ export class GameEngine {
   // ----------------------------------------------------------
   private updateEnemies(dt: number): void {
     const now = performance.now();
-    
+
     for (const enemy of this.currentArea.enemies) {
       if (enemy.isDead) continue;
-      
+
       const playerCenterX = this.player.x + this.player.width / 2;
       const playerCenterY = this.player.y + this.player.height / 2;
       const enemyCenterX = enemy.x + enemy.width / 2;
       const enemyCenterY = enemy.y + enemy.height / 2;
-      
+
       // Distance to player
       const dx = playerCenterX - enemyCenterX;
       const dy = playerCenterY - enemyCenterY;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      
+
       // Face player
       enemy.isFacingRight = dx > 0;
-      
+
       // Basic patrol movement
       if (distance > enemy.detectionRange) {
         // Patrol between patrol points
@@ -640,12 +679,12 @@ export class GameEngine {
         } else if (enemy.x >= enemy.patrolEndX) {
           enemy.vx = -enemy.speed * 0.5;
         }
-        
+
         // If not moving, start moving
         if (enemy.vx === 0) {
           enemy.vx = enemy.speed * 0.5;
         }
-        
+
         enemy.x += enemy.vx * dt;
       } else if (distance > enemy.attackRange) {
         // Chase player
@@ -656,18 +695,25 @@ export class GameEngine {
         // In attack range, stop moving
         enemy.vx = 0;
       }
-      
-      // Shooting (only soldiers and heavies for now)
-      if ((enemy.type === 'soldier' || enemy.type === 'heavy') && distance <= enemy.attackRange) {
-        // Fire rate: 1 shot per second for soldiers, 0.5 for heavies
-        const fireRate = enemy.type === 'heavy' ? 2000 : 1000;
-        
+
+      // Shooting (soldiers, heavies, and boss)
+      if ((enemy.type === 'soldier' || enemy.type === 'heavy' || enemy.type === 'boss') && distance <= enemy.attackRange) {
+        // Fire rate: 1 shot per second for soldiers, 0.5 for heavies, 0.8 for boss
+        let fireRate = 1000;
+        if (enemy.type === 'heavy') fireRate = 2000;
+        if (enemy.type === 'boss') fireRate = 800;
+
         if (now - enemy.lastAttackTime > fireRate) {
-          this.enemyShoot(enemy, playerCenterX, playerCenterY);
+          // Boss fires a burst of 3 shots
+          if (enemy.type === 'boss') {
+            this.enemyBossShoot(enemy, playerCenterX, playerCenterY);
+          } else {
+            this.enemyShoot(enemy, playerCenterX, playerCenterY);
+          }
           enemy.lastAttackTime = now;
         }
       }
-      
+
       // Melee damage for grunts (contact)
       if (enemy.type === 'grunt' && distance < 30) {
         // Damage player every second when touching
@@ -677,6 +723,103 @@ export class GameEngine {
         }
       }
     }
+  }
+
+  private enemyBossShoot(enemy: Enemy, targetX: number, targetY: number): void {
+    // Boss fires in BOTH directions - forward and backward spray
+    const leftGunX = enemy.x;
+    const rightGunX = enemy.x + enemy.width;
+    const gunY = enemy.y + enemy.height / 2;
+
+    // Determine which direction is "forward" (toward player)
+    const playerIsRight = targetX > enemy.x + enemy.width / 2;
+    const forwardDir = playerIsRight ? 1 : -1;
+    const backDir = -forwardDir;
+
+    // === FORWARD SHOTS (toward player) ===
+    // Left cannon forward
+    const bullet1 = new Bullet(
+      leftGunX,
+      gunY,
+      targetX,
+      targetY - 50, // Aim slightly up
+      500,
+      enemy.damage,
+      false,
+      '#ff0000'
+    );
+
+    // Center/core forward
+    const bullet2 = new Bullet(
+      enemy.x + enemy.width / 2,
+      gunY,
+      targetX,
+      targetY,
+      500,
+      enemy.damage,
+      false,
+      '#ff0000'
+    );
+
+    // Right cannon forward
+    const bullet3 = new Bullet(
+      rightGunX,
+      gunY,
+      targetX,
+      targetY + 50, // Aim slightly down
+      500,
+      enemy.damage,
+      false,
+      '#ff0000'
+    );
+
+    // === BACKWARD SHOTS (opposite direction) ===
+    // Calculate opposite target point
+    const backTargetX = enemy.x + enemy.width / 2 - (targetX - (enemy.x + enemy.width / 2));
+    const backTargetY = targetY;
+
+    // Left cannon backward (becomes right from back perspective)
+    const bullet4 = new Bullet(
+      rightGunX,
+      gunY - 10,
+      backTargetX,
+      backTargetY - 50,
+      500,
+      enemy.damage,
+      false,
+      '#ff5500'  // Orange-red for back shots
+    );
+
+    // Center/core backward
+    const bullet5 = new Bullet(
+      enemy.x + enemy.width / 2,
+      gunY - 10,
+      backTargetX,
+      backTargetY,
+      500,
+      enemy.damage,
+      false,
+      '#ff5500'
+    );
+
+    // Right cannon backward (becomes left from back perspective)
+    const bullet6 = new Bullet(
+      leftGunX,
+      gunY - 10,
+      backTargetX,
+      backTargetY + 50,
+      500,
+      enemy.damage,
+      false,
+      '#ff5500'
+    );
+
+    this.enemyBullets.push(bullet1, bullet2, bullet3, bullet4, bullet5, bullet6);
+
+    // Trigger shooting animation
+    enemy.isShooting = true;
+    enemy.animationTimer = 0;
+    enemy.animationState = 'shoot';
   }
   
   private enemyShoot(enemy: Enemy, targetX: number, targetY: number): void {
@@ -810,21 +953,23 @@ export class GameEngine {
   // ----------------------------------------------------------
   private render(): void {
     const ctx = this.ctx;
-    
+
     // Render different screens based on game state
     if (this.screen === 'menu') {
       this.renderMenu(ctx);
+    } else if (this.screen === 'victory') {
+      this.renderVictoryScreen(ctx);
     } else {
       // Render themed background
       this.renderBackground(ctx);
-      
+
       // Apply camera transform
       ctx.save();
       ctx.translate(-this.camera.x, -this.camera.y);
-      
+
       // Render parallax background layers
       this.renderParallaxBackground(ctx);
-      
+
       // Render world
       this.renderPlatforms(ctx);
       this.renderSavePoints(ctx);
@@ -834,10 +979,10 @@ export class GameEngine {
       this.renderEnemyBullets(ctx);
       this.renderPlayer(ctx);
       this.renderAreaConnections(ctx);
-      
+
       // Restore transform
       ctx.restore();
-      
+
       // Render UI (screen space)
       this.renderUI(ctx);
     }
@@ -865,6 +1010,15 @@ export class GameEngine {
         break;
       case 'hq':
         this.renderHQBackground(ctx);
+        break;
+      case 'skyfortress':
+        this.renderSkyFortressBackground(ctx);
+        break;
+      case 'volcanolab':
+        this.renderVolcanoLabBackground(ctx);
+        break;
+      case 'voidcore':
+        this.renderVoidCoreBackground(ctx);
         break;
       default:
         ctx.fillStyle = this.currentArea.backgroundColor;
@@ -1164,6 +1318,166 @@ export class GameEngine {
     }
   }
   
+  private renderSkyFortressBackground(ctx: CanvasRenderingContext2D): void {
+    // Sky fortress - high altitude with clouds below
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#4a69bd');
+    gradient.addColorStop(0.4, '#6c5ce7');
+    gradient.addColorStop(0.7, '#a29bfe');
+    gradient.addColorStop(1, '#dfe6e9');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Cloud layer below (sea of clouds)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    for (let x = -50; x < CANVAS_WIDTH + 50; x += 80) {
+      const cloudY = CANVAS_HEIGHT - 100 + Math.sin(x * 0.01) * 30;
+      this.drawCloud(ctx, x, cloudY, 35 + Math.sin(x * 0.02) * 10);
+    }
+    
+    // Wind streaks
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 15; i++) {
+      const y = 50 + i * 40;
+      const offset = (performance.now() / 20 + i * 30) % (CANVAS_WIDTH + 100);
+      ctx.beginPath();
+      ctx.moveTo(offset - 100, y);
+      ctx.lineTo(offset, y);
+      ctx.stroke();
+    }
+    
+    // Sun glow
+    const sunGradient = ctx.createRadialGradient(CANVAS_WIDTH - 150, 100, 0, CANVAS_WIDTH - 150, 100, 150);
+    sunGradient.addColorStop(0, 'rgba(255, 223, 0, 0.4)');
+    sunGradient.addColorStop(1, 'rgba(255, 223, 0, 0)');
+    ctx.fillStyle = sunGradient;
+    ctx.beginPath();
+    ctx.arc(CANVAS_WIDTH - 150, 100, 150, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  private renderVolcanoLabBackground(ctx: CanvasRenderingContext2D): void {
+    // Volcano lab - magma chamber with industrial equipment
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#2c0a0a');
+    gradient.addColorStop(0.5, '#5c1919');
+    gradient.addColorStop(1, '#8b2631');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Magma/lava flow at bottom
+    const magmaGradient = ctx.createLinearGradient(0, CANVAS_HEIGHT - 200, 0, CANVAS_HEIGHT);
+    magmaGradient.addColorStop(0, 'rgba(255, 69, 0, 0.3)');
+    magmaGradient.addColorStop(0.5, 'rgba(255, 100, 0, 0.6)');
+    magmaGradient.addColorStop(1, 'rgba(255, 140, 0, 0.9)');
+    ctx.fillStyle = magmaGradient;
+    ctx.fillRect(0, CANVAS_HEIGHT - 200, CANVAS_WIDTH, 200);
+    
+    // Bubbles in magma
+    ctx.fillStyle = 'rgba(255, 200, 100, 0.8)';
+    for (let i = 0; i < 10; i++) {
+      const x = (i * 130 + performance.now() / 50) % CANVAS_WIDTH;
+      const y = CANVAS_HEIGHT - 50 - Math.sin(performance.now() / 1000 + i) * 30;
+      const size = 5 + Math.sin(performance.now() / 500 + i) * 3;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Industrial pipes silhouettes
+    ctx.fillStyle = 'rgba(30, 10, 10, 0.6)';
+    for (let x = 100; x < CANVAS_WIDTH; x += 300) {
+      // Vertical pipes
+      ctx.fillRect(x, 50, 20, CANVAS_HEIGHT - 150);
+      // Horizontal connectors
+      ctx.fillRect(x, 100, 100, 15);
+      ctx.fillRect(x, 250, 150, 15);
+    }
+    
+    // Heat distortion shimmer lines
+    ctx.strokeStyle = 'rgba(255, 100, 50, 0.1)';
+    ctx.lineWidth = 1;
+    for (let y = 50; y < CANVAS_HEIGHT - 100; y += 30) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      for (let x = 0; x < CANVAS_WIDTH; x += 50) {
+        ctx.lineTo(x + 25, y + Math.sin(x * 0.02 + performance.now() / 1000) * 5);
+      }
+      ctx.stroke();
+    }
+  }
+  
+  private renderVoidCoreBackground(ctx: CanvasRenderingContext2D): void {
+    // Void core - shattered dimension
+    // Dark void background
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#050510');
+    gradient.addColorStop(0.5, '#0c0c1a');
+    gradient.addColorStop(1, '#1a0b2e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Reality cracks - jagged lines across screen
+    ctx.strokeStyle = `rgba(100, 50, 200, ${0.2 + Math.sin(performance.now() / 1000) * 0.1})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, 100);
+    ctx.lineTo(300, 150);
+    ctx.lineTo(500, 80);
+    ctx.lineTo(800, 200);
+    ctx.lineTo(CANVAS_WIDTH, 120);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, CANVAS_HEIGHT - 150);
+    ctx.lineTo(400, CANVAS_HEIGHT - 200);
+    ctx.lineTo(700, CANVAS_HEIGHT - 100);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT - 180);
+    ctx.stroke();
+    
+    // Floating geometric fragments
+    ctx.fillStyle = 'rgba(150, 100, 255, 0.15)';
+    for (let i = 0; i < 8; i++) {
+      const x = (i * 160 + performance.now() / 50) % (CANVAS_WIDTH + 100) - 50;
+      const y = 100 + i * 80 + Math.sin(performance.now() / 2000 + i) * 30;
+      const rotation = performance.now() / 3000 + i;
+      
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.fillRect(-20, -20, 40, 40);
+      ctx.restore();
+    }
+    
+    // Distant stars/worlds
+    ctx.fillStyle = 'rgba(200, 200, 255, 0.8)';
+    for (let i = 0; i < 30; i++) {
+      const x = (i * 47) % CANVAS_WIDTH;
+      const y = (i * 23) % CANVAS_HEIGHT;
+      const twinkle = Math.sin(performance.now() / 500 + i) * 0.5 + 0.5;
+      ctx.globalAlpha = twinkle;
+      ctx.beginPath();
+      ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    
+    // Energy pulsing from center
+    const pulse = Math.sin(performance.now() / 1500) * 0.3 + 0.7;
+    const energyGradient = ctx.createRadialGradient(
+      CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 0,
+      CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 300
+    );
+    energyGradient.addColorStop(0, `rgba(100, 0, 200, ${0.2 * pulse})`);
+    energyGradient.addColorStop(0.5, `rgba(100, 0, 200, ${0.1 * pulse})`);
+    energyGradient.addColorStop(1, 'rgba(100, 0, 200, 0)');
+    ctx.fillStyle = energyGradient;
+    ctx.beginPath();
+    ctx.arc(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 300, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
   private renderParallaxBackground(ctx: CanvasRenderingContext2D): void {
     // Parallax effect - background elements move slower than foreground
     const parallaxX = this.camera.x * 0.3;
@@ -1231,9 +1545,72 @@ export class GameEngine {
           ctx.fillStyle = 'rgba(100, 50, 50, 0.2)';
         }
         break;
+        
+      case 'skyfortress':
+        // Floating debris and distant clouds
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        for (let x = -parallaxX % 500; x < CANVAS_WIDTH + this.camera.x; x += 500) {
+          this.drawCloud(ctx, x + 100, 150, 30);
+          this.drawCloud(ctx, x + 300, 200, 25);
+        }
+        // Distant floating islands
+        ctx.fillStyle = 'rgba(100, 120, 150, 0.3)';
+        for (let x = -parallaxX % 800; x < CANVAS_WIDTH + this.camera.x; x += 800) {
+          ctx.beginPath();
+          ctx.moveTo(x + 100, 300);
+          ctx.lineTo(x + 200, 300);
+          ctx.lineTo(x + 150, 250);
+          ctx.fill();
+        }
+        break;
+        
+      case 'volcanolab':
+        // Heat shimmer effect - distant magma glow
+        const magmaGlow = ctx.createRadialGradient(
+          CANVAS_WIDTH / 2, CANVAS_HEIGHT, 0,
+          CANVAS_WIDTH / 2, CANVAS_HEIGHT, 400
+        );
+        magmaGlow.addColorStop(0, 'rgba(255, 80, 0, 0.2)');
+        magmaGlow.addColorStop(1, 'rgba(255, 80, 0, 0)');
+        ctx.fillStyle = magmaGlow;
+        ctx.fillRect(0, CANVAS_HEIGHT - 400, CANVAS_WIDTH, 400);
+        
+        // Floating embers
+        ctx.fillStyle = 'rgba(255, 100, 50, 0.6)';
+        for (let i = 0; i < 20; i++) {
+          const x = (Math.sin(i * 2.3) * 500 + i * 60 - parallaxX * 0.5) % CANVAS_WIDTH;
+          const y = (i * 30 + performance.now() / 30) % CANVAS_HEIGHT;
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        break;
+        
+      case 'voidcore':
+        // Reality tears - glitchy distortions
+        ctx.fillStyle = `rgba(100, 0, 200, ${0.1 + Math.sin(performance.now() / 1000) * 0.05})`;
+        for (let x = -parallaxX % 300; x < CANVAS_WIDTH + this.camera.x; x += 300) {
+          ctx.fillRect(x + 50, 100, 5, CANVAS_HEIGHT - 200);
+          ctx.fillRect(x + 150, 50, 3, CANVAS_HEIGHT - 100);
+        }
+        
+        // Floating geometric shapes
+        ctx.strokeStyle = 'rgba(150, 50, 255, 0.2)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 5; i++) {
+          const x = (i * 250 - parallaxX * 0.3) % CANVAS_WIDTH;
+          const y = 200 + Math.sin(performance.now() / 2000 + i) * 50;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + 40, y + 30);
+          ctx.lineTo(x + 20, y + 60);
+          ctx.closePath();
+          ctx.stroke();
+        }
+        break;
     }
   }
-  
+
   private drawCloud(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI * 2);
@@ -1309,7 +1686,155 @@ export class GameEngine {
     ctx.fillStyle = '#555';
     ctx.fillText('v1.0', CANVAS_WIDTH - 30, CANVAS_HEIGHT - 20);
   }
-  
+
+  private renderVictoryScreen(ctx: CanvasRenderingContext2D): void {
+    // Animated victory background - golden celebration
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#1a1a2e');
+    gradient.addColorStop(0.5, '#2d1b4e');
+    gradient.addColorStop(1, '#16213e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Animated confetti particles
+    const colors = ['#f1c40f', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#e67e22'];
+    for (let i = 0; i < 50; i++) {
+      const x = (i * 73 + performance.now() / 20) % CANVAS_WIDTH;
+      const y = (i * 47 + performance.now() / 10) % CANVAS_HEIGHT;
+      const size = 4 + (i % 6);
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Victory title with glow
+    const titleY = 100;
+
+    // Glow effect
+    ctx.shadowColor = '#f1c40f';
+    ctx.shadowBlur = 30;
+    ctx.fillStyle = '#f1c40f';
+    ctx.font = 'bold 72px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('VICTORY!', CANVAS_WIDTH / 2, titleY);
+    ctx.shadowBlur = 0;
+
+    // Subtitle
+    ctx.fillStyle = '#ecf0f1';
+    ctx.font = 'bold 28px Arial';
+    ctx.fillText('BOSS DEFEATED', CANVAS_WIDTH / 2, titleY + 60);
+
+    // Mission complete text
+    ctx.fillStyle = '#95a5a6';
+    ctx.font = '20px Arial';
+    ctx.fillText('Mission Accomplished', CANVAS_WIDTH / 2, titleY + 100);
+
+    // Stats box background
+    const boxWidth = 450;
+    const boxHeight = 280;
+    const boxX = (CANVAS_WIDTH - boxWidth) / 2;
+    const boxY = 220;
+
+    // Box shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(boxX + 8, boxY + 8, boxWidth, boxHeight);
+
+    // Box background
+    ctx.fillStyle = 'rgba(30, 40, 60, 0.9)';
+    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+    // Box border
+    ctx.strokeStyle = '#f1c40f';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+    // Stats title
+    ctx.fillStyle = '#f1c40f';
+    ctx.font = 'bold 24px Arial';
+    ctx.fillText('MISSION STATS', CANVAS_WIDTH / 2, boxY + 40);
+
+    // Divider line
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(boxX + 50, boxY + 60);
+    ctx.lineTo(boxX + boxWidth - 50, boxY + 60);
+    ctx.stroke();
+
+    // Stats
+    const stats = this.victoryStats || {
+      finalTime: this.playTime,
+      totalRespawns: this.respawnCount,
+      totalKills: this.enemiesKilled,
+      completionDate: new Date().toLocaleString(),
+    };
+
+    // Format time
+    const minutes = Math.floor(stats.finalTime / 60);
+    const seconds = Math.floor(stats.finalTime % 60);
+    const timeString = `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+
+    const statItems = [
+      { label: 'Total Time', value: timeString },
+      { label: 'Respawns', value: stats.totalRespawns.toString() },
+      { label: 'Enemies Defeated', value: stats.totalKills.toString() },
+      { label: 'Completion', value: stats.completionDate },
+    ];
+
+    ctx.font = '18px Arial';
+    let currentY = boxY + 100;
+
+    for (const item of statItems) {
+      // Label
+      ctx.fillStyle = '#95a5a6';
+      ctx.textAlign = 'left';
+      ctx.fillText(item.label + ':', boxX + 40, currentY);
+
+      // Value
+      ctx.fillStyle = '#ecf0f1';
+      ctx.textAlign = 'right';
+      ctx.fillText(item.value, boxX + boxWidth - 40, currentY);
+
+      currentY += 45;
+    }
+
+    // Rank/Grade based on respawns
+    let rank = 'S';
+    let rankColor = '#f1c40f'; // Gold
+    if (stats.totalRespawns > 20) {
+      rank = 'C';
+      rankColor = '#e67e22'; // Bronze
+    } else if (stats.totalRespawns > 10) {
+      rank = 'B';
+      rankColor = '#95a5a6'; // Silver
+    } else if (stats.totalRespawns > 5) {
+      rank = 'A';
+      rankColor = '#3498db'; // Blue
+    }
+
+    // Rank display
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#95a5a6';
+    ctx.font = '20px Arial';
+    ctx.fillText('RANK', CANVAS_WIDTH / 2, currentY + 20);
+
+    ctx.fillStyle = rankColor;
+    ctx.font = 'bold 72px Arial';
+    ctx.shadowColor = rankColor;
+    ctx.shadowBlur = 20;
+    ctx.fillText(rank, CANVAS_WIDTH / 2, currentY + 80);
+    ctx.shadowBlur = 0;
+
+    // Continue hint
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '16px Arial';
+    ctx.fillText('Press ENTER or CLICK to return to Menu', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 40);
+  }
+
   private renderButton(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, text: string, color: string, disabled: boolean = false): void {
     // Button shadow
     if (!disabled) {
@@ -1474,6 +1999,9 @@ export class GameEngine {
           Math.PI * 2
         );
         ctx.fill();
+      } else if (enemy.type === 'boss') {
+        // BOSS - Special large rendering with effects
+        this.renderBoss(ctx, enemy);
       } else {
         // Human enemies use sprites
         const typeKey = enemy.type as 'grunt' | 'soldier' | 'heavy';
@@ -1525,6 +2053,88 @@ export class GameEngine {
       ctx.fillStyle = hpPercent > 0.5 ? '#2ecc71' : '#e74c3c';
       ctx.fillRect(enemy.x, enemy.y - 10, enemy.width * hpPercent, 6);
     }
+  }
+
+  private renderBoss(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
+    const centerX = enemy.x + enemy.width / 2;
+    const centerY = enemy.y + enemy.height / 2;
+
+    // Boss aura/pulse effect
+    const pulse = Math.sin(performance.now() / 300) * 0.2 + 0.8;
+    const auraGradient = ctx.createRadialGradient(centerX, centerY, 20, centerX, centerY, 80);
+    auraGradient.addColorStop(0, `rgba(192, 57, 43, ${0.4 * pulse})`);
+    auraGradient.addColorStop(0.5, `rgba(192, 57, 43, ${0.2 * pulse})`);
+    auraGradient.addColorStop(1, 'rgba(192, 57, 43, 0)');
+    ctx.fillStyle = auraGradient;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 80, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Boss body - larger and more menacing
+    ctx.fillStyle = '#2c0a0a';
+    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+
+    // Armor plates
+    ctx.fillStyle = '#5c1919';
+    ctx.fillRect(enemy.x + 10, enemy.y + 10, enemy.width - 20, enemy.height - 20);
+
+    // Glowing core
+    const corePulse = Math.sin(performance.now() / 200) * 0.3 + 0.7;
+    ctx.fillStyle = `rgba(255, 50, 50, ${corePulse})`;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY + 10, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Boss helmet/head
+    ctx.fillStyle = '#1a0505';
+    ctx.fillRect(enemy.x + 15, enemy.y - 15, enemy.width - 30, 25);
+
+    // Glowing eyes
+    ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.arc(enemy.x + 25, enemy.y - 5, 4, 0, Math.PI * 2);
+    ctx.arc(enemy.x + enemy.width - 25, enemy.y - 5, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Shoulder cannons
+    ctx.fillStyle = '#3d0e0e';
+    ctx.fillRect(enemy.x - 10, enemy.y + 15, 15, 25);
+    ctx.fillRect(enemy.x + enemy.width - 5, enemy.y + 15, 15, 25);
+
+    // BOSS label
+    ctx.fillStyle = '#ff0000';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('BOSS', centerX, enemy.y - 25);
+
+    // Enhanced health bar - longer and with segments
+    const hpPercent = enemy.hp / enemy.maxHp;
+    const barWidth = enemy.width + 20;
+    const barX = enemy.x - 10;
+
+    // Bar background
+    ctx.fillStyle = '#333';
+    ctx.fillRect(barX, enemy.y - 15, barWidth, 10);
+
+    // Health segments (10 segments)
+    ctx.fillStyle = hpPercent > 0.5 ? '#e74c3c' : '#ff0000';
+    ctx.fillRect(barX, enemy.y - 15, barWidth * hpPercent, 10);
+
+    // Segment dividers
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 10; i++) {
+      ctx.beginPath();
+      ctx.moveTo(barX + (barWidth / 10) * i, enemy.y - 15);
+      ctx.lineTo(barX + (barWidth / 10) * i, enemy.y - 5);
+      ctx.stroke();
+    }
+
+    // HP text
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.ceil(enemy.hp)}/${enemy.maxHp}`, centerX, enemy.y - 8);
   }
 
   private updateEnemyAnimation(enemy: Enemy): void {
@@ -1937,6 +2547,30 @@ export class GameEngine {
   // Input Handlers (called from React component)
   // ----------------------------------------------------------
   setKeyDown(key: string): void {
+    // Handle victory screen Enter key
+    if (key === 'Enter' && this.screen === 'victory') {
+      this.returnToMenu();
+      return;
+    }
+
+    // F-keys for level skipping (dev mode)
+    const levelKeys: Record<string, string> = {
+      'F1': 'bootcamp',
+      'F2': 'city',
+      'F3': 'bunker',
+      'F4': 'mountain',
+      'F5': 'hq',
+      'F6': 'skyfortress',
+      'F7': 'volcanolab',
+      'F8': 'voidcore',
+    };
+
+    if (levelKeys[key] && this.screen === 'playing') {
+      this.warpToArea(levelKeys[key]);
+      console.log(`[DEV] Warped to ${levelKeys[key]}`);
+      return;
+    }
+
     switch (key.toLowerCase()) {
       case 'a':
       case 'arrowleft':
@@ -2087,4 +2721,7 @@ export class GameEngine {
   warpToBunker(): void { this.warpToArea('bunker'); }
   warpToMountain(): void { this.warpToArea('mountain'); }
   warpToHQ(): void { this.warpToArea('hq'); }
+  warpToSkyFortress(): void { this.warpToArea('skyfortress'); }
+  warpToVolcanoLab(): void { this.warpToArea('volcanolab'); }
+  warpToVoidCore(): void { this.warpToArea('voidcore'); }
 }
