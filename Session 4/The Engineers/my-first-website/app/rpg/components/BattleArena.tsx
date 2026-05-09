@@ -583,39 +583,42 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
         )}
       </div>
 
-      {/* Battle Scene */}
-      <div className="glass-card rounded-2xl p-6 mb-4 relative overflow-hidden min-h-[400px]">
-        {/* Background effect based on enemy rarity */}
-        {enemies.length > 0 && (
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{ 
-              background: `radial-gradient(circle at 50% 50%, ${RARITY_COLORS[enemies[0].rarity]}, transparent 70%)` 
-            }}
-          />
-        )}
+      {/* Battle Arena - Pixel Art Game Background */}
+      <div className="relative rounded-2xl overflow-hidden mb-4" style={{ minHeight: '400px' }}>
+        {/* Pixel Art Game Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: `url('/images/battle/game-bg.jpg')`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }}
+        />
         
-        {/* Player Stats */}
-        <div className="relative mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[var(--arcane-cyan)] to-[var(--ethereal-violet)] flex items-center justify-center text-3xl">
-              🎭
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-display font-bold text-white">{character.name}</span>
-                <span className="font-display text-sm text-[var(--text-muted)]">
-                  Lv.{character.level}
-                </span>
+        {/* Light overlay for better visibility */}
+        <div className="absolute inset-0 bg-black/20" />
+        
+        {/* Battle Scene Content */}
+        <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+          
+          {/* Top Section - Stats Bars */}
+          <div className="flex justify-between items-start">
+            {/* Player (Left) */}
+            <div className="flex items-center gap-3 bg-black/40 backdrop-blur-sm rounded-xl p-3 border border-[var(--arcane-cyan)]/30">
+              <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-[var(--arcane-cyan)] bg-[var(--surface)]">
+                <img 
+                  src="/images/battle/knight.png" 
+                  alt="Knight"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).parentElement!.innerHTML = '<span style="font-size:24px">⚔️</span>';
+                  }}
+                />
               </div>
-              
-              {/* HP Bar */}
-              <div className="mb-2">
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-body text-[var(--text-muted)]">HP</span>
-                  <span className="font-display text-white">{playerHealth}/{character.derivedStats.maxHealth}</span>
-                </div>
-                <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
+              <div className="w-32">
+                <div className="font-display font-bold text-white text-sm mb-1">{character.name}</div>
+                <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden mb-1">
                   <div 
                     className="h-full rounded-full transition-all duration-300"
                     style={{ 
@@ -624,105 +627,111 @@ export default function BattleArena({ character, onBattleEnd, onFlee }: BattleAr
                     }}
                   />
                 </div>
-              </div>
-              
-              {/* MP Bar */}
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-body text-[var(--text-muted)]">MP</span>
-                  <span className="font-display text-white">{playerMana}/{character.derivedStats.maxMana}</span>
-                </div>
-                <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
-                  <div 
-                    className="h-full rounded-full transition-all duration-300 bg-[var(--mystic-magenta)]"
-                    style={{ width: `${playerManaPercent}%` }}
-                  />
-                </div>
+                <div className="text-xs text-[var(--text-secondary)]">{playerHealth}/{character.derivedStats.maxHealth} HP</div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Enemies */}
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {enemies.map((enemy, index) => {
-            const enemyHealthPercent = (enemy.currentHealth / enemy.maxHealth) * 100;
-            const isSelected = selectedTarget === index && enemy.currentHealth > 0;
-            const isDead = enemy.currentHealth <= 0;
-            
-            return (
-              <div 
-                key={enemy.id + index}
-                onClick={() => enemy.currentHealth > 0 && setSelectedTarget(index)}
-                className={`relative p-4 rounded-xl border-2 transition-all cursor-pointer
-                  ${isSelected ? 'border-[var(--arcane-cyan)] bg-[var(--arcane-cyan)]/10' : 'border-[var(--edge)]'}
-                  ${isDead ? 'opacity-50 grayscale' : ''}
-                  ${enemiesShake[index] ? 'animate-pulse' : ''}
-                `}
-              >
-                {/* Damage numbers */}
-                {damageNumbers.filter(d => d.enemyIndex === index && !d.isPlayer).map(d => (
-                  <div 
-                    key={d.id}
-                    className={`absolute -top-2 left-1/2 -translate-x-1/2 font-display font-bold text-2xl animate-bounce
-                      ${d.isCrit ? 'text-[var(--legendary-amber)] text-3xl' : 'text-white'}`}
-                  >
-                    -{d.amount}
-                  </div>
-                ))}
-                
-                {/* Selection indicator */}
-                {isSelected && (
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--arcane-cyan)] rounded-full" />
-                )}
-                
-                {/* Enemy Icon */}
-                <div className="text-center mb-2">
-                  <div 
-                    className="w-16 h-16 mx-auto rounded-xl flex items-center justify-center text-3xl"
-                    style={{ 
-                      backgroundColor: `${RARITY_COLORS[enemy.rarity]}20`,
-                      border: `2px solid ${RARITY_COLORS[enemy.rarity]}`
-                    }}
-                  >
-                    {enemy.icon}
-                  </div>
-                </div>
-                
-                {/* Enemy Info */}
-                <div className="text-center mb-2">
-                  <div className="font-display font-bold text-white text-sm">{enemy.name}</div>
-                  <div className="font-body text-xs text-[var(--text-secondary)]">
-                    Lv.{enemy.level} {RARITY_NAMES[enemy.rarity]}
-                  </div>
-                </div>
-                
-                {/* HP Bar */}
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="font-body text-[var(--text-muted)]">HP</span>
-                    <span className="font-display text-white">{enemy.currentHealth}/{enemy.maxHealth}</span>
-                  </div>
-                  <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden">
+            {/* VS Badge */}
+            <div className="bg-[var(--legendary-amber)]/80 text-[var(--void)] font-display font-bold px-4 py-2 rounded-full text-xl border-2 border-[var(--legendary-amber)]">
+              VS
+            </div>
+
+            {/* Enemy (Right) */}
+            {enemies.length > 0 && enemies[0].currentHealth > 0 && (
+              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-sm rounded-xl p-3 border border-[var(--mystic-magenta)]/30">
+                <div className="w-32 text-right">
+                  <div className="font-display font-bold text-white text-sm mb-1">{enemies[0].name}</div>
+                  <div className="h-2 bg-[var(--edge)] rounded-full overflow-hidden mb-1">
                     <div 
                       className="h-full rounded-full transition-all duration-300"
                       style={{ 
-                        width: `${enemyHealthPercent}%`,
-                        backgroundColor: RARITY_COLORS[enemy.rarity]
+                        width: `${(enemies[0].currentHealth / enemies[0].maxHealth) * 100}%`,
+                        backgroundColor: '#e74c3c'
                       }}
                     />
                   </div>
+                  <div className="text-xs text-[var(--text-secondary)]">{enemies[0].currentHealth}/{enemies[0].maxHealth} HP</div>
                 </div>
-                
-                {/* Target indicator for dead enemies */}
-                {isDead && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-display text-2xl font-bold text-[var(--mystic-magenta)]">DEFEATED</span>
+                <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-[var(--mystic-magenta)] bg-[var(--surface)]">
+                  <img 
+                    src="/images/battle/goblin.png" 
+                    alt="Goblin"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).parentElement!.innerHTML = `<span style="font-size:24px">${enemies[0].icon}</span>`;
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Middle Section - Combatants */}
+          <div className="flex justify-between items-end px-8 py-4">
+            {/* Player Sprite */}
+            <div className={`relative transition-transform ${playerShake ? 'animate-shake' : ''}`}>
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden border-4 border-[var(--arcane-cyan)] shadow-2xl shadow-[var(--arcane-cyan)]/50 bg-[var(--surface)]">
+                <img 
+                  src="/images/battle/knight.png" 
+                  alt="Knight"
+                  className="w-full h-full object-cover"
+                  style={{ imageRendering: 'pixelated' }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).parentElement!.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:64px">⚔️</div>';
+                  }}
+                />
+              </div>
+              {/* Damage numbers on player */}
+              {damageNumbers.filter(d => d.isPlayer).map(d => (
+                <div 
+                  key={d.id}
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 font-display font-bold text-3xl animate-bounce text-red-500"
+                >
+                  -{d.amount}
+                </div>
+              ))}
+            </div>
+
+            {/* Enemy Sprite */}
+            {enemies.length > 0 && (
+              <div 
+                className={`relative transition-transform ${enemiesShake[0] ? 'animate-shake' : ''} ${enemies[0].currentHealth <= 0 ? 'opacity-50 grayscale' : ''}`}
+                onClick={() => enemies[0].currentHealth > 0 && setSelectedTarget(0)}
+              >
+                <div className={`w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden border-4 shadow-2xl bg-[var(--surface)] cursor-pointer transition-all ${selectedTarget === 0 && enemies[0].currentHealth > 0 ? 'border-[var(--arcane-cyan)] shadow-[var(--arcane-cyan)]/50 scale-110' : 'border-[var(--mystic-magenta)] shadow-[var(--mystic-magenta)]/50'}`}>
+                  <img 
+                    src="/images/battle/goblin.png" 
+                    alt="Goblin"
+                    className="w-full h-full object-cover"
+                    style={{ imageRendering: 'pixelated' }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).parentElement!.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:64px">${enemies[0].icon}</div>`;
+                    }}
+                  />
+                </div>
+                {/* Damage numbers on enemy */}
+                {damageNumbers.filter(d => !d.isPlayer && d.enemyIndex === 0).map(d => (
+                  <div 
+                    key={d.id}
+                    className={`absolute -top-8 left-1/2 -translate-x-1/2 font-display font-bold text-3xl animate-bounce ${d.isCrit ? 'text-[var(--legendary-amber)]' : 'text-white'}`}
+                  >
+                    -{d.amount}{d.isCrit ? '!' : ''}
+                  </div>
+                ))}
+                {/* Selection indicator */}
+                {selectedTarget === 0 && enemies[0].currentHealth > 0 && (
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[var(--arcane-cyan)] rounded-full animate-pulse" />
+                )}
+                {/* Defeated overlay */}
+                {enemies[0].currentHealth <= 0 && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
+                    <span className="font-display text-xl font-bold text-[var(--mystic-magenta)]">DEFEATED</span>
                   </div>
                 )}
               </div>
-            );
-          })}
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}

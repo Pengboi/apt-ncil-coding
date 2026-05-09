@@ -1,0 +1,9 @@
+PLACE YOUR BATTLE IMAGES IN THIS FOLDER:
+
+1. game-bg.jpg - The pixel art game background (platformer scene with knight and dragon)
+2. goblin.png - The pixel art goblin/enemy character
+3. knight.png - The pixel art knight character
+
+The battle arena is now configured to use these images!
+
+Note: The background has been changed to the pixel art game scene (platformer style with grass, trees, and sky).

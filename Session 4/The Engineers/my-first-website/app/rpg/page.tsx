@@ -586,13 +586,14 @@ export default function RPGPage() {
                   <div className="glass-card rounded-xl p-4 space-y-3">
                     <h4 className="font-display text-sm text-[var(--text-muted)]">QUICK ACTIONS</h4>
                     
-                    {/* Battle Button */}
-                    <button 
-                      onClick={handleStartBattle}
-                      className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[var(--mystic-magenta)] to-[var(--ethereal-violet)] font-display font-bold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                    >
-                      <span>⚔️</span> FIND BATTLE
-                    </button>
+                    {/* Battle Button - Now goes to Platformer */}
+                    <Link href="/rpg/platformer" className="w-full">
+                      <button 
+                        className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[var(--mystic-magenta)] to-[var(--ethereal-violet)] font-display font-bold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                      >
+                        <span>⚔️</span> FIND BATTLE
+                      </button>
+                    </Link>
                     
                     {/* Inventory Button */}
                     <Link href="/rpg/inventory" className="w-full">
