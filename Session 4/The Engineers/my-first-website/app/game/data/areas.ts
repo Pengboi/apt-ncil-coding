@@ -211,7 +211,7 @@ export const cityArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 640, 'city'),
+    createSavePoint(250, 640, 'city'),     // Moved forward from entrance
     createSavePoint(900, 640, 'city'),
     createSavePoint(1820, 640, 'city'),   // Adjusted: was 1900, now on platform 3 (ends at 1850)
     createSavePoint(2650, 640, 'city'),   // Adjusted: was 2700, now on platform 5 (starts at 2610)
@@ -510,7 +510,7 @@ export const mountainArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 540, 'mountain'),      // Base camp
+    createSavePoint(150, 540, 'mountain'),      // Base camp - moved forward
     createSavePoint(1030, 410, 'mountain'),    // Ridge start
     createSavePoint(1760, 320, 'mountain'),    // Summit
     createSavePoint(2700, 430, 'mountain'),    // Exit approach
@@ -575,6 +575,9 @@ export const hqArea: Area = {
     createPlatform(2320, 450, 80, 30),      // Arena entry
     createPlatform(2480, 480, 200, 40),   // 80px gap - main arena
     createPlatform(2760, 500, 140, 50),   // 80px gap - victory platform
+    
+    // Exit platform to Sky Fortress
+    createPlatform(2980, 520, 120, 40),   // Exit connection platform
     
     // ============================================================
     // LOWER STEALTH PATH - Longer but safer
@@ -679,8 +682,8 @@ export const hqArea: Area = {
     },
     {
       toAreaId: 'skyfortress',
-      fromX: 3100,
-      fromY: 500,
+      fromX: 3040,
+      fromY: 520,
       toSpawnX: 100,
       toSpawnY: 500,
     },
@@ -803,7 +806,7 @@ export const skyFortressArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 540, 'skyfortress'),
+    createSavePoint(150, 540, 'skyfortress'),   // Moved forward from entrance
     createSavePoint(980, 400, 'skyfortress'),
     createSavePoint(1680, 210, 'skyfortress'),
     createSavePoint(2580, 330, 'skyfortress'),
@@ -948,7 +951,7 @@ export const volcanoLabArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 540, 'volcanolab'),
+    createSavePoint(150, 540, 'volcanolab'),    // Moved forward from entrance
     createSavePoint(900, 400, 'volcanolab'),
     createSavePoint(1560, 230, 'volcanolab'),
     createSavePoint(2740, 350, 'volcanolab'),
@@ -1091,7 +1094,7 @@ export const voidCoreArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 540, 'voidcore'),
+    createSavePoint(150, 540, 'voidcore'),   // Moved forward from entrance
     createSavePoint(780, 360, 'voidcore'),
     createSavePoint(1380, 180, 'voidcore'),
     createSavePoint(2240, 350, 'voidcore'),  // Pre-boss save

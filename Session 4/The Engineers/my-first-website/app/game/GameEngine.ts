@@ -232,10 +232,12 @@ export class GameEngine {
     
     // Cap frame time to prevent spiral of death
     const deltaTime = Math.min(frameTime, 0.1);
-    
-    // Update play time
-    this.playTime += deltaTime;
-    
+
+    // Update play time (only during active gameplay)
+    if (this.screen === 'playing') {
+      this.playTime += deltaTime;
+    }
+
     // Fixed time step update
     this.accumulator += deltaTime;
     while (this.accumulator >= DT) {
@@ -503,8 +505,10 @@ export class GameEngine {
   private handlePlayerDeath(): void {
     if (!this.lastSavePoint) return;
 
+    // LOCKED: Cannot die after victory is achieved
+    if (this.screen === 'victory' || this.bossDefeated) return;
+
     // Increment respawn counter
-    this.respawnCount++;
 
     // Clear enemy bullets
     this.enemyBullets = [];
@@ -619,6 +623,9 @@ export class GameEngine {
   }
   
   private killEnemy(enemy: Enemy): void {
+    // LOCKED: Once victory is achieved, no more enemy kills count
+    if (this.screen === 'victory' || this.bossDefeated) return;
+
     enemy.isDead = true;
     this.enemiesKilled++;
 
@@ -627,7 +634,7 @@ export class GameEngine {
       this.bossDefeated = true;
       this.currentArea.bossDefeated = true;
 
-      // Store victory stats
+      // LOCK IN victory stats - these will never change
       this.victoryStats = {
         finalTime: this.playTime,
         totalRespawns: this.respawnCount,
@@ -635,16 +642,20 @@ export class GameEngine {
         completionDate: new Date().toLocaleString(),
       };
 
-      // Switch to victory screen
+      // Switch to victory screen - input now locked
       this.screen = 'victory';
-      console.log('BOSS DEFEATED! Victory screen triggered.');
+
+      // Reset all input to prevent any accidental actions
+      this.input = this.getDefaultInput();
+
+      console.log('BOSS DEFEATED! Victory screen triggered. Stats locked.');
+      return; // No XP for boss - game is over
     }
 
-    // Give XP
+    // Give XP for regular enemies
     const leveledUp = this.player.gainXp(enemy.xpValue);
 
     if (leveledUp) {
-      // Could show level up notification here
       console.log(`Level Up! Now level ${this.player.level}`);
     }
   }
@@ -2620,6 +2631,9 @@ export class GameEngine {
   }
   
   setKeyUp(key: string): void {
+    // Block all key releases during victory screen
+    if (this.screen === 'victory') return;
+
     switch (key.toLowerCase()) {
       case 'a':
       case 'arrowleft':
@@ -2669,11 +2683,15 @@ export class GameEngine {
   }
   
   setMousePosition(x: number, y: number): void {
+    // Block all mouse input during victory screen
+    if (this.screen === 'victory') return;
     this.input.mouseX = x;
     this.input.mouseY = y;
   }
-  
+
   setMouseDown(down: boolean): void {
+    // Block shooting during victory screen (click is handled by handleMenuClick)
+    if (this.screen === 'victory') return;
     this.input.shoot = down;
   }
   
