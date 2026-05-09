@@ -815,13 +815,15 @@ export class GameEngine {
     if (this.screen === 'menu') {
       this.renderMenu(ctx);
     } else {
-      // Clear canvas
-      ctx.fillStyle = this.currentArea.backgroundColor;
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      // Render themed background
+      this.renderBackground(ctx);
       
       // Apply camera transform
       ctx.save();
       ctx.translate(-this.camera.x, -this.camera.y);
+      
+      // Render parallax background layers
+      this.renderParallaxBackground(ctx);
       
       // Render world
       this.renderPlatforms(ctx);
@@ -839,6 +841,407 @@ export class GameEngine {
       // Render UI (screen space)
       this.renderUI(ctx);
     }
+  }
+  
+  // ----------------------------------------------------------
+  // Background Rendering - Themed by area
+  // ----------------------------------------------------------
+  private renderBackground(ctx: CanvasRenderingContext2D): void {
+    const theme = this.currentArea.theme;
+    
+    // Base gradient based on theme
+    switch (theme) {
+      case 'bootcamp':
+        this.renderBootCampBackground(ctx);
+        break;
+      case 'city':
+        this.renderCityBackground(ctx);
+        break;
+      case 'bunker':
+        this.renderBunkerBackground(ctx);
+        break;
+      case 'mountain':
+        this.renderMountainBackground(ctx);
+        break;
+      case 'hq':
+        this.renderHQBackground(ctx);
+        break;
+      default:
+        ctx.fillStyle = this.currentArea.backgroundColor;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+  }
+  
+  private renderBootCampBackground(ctx: CanvasRenderingContext2D): void {
+    // Sunny training ground - sky gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#87CEEB');
+    gradient.addColorStop(0.6, '#B8E6F0');
+    gradient.addColorStop(1, '#E8F8F5');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Sun
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(CANVAS_WIDTH - 100, 80, 40, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Distant training obstacles (silhouettes)
+    ctx.fillStyle = 'rgba(100, 150, 100, 0.3)';
+    // Obstacle course elements in distance
+    ctx.fillRect(200, 400, 20, 60);
+    ctx.fillRect(350, 380, 60, 20);
+    ctx.fillRect(500, 420, 30, 40);
+    ctx.fillRect(700, 390, 80, 15);
+    
+    // Ground/horizon line
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.4)';
+    ctx.fillRect(0, 500, CANVAS_WIDTH, 200);
+    
+    // Clouds
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    this.drawCloud(ctx, 150, 100, 40);
+    this.drawCloud(ctx, 450, 70, 50);
+    this.drawCloud(ctx, 800, 120, 35);
+    this.drawCloud(ctx, 1050, 90, 45);
+  }
+  
+  private renderCityBackground(ctx: CanvasRenderingContext2D): void {
+    // Abandoned city - overcast/dusk atmosphere
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#2C3E50');
+    gradient.addColorStop(0.5, '#34495E');
+    gradient.addColorStop(1, '#4A5F7A');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Distant city skyline (silhouettes)
+    ctx.fillStyle = 'rgba(30, 40, 50, 0.8)';
+    // Building silhouettes
+    const buildings = [
+      { x: 50, w: 60, h: 200 },
+      { x: 120, w: 80, h: 280 },
+      { x: 210, w: 50, h: 180 },
+      { x: 270, w: 100, h: 320 },
+      { x: 380, w: 70, h: 240 },
+      { x: 460, w: 90, h: 300 },
+      { x: 560, w: 60, h: 190 },
+      { x: 630, w: 110, h: 350 },
+      { x: 750, w: 80, h: 260 },
+      { x: 840, w: 50, h: 170 },
+      { x: 900, w: 120, h: 310 },
+      { x: 1030, w: 70, h: 220 },
+      { x: 1110, w: 90, h: 280 },
+    ];
+    
+    for (const b of buildings) {
+      ctx.fillRect(b.x, CANVAS_HEIGHT - b.h, b.w, b.h);
+      // Windows (some lit, some dark)
+      for (let wy = CANVAS_HEIGHT - b.h + 20; wy < CANVAS_HEIGHT - 20; wy += 30) {
+        for (let wx = b.x + 10; wx < b.x + b.w - 10; wx += 20) {
+          if (Math.random() > 0.7) {
+            ctx.fillStyle = 'rgba(255, 200, 100, 0.6)'; // Lit window
+            ctx.fillRect(wx, wy, 12, 18);
+            ctx.fillStyle = 'rgba(30, 40, 50, 0.8)';
+          }
+        }
+      }
+    }
+    
+    // Smog/fog overlay
+    const fogGradient = ctx.createLinearGradient(0, CANVAS_HEIGHT - 100, 0, CANVAS_HEIGHT);
+    fogGradient.addColorStop(0, 'rgba(100, 110, 120, 0)');
+    fogGradient.addColorStop(1, 'rgba(100, 110, 120, 0.4)');
+    ctx.fillStyle = fogGradient;
+    ctx.fillRect(0, CANVAS_HEIGHT - 150, CANVAS_WIDTH, 150);
+  }
+  
+  private renderBunkerBackground(ctx: CanvasRenderingContext2D): void {
+    // Underground bunker - industrial/concrete
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#1A252F');
+    gradient.addColorStop(0.5, '#2C3E50');
+    gradient.addColorStop(1, '#34495E');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Concrete wall texture - horizontal lines
+    ctx.strokeStyle = 'rgba(100, 110, 120, 0.3)';
+    ctx.lineWidth = 2;
+    for (let y = 50; y < CANVAS_HEIGHT; y += 40) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(CANVAS_WIDTH, y);
+      ctx.stroke();
+    }
+    
+    // Vertical structural beams
+    ctx.fillStyle = 'rgba(60, 70, 80, 0.5)';
+    for (let x = 0; x < CANVAS_WIDTH; x += 200) {
+      ctx.fillRect(x, 0, 15, CANVAS_HEIGHT);
+    }
+    
+    // Pipes along ceiling
+    ctx.strokeStyle = 'rgba(80, 90, 100, 0.6)';
+    ctx.lineWidth = 8;
+    for (let x = 0; x < CANVAS_WIDTH; x += 150) {
+      ctx.beginPath();
+      ctx.moveTo(x, 30);
+      ctx.lineTo(x + 100, 30);
+      ctx.stroke();
+      // Pipe connectors
+      ctx.fillStyle = 'rgba(100, 110, 120, 0.8)';
+      ctx.fillRect(x + 100, 26, 8, 8);
+    }
+    
+    // Emergency lights (red glow)
+    for (let x = 100; x < CANVAS_WIDTH; x += 300) {
+      // Light fixture
+      ctx.fillStyle = '#444';
+      ctx.fillRect(x - 10, 60, 20, 8);
+      // Red glow
+      const glowGradient = ctx.createRadialGradient(x, 100, 0, x, 120, 80);
+      glowGradient.addColorStop(0, 'rgba(255, 50, 50, 0.4)');
+      glowGradient.addColorStop(1, 'rgba(255, 50, 50, 0)');
+      ctx.fillStyle = glowGradient;
+      ctx.beginPath();
+      ctx.arc(x, 80, 60, 0, Math.PI / 2);
+      ctx.fill();
+    }
+    
+    // Floor grating shadows
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    for (let y = CANVAS_HEIGHT - 100; y < CANVAS_HEIGHT; y += 10) {
+      ctx.fillRect(0, y, CANVAS_WIDTH, 2);
+    }
+  }
+  
+  private renderMountainBackground(ctx: CanvasRenderingContext2D): void {
+    // Mountain outpost - cold, snowy environment
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#85C1E9');
+    gradient.addColorStop(0.5, '#AED6F1');
+    gradient.addColorStop(1, '#D6EAF8');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Distant mountains (layers for depth)
+    // Far mountains
+    ctx.fillStyle = 'rgba(100, 130, 160, 0.4)';
+    ctx.beginPath();
+    ctx.moveTo(0, 400);
+    ctx.lineTo(100, 300);
+    ctx.lineTo(250, 350);
+    ctx.lineTo(400, 280);
+    ctx.lineTo(600, 320);
+    ctx.lineTo(800, 260);
+    ctx.lineTo(1000, 310);
+    ctx.lineTo(1200, 250);
+    ctx.lineTo(CANVAS_WIDTH, 350);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.lineTo(0, CANVAS_HEIGHT);
+    ctx.fill();
+    
+    // Mid mountains
+    ctx.fillStyle = 'rgba(130, 160, 190, 0.5)';
+    ctx.beginPath();
+    ctx.moveTo(0, 450);
+    ctx.lineTo(150, 380);
+    ctx.lineTo(300, 420);
+    ctx.lineTo(500, 360);
+    ctx.lineTo(750, 400);
+    ctx.lineTo(950, 350);
+    ctx.lineTo(1150, 390);
+    ctx.lineTo(CANVAS_WIDTH, 420);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.lineTo(0, CANVAS_HEIGHT);
+    ctx.fill();
+    
+    // Near snow-covered peaks
+    ctx.fillStyle = 'rgba(200, 220, 240, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(0, 500);
+    ctx.lineTo(200, 450);
+    ctx.lineTo(400, 480);
+    ctx.lineTo(600, 440);
+    ctx.lineTo(800, 470);
+    ctx.lineTo(1000, 430);
+    ctx.lineTo(CANVAS_WIDTH, 460);
+    ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.lineTo(0, CANVAS_HEIGHT);
+    ctx.fill();
+    
+    // Snowflakes falling
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    for (let i = 0; i < 50; i++) {
+      const x = (Math.sin(i * 1.5) * 1000 + i * 30) % CANVAS_WIDTH;
+      const y = (i * 15 + (performance.now() / 50)) % CANVAS_HEIGHT;
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // Wind/snow drift effect at bottom
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    for (let x = 0; x < CANVAS_WIDTH; x += 50) {
+      ctx.fillRect(x, CANVAS_HEIGHT - 80, 30, 3);
+      ctx.fillRect(x + 20, CANVAS_HEIGHT - 70, 20, 2);
+    }
+  }
+  
+  private renderHQBackground(ctx: CanvasRenderingContext2D): void {
+    // Enemy HQ - dark high-tech facility
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    gradient.addColorStop(0, '#0A0A15');
+    gradient.addColorStop(0.5, '#151525');
+    gradient.addColorStop(1, '#202035');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    // Tech grid pattern
+    ctx.strokeStyle = 'rgba(200, 50, 50, 0.2)';
+    ctx.lineWidth = 1;
+    const gridSize = 60;
+    for (let x = 0; x < CANVAS_WIDTH; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, CANVAS_HEIGHT);
+      ctx.stroke();
+    }
+    for (let y = 0; y < CANVAS_HEIGHT; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(CANVAS_WIDTH, y);
+      ctx.stroke();
+    }
+    
+    // Warning stripes
+    ctx.fillStyle = 'rgba(200, 50, 50, 0.6)';
+    for (let x = 0; x < CANVAS_WIDTH; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, CANVAS_HEIGHT - 50);
+      ctx.lineTo(x + 20, CANVAS_HEIGHT - 30);
+      ctx.lineTo(x + 15, CANVAS_HEIGHT - 30);
+      ctx.lineTo(x - 5, CANVAS_HEIGHT - 50);
+      ctx.fill();
+    }
+    
+    // Red alert lights pulsing
+    const pulse = Math.sin(performance.now() / 500) * 0.3 + 0.7;
+    for (let x = 100; x < CANVAS_WIDTH; x += 250) {
+      // Light beam
+      const beamGradient = ctx.createRadialGradient(x, 0, 0, x, 200, 100);
+      beamGradient.addColorStop(0, `rgba(255, 0, 0, ${0.3 * pulse})`);
+      beamGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      ctx.fillStyle = beamGradient;
+      ctx.beginPath();
+      ctx.moveTo(x - 30, 0);
+      ctx.lineTo(x + 30, 0);
+      ctx.lineTo(x + 80, 200);
+      ctx.lineTo(x - 80, 200);
+      ctx.fill();
+    }
+    
+    // Holographic displays (faint screens)
+    ctx.fillStyle = 'rgba(0, 200, 255, 0.1)';
+    ctx.fillRect(100, 100, 150, 100);
+    ctx.fillRect(900, 150, 120, 80);
+    // Screen glow
+    ctx.strokeStyle = 'rgba(0, 200, 255, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(100, 100, 150, 100);
+    ctx.strokeRect(900, 150, 120, 80);
+    
+    // Random data lines on screens
+    ctx.strokeStyle = 'rgba(0, 255, 200, 0.2)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(110, 120 + i * 15);
+      ctx.lineTo(240, 120 + i * 15);
+      ctx.stroke();
+    }
+  }
+  
+  private renderParallaxBackground(ctx: CanvasRenderingContext2D): void {
+    // Parallax effect - background elements move slower than foreground
+    const parallaxX = this.camera.x * 0.3;
+    
+    switch (this.currentArea.theme) {
+      case 'bootcamp':
+        // Distant trees
+        ctx.fillStyle = 'rgba(100, 150, 100, 0.2)';
+        for (let x = -parallaxX % 300; x < CANVAS_WIDTH + this.camera.x; x += 300) {
+          // Tree trunk
+          ctx.fillRect(x + 50, 350, 15, 100);
+          // Tree top (triangle)
+          ctx.beginPath();
+          ctx.moveTo(x + 20, 380);
+          ctx.lineTo(x + 95, 380);
+          ctx.lineTo(x + 57, 300);
+          ctx.fill();
+        }
+        break;
+        
+      case 'city':
+        // Distant building details
+        ctx.fillStyle = 'rgba(50, 60, 70, 0.3)';
+        for (let x = -parallaxX % 400; x < CANVAS_WIDTH + this.camera.x; x += 400) {
+          ctx.fillRect(x + 100, 200, 80, 300);
+          ctx.fillRect(x + 250, 250, 60, 250);
+        }
+        break;
+        
+      case 'bunker':
+        // Deeper wall sections
+        ctx.fillStyle = 'rgba(40, 50, 60, 0.4)';
+        for (let x = -parallaxX % 500; x < CANVAS_WIDTH + this.camera.x; x += 500) {
+          ctx.fillRect(x + 50, 100, 20, 400);
+          // Wall panels
+          ctx.fillRect(x + 200, 150, 150, 200);
+          ctx.fillRect(x + 400, 200, 100, 150);
+        }
+        break;
+        
+      case 'mountain':
+        // Snow drifts
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        for (let x = -parallaxX % 600; x < CANVAS_WIDTH + this.camera.x; x += 600) {
+          ctx.beginPath();
+          ctx.arc(x + 100, CANVAS_HEIGHT - 50, 80, Math.PI, 0);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(x + 400, CANVAS_HEIGHT - 40, 60, Math.PI, 0);
+          ctx.fill();
+        }
+        break;
+        
+      case 'hq':
+        // Distant machinery
+        ctx.fillStyle = 'rgba(100, 50, 50, 0.2)';
+        for (let x = -parallaxX % 600; x < CANVAS_WIDTH + this.camera.x; x += 600) {
+          // Server racks
+          ctx.fillRect(x + 150, 200, 40, 200);
+          ctx.fillRect(x + 220, 220, 40, 180);
+          // Blinking lights
+          ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() > 0.5 ? 0.5 : 0.2})`;
+          ctx.fillRect(x + 155, 210, 5, 5);
+          ctx.fillRect(x + 155, 230, 5, 5);
+          ctx.fillStyle = 'rgba(100, 50, 50, 0.2)';
+        }
+        break;
+    }
+  }
+  
+  private drawCloud(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.arc(x + size * 0.8, y, size * 0.7, 0, Math.PI * 2);
+    ctx.arc(x - size * 0.8, y, size * 0.7, 0, Math.PI * 2);
+    ctx.arc(x + size * 0.4, y - size * 0.4, size * 0.6, 0, Math.PI * 2);
+    ctx.arc(x - size * 0.4, y - size * 0.4, size * 0.6, 0, Math.PI * 2);
+    ctx.fill();
   }
   
   private renderMenu(ctx: CanvasRenderingContext2D): void {
