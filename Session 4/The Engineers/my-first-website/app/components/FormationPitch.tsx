@@ -26,20 +26,47 @@ export default function FormationPitch({ players }: FormationPitchProps) {
   return (
     <>
       <div className="relative w-full aspect-[3/4] max-w-2xl mx-auto">
+        {/* Stadium Background Effect */}
+        <div className="absolute -inset-4 bg-gradient-to-b from-[#1a0f2e] via-[#2d1b4e] to-[#1a0f2e] rounded-3xl opacity-80 blur-sm" />
+        
+        {/* Crowd Effect Background */}
+        <div className="absolute -inset-8 opacity-10" style={{
+          background: `radial-gradient(circle at 50% 120%, #d4af37 0%, transparent 50%)`
+        }} />
+
         {/* Pitch Container */}
-        <div className="pitch-container absolute inset-0 rounded-2xl overflow-hidden">
-          {/* Grass pattern stripes */}
-          <div className="absolute inset-0 opacity-20">
+        <div className="pitch-container absolute inset-0 rounded-2xl overflow-hidden border-4 border-[#d4af37]/40 shadow-2xl shadow-[#d4af37]/20">
+          {/* Deep Grass Base */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1e4d2b] via-[#2d5a3d] to-[#1e4d2b]" />
+          
+          {/* Grass pattern stripes - vertical */}
+          <div className="absolute inset-0 opacity-30">
             <div className="h-full w-full" style={{
               background: `repeating-linear-gradient(
                 90deg,
                 transparent,
-                transparent 10%,
-                rgba(255,255,255,0.1) 10%,
-                rgba(255,255,255,0.1) 20%
+                transparent 8%,
+                rgba(255,255,255,0.15) 8%,
+                rgba(255,255,255,0.15) 16%
               )`
             }} />
           </div>
+
+          {/* Grass pattern stripes - horizontal for mowed effect */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="h-full w-full" style={{
+              background: `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 5%,
+                rgba(0,0,0,0.1) 5%,
+                rgba(0,0,0,0.1) 10%
+              )`
+            }} />
+          </div>
+
+          {/* Pitch Shadow/Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/20" />
 
           {/* Pitch Markings */}
           <svg
@@ -54,8 +81,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="90"
               height="123.33"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
 
             {/* Halfway line */}
@@ -64,8 +91,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               y1="66.67"
               x2="95"
               y2="66.67"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
 
             {/* Center circle */}
@@ -74,14 +101,14 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               cy="66.67"
               r="12"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             <circle
               cx="50"
               cy="66.67"
               r="0.8"
-              fill="rgba(255,255,255,0.9)"
+              fill="rgba(255,255,255,0.95)"
             />
 
             {/* Goal area (bottom - home team) */}
@@ -91,8 +118,8 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="30"
               height="10"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             {/* Penalty area (bottom) */}
             <rect
@@ -101,50 +128,65 @@ export default function FormationPitch({ players }: FormationPitchProps) {
               width="55"
               height="25"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             {/* Penalty spot (bottom) */}
             <circle
               cx="50"
               cy="22"
               r="0.6"
-              fill="rgba(255,255,255,0.9)"
+              fill="rgba(255,255,255,0.95)"
             />
             {/* Penalty arc (bottom) */}
             <path
               d="M 38 30 A 12 12 0 0 1 62 30"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
+            />
+
+            {/* Goal line with net pattern indication */}
+            <line
+              x1="40"
+              y1="5"
+              x2="60"
+              y2="5"
+              stroke="rgba(212,175,55,0.6)"
+              strokeWidth="2"
             />
 
             {/* Corner arcs */}
             <path
               d="M 5 10 Q 8 10 8 7"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             <path
               d="M 95 10 Q 92 10 92 7"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             <path
               d="M 5 123.33 Q 8 123.33 8 126.33"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
             <path
               d="M 95 123.33 Q 92 123.33 92 126.33"
               fill="none"
-              stroke="rgba(255,255,255,0.9)"
-              strokeWidth="0.8"
+              stroke="rgba(255,255,255,0.95)"
+              strokeWidth="1"
             />
           </svg>
+
+          {/* Starting XI Label */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#1a0f2e]/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-[#d4af37]/50">
+            <span className="text-[#d4af37] text-xs font-bold tracking-widest uppercase">Starting XI</span>
+          </div>
 
           {/* Players positioned on pitch */}
           {players.map((player) => (
@@ -159,8 +201,13 @@ export default function FormationPitch({ players }: FormationPitchProps) {
         </div>
 
         {/* Formation Label */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-[var(--surface)] border border-[#d4af37]/30 px-6 py-2 rounded-full shadow-lg">
-          <span className="font-display text-[#d4af37] font-bold tracking-wider">4-3-3 Formation</span>
+        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#2d1b4e] via-[#1a0f2e] to-[#2d1b4e] border-2 border-[#d4af37]/50 px-8 py-3 rounded-full shadow-lg shadow-[#d4af37]/20">
+          <span className="font-display text-[#d4af37] font-bold tracking-wider text-lg">4-3-3 Formation</span>
+        </div>
+
+        {/* Player Count Badge */}
+        <div className="absolute -top-6 right-4 bg-[#d4af37] text-[#1a0f2e] px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+          {players.length} Players
         </div>
       </div>
 

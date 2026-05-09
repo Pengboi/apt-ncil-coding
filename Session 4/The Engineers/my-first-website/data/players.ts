@@ -54,16 +54,6 @@ export const players: Player[] = [
     positionY: 55,
   },
   {
-    slug: "federico-valverde",
-    name: "Federico Valverde",
-    role: "Right Midfielder",
-    shortDescription: "Energetic runner with powerful shooting. Covers every blade of grass on the pitch.",
-    image: "/images/placeholder-1.svg",
-    number: 8,
-    positionX: 75,
-    positionY: 50,
-  },
-  {
     slug: "aurélien-tchouameni",
     name: "Aurélien Tchouaméni",
     role: "Defensive Midfielder",
@@ -78,7 +68,7 @@ export const players: Player[] = [
     name: "Dani Carvajal",
     role: "Right-back",
     shortDescription: "Solid defender with attacking overlap. Veteran presence with exceptional work rate.",
-    image: "/images/placeholder-1.svg",
+    image: "/images/carvajal.svg",
     number: 2,
     positionX: 85,
     positionY: 30,
@@ -98,7 +88,7 @@ export const players: Player[] = [
     name: "Éder Militão",
     role: "Center-back",
     shortDescription: "Quick and aggressive defender. Strong in duels and excellent recovery pace.",
-    image: "/images/placeholder-1.svg",
+    image: "/images/militao.svg",
     number: 3,
     positionX: 35,
     positionY: 25,
@@ -108,7 +98,7 @@ export const players: Player[] = [
     name: "Antonio Rüdiger",
     role: "Center-back",
     shortDescription: "Aerially dominant and aggressive defender. Leader at the back with fearless commitment.",
-    image: "/images/placeholder-1.svg",
+    image: "/images/rudiger.svg",
     number: 22,
     positionX: 65,
     positionY: 25,
@@ -118,21 +108,28 @@ export const players: Player[] = [
     name: "Andriy Lunin",
     role: "Goalkeeper",
     shortDescription: "Shot-stopper with excellent reflexes. Reliable last line of defense.",
-    image: "/images/placeholder-1.svg",
+    image: "/images/lunin.svg",
     number: 13,
     positionX: 50,
     positionY: 8,
   },
 ];
 
-// Get player flag emoji based on role
-export function getPlayerFlag(role: string): string {
-  if (role.includes("Brazil") || role.includes("Vinícius") || role.includes("Rodrygo")) return "🇧🇷";
-  if (role.includes("France") || role.includes("Mbappé") || role.includes("Tchouaméni")) return "🇫🇷";
-  if (role.includes("England") || role.includes("Bellingham")) return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-  if (role.includes("Germany") || role.includes("Rüdiger")) return "🇩🇪";
-  if (role.includes("Ukraine") || role.includes("Lunin")) return "🇺🇦";
-  if (role.includes("Spain") || role.includes("Carvajal") || role.includes("Valverde")) return "🇪🇸";
-  if (role.includes("Austria") || role.includes("Alaba")) return "🇦🇹";
+// Get player flag emoji based on name and role
+export function getPlayerFlag(name: string, role: string): string {
+  // Brazil
+  if (name.includes("Vinícius") || name.includes("Rodrygo") || name.includes("Militão")) return "🇧🇷";
+  // France
+  if (name.includes("Mbappé") || name.includes("Tchouaméni")) return "🇫🇷";
+  // England
+  if (name.includes("Bellingham")) return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
+  // Germany
+  if (name.includes("Rüdiger")) return "🇩🇪";
+  // Ukraine
+  if (name.includes("Lunin")) return "🇺🇦";
+  // Spain
+  if (name.includes("Carvajal")) return "🇪🇸";
+  // Austria
+  if (name.includes("Alaba")) return "🇦🇹";
   return "";
 }
