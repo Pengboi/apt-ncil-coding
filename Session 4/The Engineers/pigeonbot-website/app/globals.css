@@ -3101,7 +3101,7 @@ body {
   overflow: hidden;
   display: flex;
   align-items: center;
-  padding: 2rem 0;
+  padding: 8rem 0 2rem 0;
 }
 
 /* Geometric Background Shapes */
@@ -3382,6 +3382,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: -20rem;
 }
 
 .image-frame {
