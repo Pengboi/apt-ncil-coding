@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface NavbarProps {
   cartCount: number;
@@ -10,34 +9,50 @@ interface NavbarProps {
 
 export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
     { href: '#home', label: 'Home' },
     { href: '#collections', label: 'Collections' },
     { href: '#shop', label: 'Shop' },
-    { href: '#custom', label: 'Custom Order' },
+    { href: '#custom', label: 'Custom' },
     { href: '#about', label: 'About' },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled 
+          ? 'bg-[var(--cream)]/95 backdrop-blur-md shadow-sm' 
+          : 'bg-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-3xl">💎</span>
-            <span className="font-display text-2xl font-bold bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-              Eternal Blooms
-            </span>
-          </Link>
+          <a href="#home" className="flex items-center group relative">
+            <img 
+              src="/images/eternal_flowers.png" 
+              alt="Eternal Flowers" 
+              className="h-12 w-auto object-contain transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(201,162,39,0.5)]"
+            />
+          </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="nav-link font-medium"
+                className="nav-link"
               >
                 {link.label}
               </a>
@@ -45,31 +60,31 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
           </div>
 
           {/* Icons */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div className="flex items-center gap-5">
+            <button className="p-2 hover:bg-[var(--linen)] rounded-full transition-colors">
+              <svg className="w-5 h-5 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             </button>
             <button 
               onClick={onCartClick}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+              className="p-2 hover:bg-[var(--linen)] rounded-full transition-colors relative"
             >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg className="w-5 h-5 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--burgundy)] text-[var(--cream)] text-[10px] rounded-full flex items-center justify-center font-semibold">
                   {cartCount}
                 </span>
               )}
             </button>
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="md:hidden p-2 hover:bg-[var(--linen)] rounded-full transition-colors"
             >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg className="w-5 h-5 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </button>
           </div>
@@ -78,26 +93,30 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
 
       {/* Mobile Menu */}
       <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-8">
-            <span className="font-display text-xl font-bold">Menu</span>
-            <button onClick={() => setMobileMenuOpen(false)}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <div className="p-8 flex flex-col h-full">
+          <div className="flex justify-between items-center mb-12">
+            <span className="font-display text-2xl text-[var(--cream)] italic">Menu</span>
+            <button onClick={() => setMobileMenuOpen(false)} className="text-[var(--cream)]">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div className="flex flex-col gap-4">
-            {navLinks.map((link) => (
+          <div className="flex flex-col gap-6">
+            {navLinks.map((link, idx) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xl font-medium py-2 border-b border-gray-100"
+                className="text-2xl font-display text-[var(--cream)] hover:text-[var(--champagne)] transition-colors"
+                style={{ animationDelay: `${idx * 0.08}s` }}
               >
                 {link.label}
               </a>
             ))}
+          </div>
+          <div className="mt-auto pt-8 border-t border-[var(--burgundy-light)]">
+            <p className="text-sm text-[var(--cream)]/60 font-italic-display">Handcrafted with love in the UK</p>
           </div>
         </div>
       </div>

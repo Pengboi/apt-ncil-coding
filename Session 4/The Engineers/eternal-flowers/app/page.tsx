@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import ProductImage from './components/ProductImage';
 import ShoppingCart from './components/ShoppingCart';
 import ProductModal from './components/ProductModal';
 import CheckoutModal from './components/CheckoutModal';
+import FloatingPetals from './components/FloatingPetals';
 import { products, categories, Product } from './data/products';
 
 interface CartItem extends Product {
@@ -14,6 +15,39 @@ interface CartItem extends Product {
   selectedColor: string;
   ribbonText: string;
   glitter: boolean;
+}
+
+function ScrollReveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+  
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div 
+      ref={ref}
+      className={`transition-all duration-1000 ${className} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
 }
 
 export default function Home() {
@@ -25,27 +59,14 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>('');
 
-  // Filter products
   const filteredProducts = activeCategory === 'all' 
     ? products 
     : products.filter(p => p.category === activeCategory);
 
-  // Add to cart - with safety check
   const addToCart = (product: Product, color: string, ribbonText: string, glitter: boolean = false) => {
-    console.log('addToCart called:', product.id, product.name, 'Color:', color, 'Glitter:', glitter);
-    
-    // Safety check - ensure we're adding a valid product
-    if (!product || !product.id) {
-      console.error('Invalid product passed to addToCart:', product);
-      return;
-    }
+    if (!product || !product.id) return;
     
     setCart(prev => {
-      // Safety check - prevent adding if cart already has items from a different add
-      if (prev.length > 0) {
-        console.log('Cart already has', prev.length, 'items, adding one more');
-      }
-      
       const existing = prev.find(item => 
         item.id === product.id && 
         item.selectedColor === color && 
@@ -54,7 +75,6 @@ export default function Home() {
       );
       
       if (existing) {
-        console.log('Updating existing item quantity');
         return prev.map(item => 
           item.id === product.id && 
           item.selectedColor === color && 
@@ -65,21 +85,14 @@ export default function Home() {
         );
       }
       
-      console.log('Adding new item to cart. Current cart length:', prev.length);
-      // Only add the single product that was requested
       const newItem: CartItem = { ...product, quantity: 1, selectedColor: color, ribbonText, glitter };
       return [...prev, newItem];
     });
     setIsCartOpen(true);
   };
 
-  // Clear entire cart
-  const clearCart = () => {
-    console.log('Clearing cart');
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
-  // Update quantity
   const updateQuantity = (id: string, color: string, ribbonText: string, quantity: number, glitter: boolean) => {
     if (quantity === 0) {
       setCart(prev => prev.filter(item => 
@@ -94,25 +107,19 @@ export default function Home() {
     }
   };
 
-  // Remove from cart
   const removeFromCart = (id: string, color: string, ribbonText: string, glitter: boolean) => {
     setCart(prev => prev.filter(item => 
       !(item.id === id && item.selectedColor === color && item.ribbonText === ribbonText && item.glitter === glitter)
     ));
   };
 
-  // Open checkout
   const handleCheckout = () => {
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
   };
 
-  // Handle order completion
-  const handleOrderComplete = () => {
-    setCart([]);
-  };
+  const handleOrderComplete = () => setCart([]);
 
-  // Open product modal
   const openQuickView = (product: Product, color?: string) => {
     setSelectedProduct(product);
     setSelectedColor(color || product.colors[0]);
@@ -121,480 +128,634 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Navigation */}
       <Navbar 
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} 
         onCartClick={() => setIsCartOpen(true)} 
       />
 
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center pt-20 hero-pattern overflow-hidden">
-        {/* Background Decorations */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-300/30 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-200/20 rounded-full blur-3xl" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[var(--cream)]">
+        <FloatingPetals />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[calc(100vh-5rem)]">
             {/* Content */}
-            <div className="text-center lg:text-left">
-              <p className="text-emerald-600 font-semibold text-lg mb-4 animate-fade-in-up">
-                ✨ Handcrafted with Love
-              </p>
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-gray-900 leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                Eternal Beauty<br />
-                <span className="bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                  That Lasts Forever
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                Luxury artificial roses with sparkling crystals, golden butterflies, and personalized ribbons for life&apos;s most precious moments.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                <a href="#shop" className="btn-primary text-center">
-                  Shop Now
-                </a>
-                <a href="#custom" className="btn-secondary text-center">
-                  Custom Order
-                </a>
-              </div>
+            <div className="text-center lg:text-left py-12 lg:py-0">
+              <ScrollReveal>
+                <p className="text-[var(--taupe)] text-sm uppercase tracking-[0.3em] mb-6 font-medium">
+                  Handcrafted with Love
+                </p>
+              </ScrollReveal>
               
-              {/* Stats */}
-              <div className="flex gap-8 mt-12 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-emerald-600">1+</p>
-                  <p className="text-sm text-gray-500">Years of Beauty</p>
+              <ScrollReveal delay={100}>
+                <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-medium text-[var(--charcoal)] leading-[1.1] mb-6">
+                  <span className="text-[var(--burgundy)] italic">Eternal</span> Beauty,<br />
+                  Crafted to Last
+                </h1>
+              </ScrollReveal>
+              
+              <ScrollReveal delay={200}>
+                <p className="text-lg text-[var(--taupe)] mb-10 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                  Luxury artificial roses with sparkling crystals, golden butterflies, and personalised ribbons for life&apos;s most precious moments.
+                </p>
+              </ScrollReveal>
+              
+              <ScrollReveal delay={300}>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <a href="#collections" className="btn-primary">
+                    Explore Collections
+                  </a>
+                  <a href="#custom" className="btn-secondary">
+                    Custom Order
+                  </a>
                 </div>
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-emerald-600">100%</p>
-                  <p className="text-sm text-gray-500">Handcrafted</p>
+              </ScrollReveal>
+              
+              <ScrollReveal delay={400}>
+                <div className="flex gap-8 mt-12 justify-center lg:justify-start">
+                  <div className="text-center">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">1+</p>
+                    <p className="text-xs text-[var(--taupe)] uppercase tracking-widest mt-1">Years of Beauty</p>
+                  </div>
+                  <div className="w-px bg-[var(--champagne)]/30" />
+                  <div className="text-center">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">100%</p>
+                    <p className="text-xs text-[var(--taupe)] uppercase tracking-widest mt-1">Handcrafted</p>
+                  </div>
+                  <div className="w-px bg-[var(--champagne)]/30" />
+                  <div className="text-center">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">100+</p>
+                    <p className="text-xs text-[var(--taupe)] uppercase tracking-widest mt-1">Happy Customers</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-emerald-600">100+</p>
-                  <p className="text-sm text-gray-500">Happy Customers</p>
-                </div>
-              </div>
+              </ScrollReveal>
             </div>
 
             {/* Hero Image */}
-            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-              <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
-                <ProductImage 
-                  src="/images/home-page-image.JPG" 
-                  alt="Girl holding beautiful pink eternal flower bouquet"
-                  className="w-full h-full"
-                />
+            <ScrollReveal delay={300} className="relative">
+              <div className="relative">
+                {/* Offset frame decoration */}
+                <div className="absolute -inset-4 border border-[var(--champagne)]/40 rounded-lg transform translate-x-4 translate-y-4" />
+                
+                <div className="aspect-[3/4] rounded-lg overflow-hidden shadow-2xl relative">
+                  <ProductImage 
+                    src="/images/home-page-image.JPG" 
+                    alt="Girl holding beautiful pink eternal flower bouquet"
+                    className="w-full h-full"
+                  />
+                </div>
+                
+                {/* Badge */}
+                <div className="absolute -bottom-4 -right-4 bg-white px-5 py-3 rounded-lg shadow-lg border border-[var(--linen)]">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-[var(--burgundy)]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span className="text-xs font-medium text-[var(--charcoal)] uppercase tracking-wider">Handcrafted in the UK</span>
+                  </div>
+                </div>
               </div>
-              {/* Floating elements */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-amber-400 rounded-full flex items-center justify-center shadow-lg animate-float">
-                <span className="text-2xl">👑</span>
-              </div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-pink-400 rounded-full flex items-center justify-center shadow-lg animate-float" style={{ animationDelay: '1s' }}>
-                <span className="text-xl">🦋</span>
-              </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="section-padding bg-[var(--linen)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { icon: '∞', title: 'Lasts for Eternity', desc: 'Premium artificial roses that maintain their beauty forever' },
-              { icon: '✋', title: 'Handcrafted', desc: 'Each arrangement made to order with care' },
-              { icon: '🎁', title: 'Gift Ready', desc: 'Beautiful packaging with personalized messages' },
-              { icon: '🚚', title: 'Fast Delivery', desc: 'Made to order and shipped within 3-5 days' },
+              { 
+                icon: (
+                  <svg className="w-8 h-8 text-[var(--burgundy)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" />
+                  </svg>
+                ), 
+                title: 'Lasts for Eternity', 
+                desc: 'Premium artificial roses that maintain their beauty forever' 
+              },
+              { 
+                icon: (
+                  <svg className="w-8 h-8 text-[var(--burgundy)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
+                  </svg>
+                ), 
+                title: 'Handcrafted', 
+                desc: 'Each arrangement made to order with care and attention' 
+              },
+              { 
+                icon: (
+                  <svg className="w-8 h-8 text-[var(--burgundy)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V1.5m0 6.75V12m-3.75 0h7.5M12 15.75h.008v.008H12v-.008z" />
+                  </svg>
+                ), 
+                title: 'Gift Ready', 
+                desc: 'Beautiful packaging with personalised messages included' 
+              },
+              { 
+                icon: (
+                  <svg className="w-8 h-8 text-[var(--burgundy)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                  </svg>
+                ), 
+                title: 'Fast Delivery', 
+                desc: 'Made to order and shipped within 3-5 business days' 
+              },
             ].map((feature, idx) => (
-              <div key={idx} className="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                <span className="text-4xl mb-4 block">{feature.icon}</span>
-                <h3 className="font-display text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600 text-sm">{feature.desc}</p>
-              </div>
+              <ScrollReveal key={idx} delay={idx * 100}>
+                <div className="text-center p-8 bg-white rounded-lg border border-[var(--linen)] hover:border-[var(--champagne)]/40 transition-colors">
+                  <div className="mb-4 flex justify-center">{feature.icon}</div>
+                  <h3 className="font-display text-lg font-medium text-[var(--charcoal)] mb-2">{feature.title}</h3>
+                  <p className="text-sm text-[var(--taupe)] leading-relaxed">{feature.desc}</p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* Collections Section */}
-      <section id="collections" className="section-padding">
+      <section id="collections" className="section-padding bg-[var(--cream)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-emerald-600 font-semibold mb-2">Explore</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">Our Collections</h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-[10px] text-[var(--taupe)] uppercase tracking-[0.3em] mb-3 font-medium">Explore</p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium text-[var(--charcoal)]">Our Collections</h2>
+              <div className="mt-4 flex items-center justify-center gap-4">
+                <div className="w-12 h-px bg-[var(--champagne)]" />
+                <svg className="w-4 h-4 text-[var(--champagne)]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <div className="w-12 h-px bg-[var(--champagne)]" />
+              </div>
+            </div>
+          </ScrollReveal>
           
           <div className="grid md:grid-cols-3 gap-8">
             {/* Birthday Collection */}
-            <div 
-              className="collection-card group cursor-pointer relative overflow-hidden rounded-2xl" 
-              onClick={() => setActiveCategory('birthday')}
-              style={{ minHeight: '320px' }}
-            >
-              <ProductImage 
-                src="/images/pink-birthday-bouquet.jpg" 
-                alt="Birthday Collection"
-                className="absolute inset-0 w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="font-display text-2xl font-bold mb-2">Birthday Collection</h3>
-                <p className="text-white/90 mb-4">Celebrate with tiaras and custom age ribbons</p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                  Shop Now <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </span>
+            <ScrollReveal delay={0}>
+              <div 
+                className="collection-card group cursor-pointer relative overflow-hidden rounded-lg" 
+                onClick={() => setActiveCategory('birthday')}
+                style={{ minHeight: '420px' }}
+              >
+                <ProductImage 
+                  src="/images/pink-birthday-bouquet.jpg" 
+                  alt="Birthday Collection"
+                  className="absolute inset-0 w-full h-full"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/90 via-[var(--charcoal)]/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <div className="w-8 h-px bg-[var(--champagne)] mb-4" />
+                  <h3 className="font-display text-2xl font-medium mb-2">Birthday Collection</h3>
+                  <p className="text-white/70 text-sm mb-4 leading-relaxed">Celebrate with tiaras and custom age ribbons</p>
+                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--champagne)] font-medium">
+                    Discover 
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </span>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             {/* Valentine's Collection */}
-            <div 
-              className="collection-card group cursor-pointer relative overflow-hidden rounded-2xl" 
-              onClick={() => setActiveCategory('valentine')}
-              style={{ minHeight: '320px' }}
-            >
-              <ProductImage 
-                src="/images/red-valentine-heart.jpg" 
-                alt="Valentine's Collection"
-                className="absolute inset-0 w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="font-display text-2xl font-bold mb-2">Valentine&apos;s Collection</h3>
-                <p className="text-white/90 mb-4">Heart boxes and romantic &quot;I Love You&quot; arrangements</p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                  Shop Now <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </span>
+            <ScrollReveal delay={100}>
+              <div 
+                className="collection-card group cursor-pointer relative overflow-hidden rounded-lg md:-mt-4 md:mb-4" 
+                onClick={() => setActiveCategory('valentine')}
+                style={{ minHeight: '420px' }}
+              >
+                <ProductImage 
+                  src="/images/red-valentine-heart.jpg" 
+                  alt="Valentine's Collection"
+                  className="absolute inset-0 w-full h-full"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/90 via-[var(--charcoal)]/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <div className="w-8 h-px bg-[var(--champagne)] mb-4" />
+                  <h3 className="font-display text-2xl font-medium mb-2">Valentine&apos;s Collection</h3>
+                  <p className="text-white/70 text-sm mb-4 leading-relaxed">Heart boxes and romantic arrangements</p>
+                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--champagne)] font-medium">
+                    Discover 
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </span>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             {/* Flower Purses */}
-            <div 
-              className="collection-card group cursor-pointer relative overflow-hidden rounded-2xl" 
-              onClick={() => setActiveCategory('purse')}
-              style={{ minHeight: '320px' }}
-            >
-              <ProductImage 
-                src="/images/purple-flower-purse.jpg" 
-                alt="Flower Purses"
-                className="absolute inset-0 w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="font-display text-2xl font-bold mb-2">Flower Purses</h3>
-                <p className="text-white/90 mb-4">Unique wearable floral art with chain straps</p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                  Shop Now <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </span>
+            <ScrollReveal delay={200}>
+              <div 
+                className="collection-card group cursor-pointer relative overflow-hidden rounded-lg" 
+                onClick={() => setActiveCategory('purse')}
+                style={{ minHeight: '420px' }}
+              >
+                <ProductImage 
+                  src="/images/purple-flower-purse.jpg" 
+                  alt="Flower Purses"
+                  className="absolute inset-0 w-full h-full"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/90 via-[var(--charcoal)]/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <div className="w-8 h-px bg-[var(--champagne)] mb-4" />
+                  <h3 className="font-display text-2xl font-medium mb-2">Flower Purses</h3>
+                  <p className="text-white/70 text-sm mb-4 leading-relaxed">Unique wearable floral art with chain straps</p>
+                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--champagne)] font-medium">
+                    Discover 
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </span>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Shop Section */}
-      <section id="shop" className="section-padding bg-gray-50">
+      <section id="shop" className="section-padding bg-[var(--linen)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-emerald-600 font-semibold mb-2">Discover</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">Shop All Products</h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <p className="text-[10px] text-[var(--taupe)] uppercase tracking-[0.3em] mb-3 font-medium">Discover</p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium text-[var(--charcoal)]">Shop All Products</h2>
+            </div>
+          </ScrollReveal>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  activeCategory === cat.id
-                    ? 'bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <span className="mr-2">{cat.icon}</span>
-                {cat.name}
-              </button>
-            ))}
-          </div>
+          <ScrollReveal delay={100}>
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-6 py-3 rounded-full text-xs font-medium uppercase tracking-widest transition-all duration-300 ${
+                    activeCategory === cat.id
+                      ? 'bg-[var(--burgundy)] text-[var(--cream)] shadow-lg shadow-[var(--burgundy)]/20'
+                      : 'bg-white text-[var(--charcoal)] border border-[var(--taupe)]/20 hover:border-[var(--burgundy)]/40'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </ScrollReveal>
 
           {/* Products Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onQuickView={openQuickView}
-              />
+            {filteredProducts.map((product, idx) => (
+              <ScrollReveal key={product.id} delay={idx * 50}>
+                <ProductCard 
+                  product={product} 
+                  onQuickView={openQuickView}
+                />
+              </ScrollReveal>
             ))}
           </div>
 
           {filteredProducts.length === 0 && (
             <div className="text-center py-20">
-              <span className="text-6xl mb-4 block">🔍</span>
-              <p className="text-xl text-gray-500">No products found in this category</p>
+              <svg className="w-12 h-12 text-[var(--taupe)] opacity-30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <p className="text-xl text-[var(--taupe)] font-display italic">No products found in this category</p>
             </div>
           )}
         </div>
       </section>
 
       {/* Custom Order Section */}
-      <section id="custom" className="section-padding">
+      <section id="custom" className="section-padding bg-[var(--cream)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <div>
-              <p className="text-emerald-600 font-semibold mb-2">Personalized</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Create Your Custom Arrangement
-              </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Want something unique? Design your own eternal flower arrangement with custom colors, ribbon text, and special touches. Perfect for making your gift truly one-of-a-kind!
-              </p>
-
-              <form className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Your Name</label>
-                    <input type="text" className="input-field" placeholder="Enter your name" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                    <input type="email" className="input-field" placeholder="Enter your email" />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Image */}
+            <ScrollReveal>
+              <div className="relative flex justify-center">
+                <div className="relative w-80 h-80 md:w-96 md:h-96">
+                  {/* Decorative ring */}
+                  <div className="absolute inset-0 rounded-full border-2 border-[var(--champagne)]/30 animate-gentle-oscillate" />
+                  <div className="absolute inset-4 rounded-full border border-[var(--blush)]/20" />
+                  
+                  <div className="absolute inset-8 rounded-full overflow-hidden">
+                    <ProductImage 
+                      src="/images/red-birthday-bouquet.jpg" 
+                      alt="Handcrafted eternal flowers"
+                      className="w-full h-full"
+                    />
                   </div>
                 </div>
-                
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Product Type</label>
-                    <select className="input-field">
-                      <option>Select a type...</option>
-                      <option>Bouquet</option>
-                      <option>Letter Box (I ❤️ U)</option>
-                      <option>Heart Box</option>
-                      <option>Flower Purse</option>
-                    </select>
+              </div>
+            </ScrollReveal>
+
+            {/* Form */}
+            <ScrollReveal delay={200}>
+              <div>
+                <p className="text-[10px] text-[var(--taupe)] uppercase tracking-[0.3em] mb-3 font-medium">Personalised</p>
+                <h2 className="font-display text-4xl md:text-5xl font-medium text-[var(--charcoal)] mb-6">
+                  Create Your Custom Arrangement
+                </h2>
+                <p className="text-[var(--taupe)] mb-10 leading-relaxed">
+                  Want something unique? Design your own eternal flower arrangement with custom colours, ribbon text, and special touches. Perfect for making your gift truly one-of-a-kind.
+                </p>
+
+                <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Your Name</label>
+                      <input type="text" className="input-field" placeholder="Enter your name" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Email</label>
+                      <input type="email" className="input-field" placeholder="Enter your email" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Rose Color</label>
-                    <select className="input-field">
-                      <option>Choose color...</option>
-                      <option>Pink</option>
-                      <option>Red</option>
-                      <option>White</option>
-                      <option>Peach</option>
-                      <option>Emerald Green</option>
-                      <option>Purple</option>
-                      <option>Pink with Gold</option>
-                    </select>
+                  
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Product Type</label>
+                      <select className="select-field">
+                        <option>Select a type...</option>
+                        <option>Bouquet</option>
+                        <option>Letter Box</option>
+                        <option>Heart Box</option>
+                        <option>Flower Purse</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Rose Colour</label>
+                      <select className="select-field">
+                        <option>Choose colour...</option>
+                        <option>Pink</option>
+                        <option>Red</option>
+                        <option>White</option>
+                        <option>Peach</option>
+                        <option>Emerald Green</option>
+                        <option>Purple</option>
+                        <option>Pink with Gold</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Custom Ribbon Text (Optional)</label>
-                  <input type="text" className="input-field" placeholder="e.g., Happy 16th Birthday" />
-                </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Custom Ribbon Text (Optional)</label>
+                    <input type="text" className="input-field" placeholder="e.g., Happy 16th Birthday" />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Special Requests</label>
-                  <textarea rows={4} className="input-field" placeholder="Tell us about any special requests..."></textarea>
-                </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Special Requests</label>
+                    <textarea rows={4} className="input-field" placeholder="Tell us about any special requests..."></textarea>
+                  </div>
 
-                <button type="submit" className="btn-primary w-full sm:w-auto">
-                  Submit Custom Order Request
-                </button>
-              </form>
-            </div>
-
-
+                  <button type="submit" className="btn-primary">
+                    Send Your Request
+                  </button>
+                </form>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="section-padding bg-gradient-to-br from-emerald-50 via-purple-50 to-pink-50">
+      <section id="about" className="section-padding bg-[var(--linen)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative order-2 lg:order-1">
-              <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
-                <ProductImage 
-                  src="/images/red-birthday-bouquet.jpg" 
-                  alt="Handcrafted eternal flowers"
-                  className="w-full h-full"
-                />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <ScrollReveal className="order-2 lg:order-1">
+              <div className="relative">
+                <div className="aspect-square rounded-lg overflow-hidden shadow-xl">
+                  <ProductImage 
+                    src="/images/blue-bouquet-elegant.jpg" 
+                    alt="Handcrafted eternal flowers"
+                    className="w-full h-full"
+                  />
+                </div>
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[var(--burgundy)] rounded-lg flex items-center justify-center text-white shadow-xl">
+                  <div className="text-center">
+                    <p className="font-display text-3xl font-medium">UK</p>
+                    <p className="text-[10px] uppercase tracking-widest opacity-80">Made</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             <div className="order-1 lg:order-2">
-              <p className="text-emerald-600 font-semibold mb-2">Our Story</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Crafted with Love & Sparkle
-              </h2>
-              <p className="text-lg text-gray-600 mb-4">
-                Each Eternal Bloom arrangement is handcrafted to order using premium artificial roses that last for years. We add sparkling crystals, delicate golden butterflies, and personalized touches to create unforgettable gifts.
-              </p>
-              <p className="text-lg text-gray-600 mb-8">
-                From birthday celebrations with tiaras to romantic Valentine&apos;s surprises, every piece tells a story. Our signature Flower Purses combine fashion with floral art for a truly unique statement piece.
-              </p>
+              <ScrollReveal>
+                <p className="text-[10px] text-[var(--taupe)] uppercase tracking-[0.3em] mb-3 font-medium">Our Story</p>
+              </ScrollReveal>
+              <ScrollReveal delay={100}>
+                <h2 className="font-display text-4xl md:text-5xl font-medium text-[var(--charcoal)] mb-6">
+                  Crafted with Love & Sparkle
+                </h2>
+              </ScrollReveal>
+              <ScrollReveal delay={200}>
+                <p className="text-[var(--taupe)] mb-4 leading-relaxed">
+                  Each Eternal Flowers arrangement is handcrafted to order using premium artificial roses that last for years. We add sparkling crystals, delicate golden butterflies, and personalised touches to create unforgettable gifts.
+                </p>
+              </ScrollReveal>
+              <ScrollReveal delay={300}>
+                <p className="text-[var(--taupe)] mb-10 leading-relaxed">
+                  From birthday celebrations with tiaras to romantic Valentine&apos;s surprises, every piece tells a story. Our signature Flower Purses combine fashion with floral art for a truly unique statement piece.
+                </p>
+              </ScrollReveal>
               
-              <div className="grid grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-emerald-600">1+</p>
-                  <p className="text-sm text-gray-500">Years of Beauty</p>
+              <ScrollReveal delay={400}>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="text-center p-5 bg-white rounded-lg border border-[var(--linen)]">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">1+</p>
+                    <p className="text-[10px] text-[var(--taupe)] uppercase tracking-wider mt-1">Years of Beauty</p>
+                  </div>
+                  <div className="text-center p-5 bg-white rounded-lg border border-[var(--linen)]">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">100%</p>
+                    <p className="text-[10px] text-[var(--taupe)] uppercase tracking-wider mt-1">Handcrafted</p>
+                  </div>
+                  <div className="text-center p-5 bg-white rounded-lg border border-[var(--linen)]">
+                    <p className="font-display text-3xl font-medium text-[var(--burgundy)]">100+</p>
+                    <p className="text-[10px] text-[var(--taupe)] uppercase tracking-wider mt-1">Happy Customers</p>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-emerald-600">100%</p>
-                  <p className="text-sm text-gray-500">Handcrafted</p>
-                </div>
-                <div className="text-center p-4 bg-white rounded-2xl shadow-sm">
-                  <p className="text-3xl font-bold text-emerald-600">100+</p>
-                  <p className="text-sm text-gray-500">Happy Customers</p>
-                </div>
-              </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="section-padding">
+      <section className="section-padding bg-[var(--cream)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-emerald-600 font-semibold mb-2">Reviews</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900">What Our Customers Say</h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-[10px] text-[var(--taupe)] uppercase tracking-[0.3em] mb-3 font-medium">Reviews</p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium text-[var(--charcoal)]">What Our Customers Say</h2>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                stars: 5,
                 text: "My daughter was thrilled with her 13th birthday bouquet! The tiara and custom ribbon made her feel like a princess.",
                 author: "Sarah M.",
                 product: "Birthday Bouquet"
               },
               {
-                stars: 5,
                 text: "The purple roses in the letter box were absolutely stunning. My wife cried when she saw the beautiful arrangement!",
                 author: "Michael R.",
                 product: "Anniversary Gift"
               },
               {
-                stars: 5,
                 text: "The flower purse is such a unique piece! I get compliments everywhere I go. The craftsmanship is incredible.",
                 author: "Jessica L.",
                 product: "Flower Purse"
               }
             ].map((review, idx) => (
-              <div key={idx} className="testimonial-card">
-                <div className="flex gap-1 mb-4">
-                  {Array(review.stars).fill(null).map((_, i) => (
-                    <span key={i} className="text-amber-400">★</span>
-                  ))}
+              <ScrollReveal key={idx} delay={idx * 100}>
+                <div className={`testimonial-card ${idx === 1 ? 'md:-mt-4 md:mb-4' : ''}`}>
+                  <svg className="w-8 h-8 text-[var(--burgundy)] opacity-20 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                  </svg>
+                  <p className="text-[var(--charcoal)] mb-6 leading-relaxed italic font-display text-lg">&ldquo;{review.text}&rdquo;</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[var(--burgundy)] flex items-center justify-center text-[var(--cream)] font-display font-medium">
+                      {review.author[0]}
+                    </div>
+                    <div>
+                      <p className="font-medium text-[var(--charcoal)]">{review.author}</p>
+                      <p className="text-[10px] text-[var(--burgundy)] uppercase tracking-wider">{review.product}</p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-gray-700 mb-6 italic">&ldquo;{review.text}&rdquo;</p>
-                <div>
-                  <p className="font-bold text-gray-900">{review.author}</p>
-                  <p className="text-sm text-emerald-600">{review.product}</p>
-                </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* Newsletter */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-            Join Our Blooming Community
-          </h2>
-          <p className="text-white/90 mb-8 text-lg">
-            Subscribe for exclusive offers, new collection previews, and floral inspiration.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email"
-              className="flex-1 px-6 py-4 rounded-full text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/30"
-            />
-            <button type="submit" className="btn-gold">
-              Subscribe
-            </button>
-          </form>
+      <section className="py-24 bg-[var(--burgundy)] relative overflow-hidden">
+        {/* Decorative background pattern — repeating logo watermark */}
+        <div 
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'url(/images/eternal_flowers.png)',
+            backgroundSize: '80px 80px',
+            backgroundRepeat: 'repeat',
+          }}
+        />
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <ScrollReveal>
+            <h2 className="font-display text-3xl md:text-4xl font-medium text-[var(--cream)] mb-4">
+              Join the Eternal Circle
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <p className="text-[var(--cream)]/70 mb-10 text-lg leading-relaxed max-w-lg mx-auto">
+              Subscribe for exclusive offers, new collection previews, and floral inspiration delivered to your inbox.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={200}>
+            <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+              <input 
+                type="email" 
+                placeholder="Enter your email"
+                className="flex-1 px-6 py-4 bg-transparent border-b-2 border-[var(--cream)]/30 text-[var(--cream)] placeholder-[var(--cream)]/50 focus:border-[var(--cream)] outline-none transition-colors font-body"
+              />
+              <button type="submit" className="btn-cream">
+                Subscribe
+              </button>
+            </form>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16">
+      <footer className="bg-[var(--charcoal)] text-[var(--cream)] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
+          <div className="flex flex-col items-center mb-16">
+            <img 
+              src="/images/eternal_flowers.png" 
+              alt="Eternal Flowers" 
+              className="h-20 w-auto object-contain mb-6 opacity-90"
+            />
+            <p className="text-[var(--cream)]/60 text-center max-w-md leading-relaxed">
+              Luxury artificial roses that last forever. Handcrafted with love, crystals, and golden butterflies in the United Kingdom.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-3xl">💎</span>
-                <span className="font-display text-2xl font-bold">Eternal Blooms</span>
-              </div>
-              <p className="text-gray-400 mb-6">
-                Luxury artificial roses that last forever. Handcrafted with love, crystals, and golden butterflies.
-              </p>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-400 text-sm">Follow us:</span>
-                <a
-                  href="https://instagram.com/chloe.eternal.flowers"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 rounded-full hover:shadow-lg hover:shadow-pink-500/30 transition-all duration-300"
-                  title="Follow us on Instagram @chloe.eternal.flowers"
-                >
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 12.685 2h.63zm-.081 1.802h-.468c-3.264 0-3.48.012-4.632.062-.878.04-1.353.188-1.67.312a2.999 2.999 0 00-1.108.721 2.999 2.999 0 00-.72 1.107c-.124.317-.272.792-.312 1.67-.05 1.153-.062 1.369-.062 4.632v.468c0 3.264.012 3.48.062 4.632.04.878.188 1.353.312 1.67.16.41.356.723.72 1.107.384.364.697.56 1.107.72.317.124.792.272 1.67.312 1.153.05 1.369.062 4.632.062h.468c3.264 0 3.48-.012 4.632-.062.878-.04 1.353-.188 1.67-.312a2.999 2.999 0 001.108-.721 2.999 2.999 0 00.72-1.107c.124-.317.272-.792.312-1.67.05-1.153.062-1.369.062-4.632v-.468c0-3.264-.012-3.48-.062-4.632-.04-.878-.188-1.353-.312-1.67a2.999 2.999 0 00-.721-1.108 2.999 2.999 0 00-1.107-.72c-.317-.124-.792-.272-1.67-.312-1.153-.05-1.369-.062-4.632-.062zM12 7.837a4.163 4.163 0 110 8.326 4.163 4.163 0 010-8.326zm0 1.802a2.361 2.361 0 100 4.722 2.361 2.361 0 000-4.722zm4.722-3.083a1.082 1.082 0 110 2.164 1.082 1.082 0 010-2.164z"
-                      clipRule="evenodd"
-                    />
+              <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Shop</h4>
+              <ul className="space-y-3 text-sm text-[var(--cream)]/60">
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Birthday Collection</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Valentine&apos;s Day</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Flower Purses</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Custom Orders</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Help</h4>
+              <ul className="space-y-3 text-sm text-[var(--cream)]/60">
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Shipping Info</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Care Instructions</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Contact</h4>
+              <ul className="space-y-3 text-sm text-[var(--cream)]/60">
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-[var(--champagne)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                   </svg>
-                  <span className="text-white font-semibold text-sm">Instagram</span>
-                </a>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-lg mb-4">Shop</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Birthday Collection</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Valentine&apos;s Day</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Flower Purses</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Custom Orders</a></li>
+                  hello@eternalflowers.co.uk
+                </li>
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-[var(--champagne)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                  +44 (0) 123 456 7890
+                </li>
+                <li className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-[var(--champagne)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                  United Kingdom
+                </li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="font-bold text-lg mb-4">Help</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Shipping Info</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Care Instructions</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-lg mb-4">Contact</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>📧 hello@eternalblooms.com</li>
-                <li>📞 +1 (555) 123-4567</li>
-                <li>📍 Made with love worldwide</li>
-              </ul>
+              <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Follow Us</h4>
+              <a
+                href="https://instagram.com/chloe.eternal.flowers"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-5 py-3 bg-[var(--burgundy)] rounded-lg hover:bg-[var(--burgundy-light)] transition-colors group"
+              >
+                <svg className="w-5 h-5 text-[var(--cream)]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+                <span className="text-[var(--cream)] text-sm font-medium">@chloe.eternal.flowers</span>
+              </a>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-500">
-            <p>&copy; 2026 Eternal Blooms. All rights reserved.</p>
+          <div className="border-t border-[var(--cream)]/10 pt-8 text-center">
+            <p className="text-sm text-[var(--cream)]/40 font-italic-display">
+              Handcrafted with love in the United Kingdom
+            </p>
+            <p className="text-xs text-[var(--cream)]/30 mt-2">
+              &copy; 2026 Eternal Flowers. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

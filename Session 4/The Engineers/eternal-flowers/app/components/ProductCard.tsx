@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   return (
-    <div className="product-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 group">
+    <div className="product-card rounded-lg overflow-hidden group">
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
         <ProductImage 
@@ -22,13 +22,13 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
           {product.bestseller && (
-            <span className="px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">
-              ⭐ Bestseller
+            <span className="px-3 py-1 bg-[var(--burgundy)] text-[var(--cream)] text-[10px] font-semibold uppercase tracking-widest rounded-sm">
+              Bestseller
             </span>
           )}
           {product.new && (
-            <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 via-purple-500 to-pink-500 text-white text-xs font-bold rounded-full shadow-lg">
-              ✨ New
+            <span className="px-3 py-1 bg-transparent border border-[var(--champagne)] text-[var(--burgundy)] text-[10px] font-semibold uppercase tracking-widest rounded-sm">
+              New
             </span>
           )}
         </div>
@@ -36,8 +36,8 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Customizable Badge */}
         {product.customizable && (
           <div className="absolute top-3 right-3 z-10">
-            <span className="px-3 py-1 bg-white/90 backdrop-blur text-emerald-600 text-xs font-semibold rounded-full shadow-md">
-              🎨 Customizable
+            <span className="px-3 py-1 bg-white/90 backdrop-blur text-[var(--taupe)] text-[10px] font-medium uppercase tracking-widest rounded-sm">
+              Customizable
             </span>
           </div>
         )}
@@ -45,9 +45,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* Quick View Button */}
         <button
           onClick={() => onQuickView(product)}
-          className="absolute bottom-4 left-4 right-4 py-3 bg-white/95 backdrop-blur text-emerald-600 font-semibold rounded-xl shadow-lg 
-                     opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0
-                     transition-all duration-300 hover:bg-emerald-600 hover:text-white z-10"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 px-8 py-3 bg-[var(--burgundy)] text-[var(--cream)] text-xs font-medium uppercase tracking-widest rounded-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:bg-[var(--burgundy-light)] z-10"
         >
           Quick View
         </button>
@@ -56,19 +54,19 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       {/* Content */}
       <div className="p-5">
         {/* Category Tag */}
-        <span className="text-xs font-medium text-emerald-500 uppercase tracking-wider">
+        <span className="text-[10px] font-medium text-[var(--taupe)] uppercase tracking-[0.2em]">
           {product.category}
         </span>
 
         {/* Title */}
-        <h3 className="font-display text-lg font-semibold text-gray-900 mt-1 mb-2 line-clamp-2">
+        <h3 className="font-display text-xl font-medium text-[var(--charcoal)] mt-1 mb-2 line-clamp-2 leading-tight">
           {product.name}
         </h3>
 
         {/* Features */}
         <div className="flex flex-wrap gap-1 mb-3">
           {product.features.slice(0, 3).map((feature, idx) => (
-            <span key={idx} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+            <span key={idx} className="text-[10px] text-[var(--taupe)] bg-[var(--linen)] px-2 py-1 rounded-sm uppercase tracking-wider">
               {feature}
             </span>
           ))}
@@ -76,13 +74,13 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
         {/* Colors */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-gray-500">Colors:</span>
-          <div className="flex gap-1 flex-wrap max-w-[180px]">
+          <span className="text-[10px] text-[var(--taupe)] uppercase tracking-wider">Colours:</span>
+          <div className="flex gap-1.5">
             {product.colors.map((color) => (
               <button
                 key={color}
                 onClick={() => onQuickView(product, color)}
-                className={`color-swatch ${color} hover:scale-110 transition-transform cursor-pointer`}
+                className={`color-swatch ${color} hover:scale-125 transition-transform cursor-pointer`}
                 title={color.replace('-', ' ')}
               />
             ))}
@@ -90,16 +88,19 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         </div>
 
         {/* Price & CTA */}
-        <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-gray-900">
-            £{product.price}
+        <div className="flex items-center justify-between pt-3 border-t border-[var(--linen)]">
+          <span className="flex items-baseline gap-0.5">
+            <span className="text-sm text-[var(--taupe)]">£</span>
+            <span className="text-2xl font-display font-medium text-[var(--charcoal)]">{product.price}</span>
           </span>
           <button
             onClick={() => onQuickView(product)}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-600 via-purple-600 to-pink-500 text-white text-sm font-semibold rounded-full
-                       hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300"
+            className="text-[11px] font-medium text-[var(--burgundy)] uppercase tracking-widest hover:text-[var(--burgundy-light)] transition-colors flex items-center gap-1"
           >
             Add to Cart
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
           </button>
         </div>
       </div>

@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const jost = Jost({
+  variable: "--font-jost",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Eternal Blooms | Luxury Forever Flowers",
-  description: "Handcrafted eternal roses with sparkling crystals, golden butterflies, and personalized ribbons. Beautiful bouquets, letter boxes, heart boxes, and unique flower purses that last for years.",
-  keywords: ["eternal flowers", "artificial roses", "luxury bouquets", "flower purses", "birthday flowers", "valentines flowers"],
+  title: "Eternal Flowers | Luxury Forever Flowers Handmade in the UK",
+  description: "Handcrafted eternal flowers with sparkling crystals, golden butterflies, and personalised ribbons. Luxury bouquets, letter boxes, heart boxes, and unique flower purses that last for years. Made with love in the United Kingdom.",
+  keywords: ["eternal flowers", "forever flowers", "artificial roses", "luxury bouquets", "flower purses", "birthday flowers", "valentines flowers", "UK florist"],
+  icons: {
+    icon: "/images/eternal_flowers.png",
+    apple: "/images/eternal_flowers.png",
+  },
 };
 
 export default function RootLayout({
@@ -26,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${playfair.variable} ${poppins.variable} antialiased`}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${cormorant.variable} ${jost.variable} antialiased bg-[var(--cream)] text-[var(--charcoal)]`}>
         {children}
       </body>
     </html>
