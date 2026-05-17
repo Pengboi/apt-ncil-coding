@@ -136,9 +136,3 @@ export const colors = [
   { id: 'purple', name: 'Purple', hex: '#7c3aed' },
   { id: 'pink-gold', name: 'Pink with Gold', hex: '#ec4899' },
 ];
-
-// Hero images for reference
-export const heroImages = {
-  main: '/images/birthday-girl-bouquet.jpg', // Girl holding the large pink bouquet
-  secondary: '/images/red-birthday-bouquet.jpg',
-};

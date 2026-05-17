@@ -12,7 +12,7 @@ interface ProductModalProps {
   initialColor?: string;
 }
 
-export default function ProductModal({ product, isOpen, onClose, onAddToCart, initialColor }: ProductModalProps) {
+function ProductModalInner({ product, isOpen, onClose, onAddToCart, initialColor }: ProductModalProps) {
   const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors[0] || '');
   const [ribbonText, setRibbonText] = useState('');
   const [glitter, setGlitter] = useState(false);
@@ -20,17 +20,13 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    if (isOpen && initialColor) {
-      setSelectedColor(initialColor);
-    }
     if (isOpen) {
-      setIsAdding(false);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [isOpen, initialColor]);
+  }, [isOpen]);
 
   if (!product) return null;
 
@@ -238,5 +234,16 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, in
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductModal(props: ProductModalProps) {
+  if (!props.product) return null;
+
+  return (
+    <ProductModalInner
+      key={props.isOpen ? `open-${props.initialColor || ''}` : 'closed'}
+      {...props}
+    />
   );
 }

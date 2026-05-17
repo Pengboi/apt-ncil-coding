@@ -1,15 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Product } from '../data/products';
+import { CartItem } from '../types';
 import ProductImage from './ProductImage';
-
-interface CartItem extends Product {
-  quantity: number;
-  selectedColor?: string;
-  ribbonText?: string;
-  glitter?: boolean;
-}
 
 interface ShoppingCartProps {
   isOpen: boolean;

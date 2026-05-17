@@ -1,15 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Product } from '../data/products';
+import { CartItem } from '../types';
 import ProductImage from './ProductImage';
-
-interface CartItem extends Product {
-  quantity: number;
-  selectedColor?: string;
-  ribbonText?: string;
-  glitter?: boolean;
-}
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -273,7 +266,7 @@ export default function CheckoutModal({
                     type="text" 
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className={`input-field ${errors.firstName ? 'border-[var(--burgundy)]' : ''}`}
+                    className={`input-field ${errors.firstName ? 'error' : ''}`}
                     placeholder="Enter first name"
                   />
                   {errors.firstName && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.firstName}</p>}
@@ -286,7 +279,7 @@ export default function CheckoutModal({
                     type="text" 
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className={`input-field ${errors.lastName ? 'border-[var(--burgundy)]' : ''}`}
+                    className={`input-field ${errors.lastName ? 'error' : ''}`}
                     placeholder="Enter last name"
                   />
                   {errors.lastName && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.lastName}</p>}
@@ -301,7 +294,7 @@ export default function CheckoutModal({
                   type="email" 
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`input-field ${errors.email ? 'border-[var(--burgundy)]' : ''}`}
+                  className={`input-field ${errors.email ? 'error' : ''}`}
                   placeholder="your@email.com"
                 />
                 {errors.email && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.email}</p>}
@@ -315,7 +308,7 @@ export default function CheckoutModal({
                   type="tel" 
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className={`input-field ${errors.phone ? 'border-[var(--burgundy)]' : ''}`}
+                  className={`input-field ${errors.phone ? 'error' : ''}`}
                   placeholder="+44 123 456 7890"
                 />
                 {errors.phone && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.phone}</p>}
@@ -337,7 +330,7 @@ export default function CheckoutModal({
                   type="text" 
                   value={formData.shippingAddress1}
                   onChange={(e) => handleInputChange('shippingAddress1', e.target.value)}
-                  className={`input-field ${errors.shippingAddress1 ? 'border-[var(--burgundy)]' : ''}`}
+                  className={`input-field ${errors.shippingAddress1 ? 'error' : ''}`}
                   placeholder="123 Main Street"
                 />
                 {errors.shippingAddress1 && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingAddress1}</p>}
@@ -365,7 +358,7 @@ export default function CheckoutModal({
                     type="text" 
                     value={formData.shippingCity}
                     onChange={(e) => handleInputChange('shippingCity', e.target.value)}
-                    className={`input-field ${errors.shippingCity ? 'border-[var(--burgundy)]' : ''}`}
+                    className={`input-field ${errors.shippingCity ? 'error' : ''}`}
                     placeholder="London"
                   />
                   {errors.shippingCity && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingCity}</p>}
@@ -378,7 +371,7 @@ export default function CheckoutModal({
                     type="text" 
                     value={formData.shippingPostcode}
                     onChange={(e) => handleInputChange('shippingPostcode', e.target.value.toUpperCase())}
-                    className={`input-field ${errors.shippingPostcode ? 'border-[var(--burgundy)]' : ''}`}
+                    className={`input-field ${errors.shippingPostcode ? 'error' : ''}`}
                     placeholder="SW1A 1AA"
                   />
                   {errors.shippingPostcode && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingPostcode}</p>}
@@ -461,7 +454,7 @@ export default function CheckoutModal({
                         type="text" 
                         value={formData.billingAddress1}
                         onChange={(e) => handleInputChange('billingAddress1', e.target.value)}
-                        className={`input-field ${errors.billingAddress1 ? 'border-[var(--burgundy)]' : ''}`}
+                        className={`input-field ${errors.billingAddress1 ? 'error' : ''}`}
                         placeholder="123 Main Street"
                       />
                       {errors.billingAddress1 && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingAddress1}</p>}
@@ -489,7 +482,7 @@ export default function CheckoutModal({
                           type="text" 
                           value={formData.billingCity}
                           onChange={(e) => handleInputChange('billingCity', e.target.value)}
-                          className={`input-field ${errors.billingCity ? 'border-[var(--burgundy)]' : ''}`}
+                          className={`input-field ${errors.billingCity ? 'error' : ''}`}
                           placeholder="London"
                         />
                         {errors.billingCity && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingCity}</p>}
@@ -502,7 +495,7 @@ export default function CheckoutModal({
                           type="text" 
                           value={formData.billingPostcode}
                           onChange={(e) => handleInputChange('billingPostcode', e.target.value.toUpperCase())}
-                          className={`input-field ${errors.billingPostcode ? 'border-[var(--burgundy)]' : ''}`}
+                          className={`input-field ${errors.billingPostcode ? 'error' : ''}`}
                           placeholder="SW1A 1AA"
                         />
                         {errors.billingPostcode && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingPostcode}</p>}
@@ -608,21 +601,99 @@ export default function CheckoutModal({
                 </div>
               </div>
 
-              {/* Payment Placeholder */}
-              <div className="bg-[var(--linen)] p-6 rounded-lg border border-dashed border-[var(--taupe)]/30">
-                <div className="text-center">
-                  <svg className="w-10 h-10 text-[var(--taupe)] opacity-40 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                  </svg>
-                  <h4 className="font-display text-lg font-medium text-[var(--charcoal)] mb-2">Payment Integration Coming Soon</h4>
-                  <p className="text-xs text-[var(--taupe)] mb-4">
-                    This is a demo checkout. In production, this would connect to Stripe or PayPal.
-                  </p>
-                  <div className="flex justify-center gap-3 text-2xl opacity-40">
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              {/* Payment Section */}
+              <div className="bg-white p-6 rounded-lg border border-[var(--linen)]">
+                <div className="flex items-center justify-between mb-5">
+                  <h4 className="font-display text-lg font-medium text-[var(--charcoal)]">Payment Details</h4>
+                  <div className="flex gap-2">
+                    <div className="w-10 h-6 bg-[var(--charcoal)] rounded flex items-center justify-center">
+                      <div className="w-6 h-4 border border-[var(--cream)]/40 rounded-sm" />
+                    </div>
+                    <div className="w-10 h-6 bg-[var(--burgundy)] rounded flex items-center justify-center">
+                      <div className="w-5 h-3 rounded-full border border-[var(--cream)]/60" />
+                    </div>
                   </div>
+                </div>
+                
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
+                      Card Number
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type="text"
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                        className="input-field pr-12"
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 16);
+                          const formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+                          e.target.value = formatted;
+                        }}
+                      />
+                      <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-4 text-[var(--taupe)]" fill="none" stroke="currentColor" viewBox="0 0 24 16" strokeWidth={1.5}>
+                        <rect x="1" y="1" width="22" height="14" rx="2" />
+                        <line x1="1" y1="6" x2="23" y2="6" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
+                        Expiry Date
+                      </label>
+                      <input 
+                        type="text"
+                        placeholder="MM/YY"
+                        maxLength={5}
+                        className="input-field"
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                          if (val.length >= 3) {
+                            e.target.value = val.slice(0, 2) + '/' + val.slice(2);
+                          } else {
+                            e.target.value = val;
+                          }
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
+                        CVC
+                      </label>
+                      <input 
+                        type="text"
+                        placeholder="123"
+                        maxLength={4}
+                        className="input-field"
+                        onChange={(e) => {
+                          e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
+                      Name on Card
+                    </label>
+                    <input 
+                      type="text"
+                      placeholder="As it appears on your card"
+                      className="input-field"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-5 pt-4 border-t border-[var(--linen)] flex items-center gap-2">
+                  <svg className="w-4 h-4 text-[var(--champagne)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                  <p className="text-[10px] text-[var(--taupe)]">
+                    Your payment details are encrypted and secure
+                  </p>
                 </div>
               </div>
             </div>

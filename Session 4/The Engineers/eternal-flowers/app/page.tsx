@@ -9,13 +9,7 @@ import ProductModal from './components/ProductModal';
 import CheckoutModal from './components/CheckoutModal';
 import FloatingPetals from './components/FloatingPetals';
 import { products, categories, Product } from './data/products';
-
-interface CartItem extends Product {
-  quantity: number;
-  selectedColor: string;
-  ribbonText: string;
-  glitter: boolean;
-}
+import { CartItem } from './types';
 
 function ScrollReveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -58,6 +52,8 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>('');
+  const [customFormSubmitted, setCustomFormSubmitted] = useState(false);
+  const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
 
   const filteredProducts = activeCategory === 'all' 
     ? products 
@@ -464,23 +460,42 @@ export default function Home() {
                   Want something unique? Design your own eternal flower arrangement with custom colours, ribbon text, and special touches. Perfect for making your gift truly one-of-a-kind.
                 </p>
 
-                <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+                {customFormSubmitted ? (
+                  <div className="text-center py-12 animate-fade-in-up">
+                    <div className="w-16 h-16 bg-[var(--burgundy)] rounded-full flex items-center justify-center mx-auto mb-6">
+                      <svg className="w-8 h-8 text-[var(--cream)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    </div>
+                    <h3 className="font-display text-2xl font-medium text-[var(--charcoal)] mb-3">Request Received</h3>
+                    <p className="text-[var(--taupe)] mb-6 leading-relaxed">
+                      Thank you for your custom order request. We&apos;ll be in touch within 24 hours to discuss your perfect arrangement.
+                    </p>
+                    <button 
+                      onClick={() => setCustomFormSubmitted(false)}
+                      className="btn-secondary"
+                    >
+                      Send Another Request
+                    </button>
+                  </div>
+                ) : (
+                <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); setCustomFormSubmitted(true); }}>
                   <div className="grid sm:grid-cols-2 gap-8">
                     <div>
                       <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Your Name</label>
-                      <input type="text" className="input-field" placeholder="Enter your name" />
+                      <input type="text" className="input-field" placeholder="Enter your name" required />
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Email</label>
-                      <input type="email" className="input-field" placeholder="Enter your email" />
+                      <input type="email" className="input-field" placeholder="Enter your email" required />
                     </div>
                   </div>
                   
                   <div className="grid sm:grid-cols-2 gap-8">
                     <div>
                       <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Product Type</label>
-                      <select className="select-field">
-                        <option>Select a type...</option>
+                      <select className="select-field" required>
+                        <option value="">Select a type...</option>
                         <option>Bouquet</option>
                         <option>Letter Box</option>
                         <option>Heart Box</option>
@@ -489,8 +504,8 @@ export default function Home() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">Rose Colour</label>
-                      <select className="select-field">
-                        <option>Choose colour...</option>
+                      <select className="select-field" required>
+                        <option value="">Choose colour...</option>
                         <option>Pink</option>
                         <option>Red</option>
                         <option>White</option>
@@ -516,6 +531,7 @@ export default function Home() {
                     Send Your Request
                   </button>
                 </form>
+                )}
               </div>
             </ScrollReveal>
           </div>
@@ -659,16 +675,28 @@ export default function Home() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={200}>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+            {newsletterSubmitted ? (
+              <div className="text-center animate-fade-in-up">
+                <div className="inline-flex items-center gap-2 px-6 py-4 bg-[var(--cream)]/10 rounded-full">
+                  <svg className="w-5 h-5 text-[var(--cream)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  <span className="text-[var(--cream)] font-medium">Welcome to the Eternal Circle!</span>
+                </div>
+              </div>
+            ) : (
+            <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onSubmit={(e) => { e.preventDefault(); setNewsletterSubmitted(true); }}>
               <input 
                 type="email" 
                 placeholder="Enter your email"
+                required
                 className="flex-1 px-6 py-4 bg-transparent border-b-2 border-[var(--cream)]/30 text-[var(--cream)] placeholder-[var(--cream)]/50 focus:border-[var(--cream)] outline-none transition-colors font-body"
               />
               <button type="submit" className="btn-cream">
                 Subscribe
               </button>
             </form>
+            )}
           </ScrollReveal>
         </div>
       </section>
@@ -691,20 +719,20 @@ export default function Home() {
             <div>
               <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Shop</h4>
               <ul className="space-y-3 text-sm text-[var(--cream)]/60">
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Birthday Collection</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Valentine&apos;s Day</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Flower Purses</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Custom Orders</a></li>
+                <li><a href="#collections" className="hover:text-[var(--cream)] transition-colors">Birthday Collection</a></li>
+                <li><a href="#collections" className="hover:text-[var(--cream)] transition-colors">Valentine&apos;s Day</a></li>
+                <li><a href="#shop" className="hover:text-[var(--cream)] transition-colors">Flower Purses</a></li>
+                <li><a href="#custom" className="hover:text-[var(--cream)] transition-colors">Custom Orders</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] mb-6 text-[var(--champagne)]">Help</h4>
               <ul className="space-y-3 text-sm text-[var(--cream)]/60">
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Shipping Info</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Care Instructions</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-[var(--cream)] transition-colors">Contact Us</a></li>
+                <li><a href="#about" className="hover:text-[var(--cream)] transition-colors">Shipping Info</a></li>
+                <li><a href="#about" className="hover:text-[var(--cream)] transition-colors">Care Instructions</a></li>
+                <li><a href="#about" className="hover:text-[var(--cream)] transition-colors">FAQ</a></li>
+                <li><a href="mailto:hello@eternalflowers.co.uk" className="hover:text-[var(--cream)] transition-colors">Contact Us</a></li>
               </ul>
             </div>
             

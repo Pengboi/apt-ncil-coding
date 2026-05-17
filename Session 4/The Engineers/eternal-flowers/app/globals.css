@@ -359,6 +359,10 @@ body {
   border-bottom-color: var(--burgundy);
 }
 
+.input-field.error {
+  border-bottom-color: var(--burgundy);
+}
+
 .input-field::placeholder {
   color: var(--taupe);
   opacity: 0.6;
