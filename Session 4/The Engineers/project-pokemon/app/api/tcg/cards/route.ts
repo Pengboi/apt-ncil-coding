@@ -1,134 +1,62 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
 
-// TCG Pocket set IDs - these are digital-only cards that don't exist as real physical cards
-const TCG_POCKET_SETS = new Set([
-  'A1', 'A1a', 'A2', 'A2a', 'A2b', 'A3', 'A4', 'A4a', // Main sets
-  'P-A', // Promos
-  'B1', 'B2' // Future sets
+const SUPPLEMENTAL_SETS = new Set([
+  'Miscellaneous Cards & Products',
+  'Blister Exclusives',
+  'Deck Exclusives',
+  'Prize Pack Series Cards',
+  'League & Championship Cards',
+  'Jumbo Cards',
+  'World Championship Decks',
+  'Best of Promos',
 ]);
-
-function isTcgPocketCard(card: any): boolean {
-  // Check if the card's image URL contains '/tcgp/' (TCG Pocket path)
-  if (card.image && card.image.includes('/tcgp/')) {
-    return true;
-  }
-  // Check if the card ID starts with a TCG Pocket set prefix
-  const cardId = card.id || '';
-  for (const setId of TCG_POCKET_SETS) {
-    if (cardId.startsWith(setId + '-')) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Cache for set release dates to avoid repeated fetches
-const setCache = new Map<string, { name: string; releaseDate: string }>();
-
-async function getSetInfo(setId: string): Promise<{ name: string; releaseDate: string }> {
-  // Check cache first
-  if (setCache.has(setId)) {
-    return setCache.get(setId)!;
-  }
-  
-  try {
-    const res = await fetch(`https://api.tcgdex.net/v2/en/sets/${setId}`);
-    if (res.ok) {
-      const setData = await res.json();
-      const info = {
-        name: setData.name || setId,
-        releaseDate: setData.releaseDate || '9999-99-99'
-      };
-      setCache.set(setId, info);
-      return info;
-    }
-  } catch (e) {
-    // Fallback to default
-  }
-  
-  const defaultInfo = { name: setId, releaseDate: '9999-99-99' };
-  setCache.set(setId, defaultInfo);
-  return defaultInfo;
-}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const name = searchParams.get('name') || '';
+  const name = searchParams.get('name') || searchParams.get('q') || '';
+
+  if (name.length < 2) {
+    return NextResponse.json({ data: [], sets: [] });
+  }
 
   try {
-    // Fetch cards for the pokemon
-    const cardsUrl = `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(name)}`;
-    const cardsRes = await fetch(cardsUrl);
-    if (!cardsRes.ok) {
-      return NextResponse.json({ data: [], sets: [] }, { status: 200 });
+    const supabase = await createClient();
+
+    const { data: cards, error } = await supabase
+      .from('cards')
+      .select('id, name, set_id, set_name, rarity, image_url, pokemon_name')
+      .or(`name.ilike.%${name}%,pokemon_name.ilike.%${name}%`)
+      .limit(100);
+
+    if (error || !cards || cards.length === 0) {
+      return NextResponse.json({ data: [], sets: [] });
     }
-    const cards = await cardsRes.json();
-    
-    // Filter out TCG Pocket cards and cards without images
-    const realCards = cards.filter((card: any) => !isTcgPocketCard(card) && card.image);
-    
-    // Get unique set IDs from cards
-    const setIds = new Set<string>();
-    realCards.forEach((card: any) => {
-      const setId = card.id?.split('-')[0];
-      if (setId) setIds.add(setId);
+
+    const sorted = cards.sort((a, b) => {
+      const aSupp = SUPPLEMENTAL_SETS.has(a.set_name) ? 1 : 0;
+      const bSupp = SUPPLEMENTAL_SETS.has(b.set_name) ? 1 : 0;
+      if (aSupp !== bSupp) return aSupp - bSupp;
+      const aExact = a.pokemon_name?.toLowerCase() === name.toLowerCase() ? 0 : 1;
+      const bExact = b.pokemon_name?.toLowerCase() === name.toLowerCase() ? 0 : 1;
+      if (aExact !== bExact) return aExact - bExact;
+      return a.name.localeCompare(b.name);
     });
-    
-    // Fetch set details for each unique set
-    const setInfos = await Promise.all(
-      Array.from(setIds).map(async (setId) => {
-        const info = await getSetInfo(setId);
-        return { id: setId, ...info };
-      })
-    );
-    
-    // Build a map of setId -> { name, releaseDate }
-    const setMap = new Map<string, { name: string; releaseDate: string }>();
-    setInfos.forEach((info) => {
-      setMap.set(info.id, { name: info.name, releaseDate: info.releaseDate });
-    });
-    
-    // Add set info to each card and sort by release date (oldest first)
-    const cardsWithSetInfo = realCards.map((card: any) => {
-      const setId = card.id?.split('-')[0] || '';
-      const setInfo = setMap.get(setId);
-      return {
-        ...card,
-        setId,
-        setName: setInfo?.name || setId,
-        releaseDate: setInfo?.releaseDate || '9999-99-99'
-      };
-    });
-    
-    // Sort by release date (oldest first), then by card id
-    cardsWithSetInfo.sort((a: any, b: any) => {
-      const dateCompare = a.releaseDate.localeCompare(b.releaseDate);
-      if (dateCompare !== 0) return dateCompare;
-      return a.id.localeCompare(b.id);
-    });
-    
-    // Build unique sets list for filter dropdown
-    const uniqueSets = setInfos
-      .sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
-    
-    // Transform to expected format
-    const transformedData = {
-      data: cardsWithSetInfo.map((card: any) => ({
-        id: card.id,
-        name: card.name,
-        setId: card.setId,
-        setName: card.setName,
-        releaseDate: card.releaseDate,
-        images: {
-          small: card.image ? `${card.image}/low.png` : null,
-          large: card.image ? `${card.image}/high.png` : null
-        }
-      })),
-      sets: uniqueSets
-    };
-    
-    return NextResponse.json(transformedData, { status: 200 });
-  } catch (e) {
-    return NextResponse.json({ data: [], sets: [] }, { status: 200 });
+
+    const data = sorted.slice(0, 30).map(c => ({
+      id: c.id,
+      name: c.name,
+      setId: c.set_id,
+      setName: c.set_name,
+      rarity: c.rarity,
+      images: {
+        small: c.image_url || null,
+        large: c.image_url || null,
+      },
+    }));
+
+    return NextResponse.json({ data, sets: [] });
+  } catch {
+    return NextResponse.json({ data: [], sets: [] });
   }
 }

@@ -109,7 +109,7 @@ function TCGCard({ card, index, onClick }: TCGCardProps) {
         className="absolute inset-0 rounded-xl pointer-events-none z-30 transition-opacity duration-300"
         style={{
           opacity: isHovering ? 0.6 : 0,
-          background: `
+          backgroundImage: `
             linear-gradient(
               ${135 + transform.rotateY * 2}deg,
               transparent 0%,
@@ -283,8 +283,8 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
   }, [cards.length, name]);
 
   const filteredCards = useMemo(() => {
-    if (selectedSet === "all") return cards;
-    return cards.filter((c) => c.setId === selectedSet);
+    const base = selectedSet === "all" ? cards : cards.filter((c) => c.setId === selectedSet);
+    return [...base].sort((a, b) => a.setName.localeCompare(b.setName));
   }, [cards, selectedSet]);
 
   const groupedCards = useMemo(() => {
@@ -445,8 +445,8 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
         {/* Cards Grid */}
         {!loading && !error && filteredCards.length > 0 && (
           <div className="space-y-8">
-            {groupedCards.map((group) => (
-              <div key={group.setName}>
+            {groupedCards.map((group, index) => (
+              <div key={`group-${index}`}>
                 {/* Set Header */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-600 to-slate-600" />
@@ -461,11 +461,11 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
 
                 {/* Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {group.cards.map((card, index) => (
+                  {group.cards.map((card, cardIndex) => (
                     <TCGCard 
-                      key={card.id} 
+                      key={`${card.id}-${cardIndex}`} 
                       card={card} 
-                      index={index} 
+                      index={cardIndex} 
                       onClick={() => setSelectedCard(card)}
                     />
                   ))}

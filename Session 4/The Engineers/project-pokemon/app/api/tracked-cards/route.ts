@@ -18,8 +18,7 @@ export async function GET() {
       .from('tracked_cards')
       .select(`
         *,
-        cards:card_id (id, name, set_name, rarity, image_url),
-        latest_price:price_snapshots!inner (current_price, change_percent, updated_at)
+        cards:card_id (id, name, set_name, rarity, image_url)
       `)
       .eq('is_active', true)
       .order('date_added', { ascending: false });
@@ -31,29 +30,27 @@ export async function GET() {
         { status: 500 }
       );
     }
-    
-    // Also get cards without prices yet
-    const { data: trackedWithoutPrice, error: priceError } = await supabase
-      .from('tracked_cards')
-      .select(`
-        *,
-        cards:card_id (id, name, set_name, rarity, image_url)
-      `)
-      .eq('is_active', true)
-      .is('last_fetched', null)
-      .order('date_added', { ascending: false });
-    
-    // Combine results (data might be null if no prices yet)
-    const allCards = [...(data || []), ...(trackedWithoutPrice || [])];
-    
-    // Remove duplicates
-    const uniqueCards = allCards.filter((card, index, self) =>
-      index === self.findIndex((c) => c.card_id === card.card_id)
-    );
+
+    let cards = data || [];
+
+    if (cards.length > 0) {
+      const cardIds = cards.map(c => c.card_id);
+      const { data: snapshots } = await supabase
+        .from('price_snapshots')
+        .select('card_id, current_price, change_percent, updated_at')
+        .in('card_id', cardIds);
+
+      const snapMap = new Map((snapshots || []).map(s => [s.card_id, s]));
+
+      cards = cards.map(c => ({
+        ...c,
+        latest_price: snapMap.get(c.card_id) || null,
+      }));
+    }
     
     return NextResponse.json({
-      cards: uniqueCards,
-      count: uniqueCards.length,
+      cards,
+      count: cards.length,
     });
     
   } catch (error) {
@@ -76,14 +73,6 @@ export async function POST(request: NextRequest) {
     if (!cardId) {
       return NextResponse.json(
         { error: 'cardId is required' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate cardId format (should be like "base1-4")
-    if (!cardId.includes('-')) {
-      return NextResponse.json(
-        { error: 'Invalid cardId format. Expected format: "set-number" (e.g., "base1-4")' },
         { status: 400 }
       );
     }

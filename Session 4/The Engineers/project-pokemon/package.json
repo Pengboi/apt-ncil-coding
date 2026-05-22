@@ -11,7 +11,10 @@
     "import-cards:track": "ts-node scripts/import-all-cards.ts --track-all",
     "import-cards:async": "node scripts/run-import-detached.js",
     "import-cards:status": "node scripts/import-all-cards-async.js --status",
-    "import-cards:logs": "tail -f import-cards.log 2>/dev/null || cat import-status.json"
+    "import-cards:logs": "tail -f import-cards.log 2>/dev/null || cat import-status.json",
+    "seed": "ts-node scripts/seed-all-pokemon.ts",
+    "seed:track": "ts-node scripts/seed-all-pokemon.ts --track",
+    "seed:dry": "ts-node scripts/seed-all-pokemon.ts --dry-run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
