@@ -15,8 +15,8 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Adventurers Academy | Syntaxia",
-  description: "Forge your legend. Code your destiny.",
+  title: "Gopher Knight — A Pixel Adventure",
+  description: "Explore the world of Rookwood. Battle monsters. Forge your legend.",
 };
 
 export default function RootLayout({
