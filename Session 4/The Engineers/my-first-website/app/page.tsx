@@ -390,6 +390,7 @@ export default function AdventurePage() {
     battleActive: false, battleEnemy: null as WorldEnemy | null, battleTurn: 'player' as 'player' | 'enemy',
     battleLog: [] as string[], battleAnimating: false, battleAnimTimer: 0, battleFade: 0, battleChoice: 0,
     battleSubMenu: '' as '' | 'attack' | 'skills' | 'items' | 'flee', battleSubChoice: 0,
+    battleEnemyDisplayHp: 0, battlePlayerDisplayHp: 0, battleEnemyFlash: 0, battlePlayerFlash: 0,
     inventoryOpen: false, inventoryChoice: 0, inventoryTab: 0,
     quests: JSON.parse(JSON.stringify(QUESTS)) as Quest[],
     craftOpen: false, craftChoice: 0,
@@ -398,6 +399,7 @@ export default function AdventurePage() {
     skillsOpen: false, skillChoice: 0,
     totalKills: 0, totalCrafts: 0,
     playerName: '', hasStarted: false,
+    justDefeated: false,
   });
 
   const firefliesRef = useRef<Firefly[]>([]);
@@ -424,6 +426,13 @@ export default function AdventurePage() {
     if (!canvas || !container) return;
     const ctx = canvas.getContext('2d')!;
     const s = stateRef.current;
+
+    function roundRect(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+      c.beginPath(); c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.arcTo(x + w, y, x + w, y + r, r); c.lineTo(x + w, y + h - r); c.arcTo(x + w, y + h, x + w - r, y + h, r); c.lineTo(x + r, y + h); c.arcTo(x, y + h, x, y + h - r, r); c.lineTo(x, y + r); c.arcTo(x, y, x + r, y, r); c.closePath(); c.fill();
+    }
+    function roundRectStroke(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+      c.beginPath(); c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.arcTo(x + w, y, x + w, y + r, r); c.lineTo(x + w, y + h - r); c.arcTo(x + w, y + h, x + w - r, y + h, r); c.lineTo(x + r, y + h); c.arcTo(x, y + h, x, y + h - r, r); c.lineTo(x, y + r); c.arcTo(x, y, x + r, y, r); c.closePath(); c.stroke();
+    }
 
     let audioCtx: AudioContext | null = null;
     let ambientOsc: OscillatorNode | null = null;
@@ -559,6 +568,7 @@ export default function AdventurePage() {
       closeAllPanels(); s.battleActive = true; s.battleEnemy = { ...enemy, hp: enemy.maxHp };
       s.battleTurn = 'player'; s.battleLog = [`A wild ${enemy.name} appears!`];
       s.battleFade = 0; s.battleAnimating = true; s.battleAnimTimer = 0; s.battleChoice = 0; s.battleSubMenu = ''; s.battleSubChoice = 0;
+      s.battleEnemyDisplayHp = enemy.maxHp; s.battlePlayerDisplayHp = s.hp; s.battleEnemyFlash = 0; s.battlePlayerFlash = 0;
       playSound('battle_start');
     }
 
@@ -574,6 +584,7 @@ export default function AdventurePage() {
         const { dmg, crit } = calcDamage(s.atk + ab.power, e.def);
         e.hp = Math.max(0, e.hp - dmg);
         s.battleLog.push(crit ? `CRIT! ${ab.name} deals ${dmg} damage!` : `${ab.name} deals ${dmg} damage.`);
+        s.battleEnemyFlash = 12;
         playSound(crit ? 'crit' : 'hit');
         if (crit) triggerShake(6);
         if (dmg > 15) triggerShake(4);
@@ -604,13 +615,14 @@ export default function AdventurePage() {
           const { dmg: eDmg, crit: eCrit } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
           s.hp = Math.max(0, s.hp - eDmg);
           s.battleLog.push(eCrit ? `CRIT! ${s.battleEnemy.name}'s ${ab2.name} hits for ${eDmg}!` : `${s.battleEnemy.name} uses ${ab2.name} for ${eDmg} damage.`);
+          s.battlePlayerFlash = 12;
           playSound('hit');
           if (eCrit) triggerShake(8);
           triggerShake(4);
           if (s.hp <= 0) {
             s.battleLog.push('You have been defeated...');
             playSound('flee');
-            setTimeout(() => { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }, 2000);
+            setTimeout(() => { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }, 2000);
           } else {
             s.battleTurn = 'player'; s.battleSubMenu = '';
             if (s.battleEnemy?.isBoss && s.battleEnemy.hp < s.battleEnemy.maxHp * 0.5 && s.battleEnemy.phase === 1) {
@@ -639,7 +651,8 @@ export default function AdventurePage() {
           const { dmg } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
           s.hp = Math.max(0, s.hp - dmg);
           s.battleLog.push(`${s.battleEnemy.name} strikes as you flee! -${dmg} HP`);
-          if (s.hp <= 0) { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }
+          s.battlePlayerFlash = 12;
+            if (s.hp <= 0) { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }
           else { s.battleTurn = 'player'; s.battleSubMenu = ''; }
         }, 600);
       }
@@ -660,7 +673,7 @@ export default function AdventurePage() {
             const { dmg } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
             s.hp = Math.max(0, s.hp - dmg);
             s.battleLog.push(`${s.battleEnemy.name} uses ${ab2.name}! -${dmg} HP`);
-            if (s.hp <= 0) { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }
+          if (s.hp <= 0) { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }
             else { s.battleTurn = 'player'; s.battleSubMenu = ''; }
           }, 800);
         }
@@ -750,9 +763,16 @@ export default function AdventurePage() {
       if (s.battleActive && down) {
         if (s.battleAnimating) return;
         if (s.battleTurn === 'player') {
-          if (k === 'arrowup') { if (s.battleSubMenu) s.battleSubChoice = Math.max(0, s.battleSubChoice - 1); else s.battleChoice = Math.max(0, s.battleChoice - 1); }
-          else if (k === 'arrowdown') { if (s.battleSubMenu) { const max = s.battleSubMenu === 'skills' ? s.learnedAbilities.length : s.battleSubMenu === 'items' ? s.inventory.filter(i => i.id === 'potion').length : 0; s.battleSubChoice = Math.min(max - 1, s.battleSubChoice + 1); } else s.battleChoice = Math.min(3, s.battleChoice + 1); }
-          else if (k === 'e' || k === 'enter') {
+          if (!s.battleSubMenu) {
+            if (k === 'arrowup') s.battleChoice = Math.max(0, s.battleChoice - 2);
+            else if (k === 'arrowdown') s.battleChoice = Math.min(3, s.battleChoice + 2);
+            else if (k === 'arrowleft') s.battleChoice = s.battleChoice % 2 === 1 ? s.battleChoice - 1 : s.battleChoice;
+            else if (k === 'arrowright') s.battleChoice = s.battleChoice % 2 === 0 ? s.battleChoice + 1 : s.battleChoice;
+          } else {
+            if (k === 'arrowup') s.battleSubChoice = Math.max(0, s.battleSubChoice - 1);
+            else if (k === 'arrowdown') { const max = s.battleSubMenu === 'skills' ? s.learnedAbilities.length : s.battleSubMenu === 'items' ? s.inventory.filter(i => i.id === 'potion').length : 0; s.battleSubChoice = Math.min(max - 1, s.battleSubChoice + 1); }
+          }
+          if (k === 'e' || k === 'enter') {
             if (s.battleSubMenu === '') {
               if (s.battleChoice === 0) s.battleSubMenu = 'skills';
               else if (s.battleChoice === 1) s.battleSubMenu = 'items';
@@ -862,9 +882,40 @@ export default function AdventurePage() {
       if (s.battleAnimating) { s.battleAnimTimer -= dt; if (s.battleAnimTimer <= 0) s.battleAnimating = false; }
       if (s.battleFade < 1 && s.battleActive) s.battleFade = Math.min(1, s.battleFade + dt * 0.05);
       if (!s.battleActive && s.battleFade > 0) s.battleFade = Math.max(0, s.battleFade - dt * 0.05);
+      if (s.battleActive && s.battleEnemy) {
+        s.battleEnemyDisplayHp += (s.battleEnemy.hp - s.battleEnemyDisplayHp) * 0.06 * dt;
+        s.battlePlayerDisplayHp += (s.hp - s.battlePlayerDisplayHp) * 0.06 * dt;
+        if (s.battleEnemyFlash > 0) s.battleEnemyFlash -= dt;
+        if (s.battlePlayerFlash > 0) s.battlePlayerFlash -= dt;
+      }
 
       // Auto-save every 30s
       if (Math.floor(s.time) % 1800 < dt) saveGame();
+
+      // Defeat recovery — trigger Old Sage dialogue + penalties
+      if (s.justDefeated && !s.battleActive && !s.dialogueActive && !s.shopActive && !s.signActive && !s.inventoryOpen && !s.craftOpen && !s.menuOpen) {
+        s.justDefeated = false;
+        const goldLost = Math.floor(s.playerGold * 0.25);
+        s.playerGold = Math.max(0, s.playerGold - goldLost);
+        s.hp = Math.floor(s.maxHp / 2);
+        s.mp = Math.floor(s.maxMp / 2);
+        s.px = 44; s.py = 37;
+        s.camX = s.px * TILE - c.width / 2;
+        s.camY = s.py * TILE - c.height / 2;
+        enemiesRef.current = makeEnemies();
+        closeAllPanels();
+        s.dialogueActive = true;
+        s.dialogueNpc = 'Old Sage';
+        s.dialogueLines = [
+          'You took quite a beating out there...',
+          'I found you collapsed and brought you back to the village.',
+          'Rest up. And try to be more careful next time.',
+          `You lost ${goldLost} gold in the chaos...`,
+        ];
+        s.dialogueIndex = 0;
+        playSound('interact');
+        saveGame();
+      }
 
       const { px, py } = s;
       const W = c.width, H = c.height;
@@ -1144,8 +1195,8 @@ export default function AdventurePage() {
           ctx.fillStyle = '#222'; ctx.fillRect(nx + 12 + eo, ny + 6 + nb, 1, 1); ctx.fillRect(nx + 17 + eo, ny + 6 + nb, 1, 1);
           ctx.fillStyle = '#2a2a3a'; const st = offsets[nidx].step ? 2 : 0;
           ctx.fillRect(nx + 10 + st, ny + 23 + nb, 5, 5); ctx.fillRect(nx + 17 - st, ny + 23 + nb, 5, 5);
-          ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(nx + 4, ny - 14, 24, 10);
-          ctx.fillStyle = '#fff'; ctx.font = '7px monospace'; ctx.textAlign = 'center'; ctx.fillText(npc.name, nx + 16, ny - 7);
+          ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(nx - 4, ny - 22, 40, 16);
+          ctx.fillStyle = '#fff'; ctx.font = '14px monospace'; ctx.textAlign = 'center'; ctx.fillText(npc.name, nx + 16, ny - 10);
         }});
       }
 
@@ -1242,7 +1293,7 @@ export default function AdventurePage() {
         for (const sign of SIGN_DATA) { if (Math.abs(sign.x - pxi) + Math.abs(sign.y - pyi) <= 1.5) { showE = true; label = 'Read'; break; } }
         if (!showE) for (let dy = -1; dy <= 1 && !showE; dy++) for (let dx = -1; dx <= 1 && !showE; dx++) if (isDoor(pxi + dx, pyi + dy)) { showE = true; label = 'Door'; }
         if (!showE) for (const npc of NPC_DATA) { if (Math.abs(npc.x - pxi) + Math.abs(npc.y - pyi) <= 1.5) { showE = true; label = npc.isShop ? 'Shop' : 'Talk'; break; } }
-        if (showE) { const pulse = 0.6 + Math.sin(s.time * 0.1) * 0.4; ctx.fillStyle = `rgba(0,0,0,${0.5 * pulse})`; ctx.fillRect(psx, psy - 26, 32, 14); ctx.fillStyle = `rgba(255,255,200,${pulse})`; ctx.font = '7px monospace'; ctx.textAlign = 'center'; ctx.fillText(`[E] ${label}`, psx + 16, psy - 17); }
+        if (showE) { const pulse = 0.6 + Math.sin(s.time * 0.1) * 0.4; ctx.fillStyle = `rgba(0,0,0,${0.5 * pulse})`; ctx.fillRect(psx - 8, psy - 38, 48, 22); ctx.fillStyle = `rgba(255,255,200,${pulse})`; ctx.font = '14px monospace'; ctx.textAlign = 'center'; ctx.fillText(`[E] ${label}`, psx + 16, psy - 24); }
       }
 
       ctx.restore();
@@ -1277,160 +1328,361 @@ export default function AdventurePage() {
 
       // --- HUD ---
       if (!s.battleActive) {
-        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(W - 160, 8, 152, 52);
-        ctx.fillStyle = '#fff'; ctx.font = '8px monospace'; ctx.textAlign = 'left';
-        ctx.fillText(`Lv.${s.level}  HP:${s.hp}/${s.maxHp}`, W - 152, 22);
-        ctx.fillStyle = '#4a8'; ctx.fillRect(W - 152, 26, Math.max(0, (s.hp / s.maxHp) * 100), 5);
-        ctx.fillStyle = '#888'; ctx.fillRect(W - 52, 26, 40, 5);
-        ctx.fillStyle = `hsl(0, 0%, ${50 + (s.xp / s.xpToNext) * 30}%)`; ctx.fillRect(W - 152, 34, Math.max(0, (s.xp / s.xpToNext) * 100), 4);
-        ctx.fillStyle = '#888'; ctx.font = '7px monospace'; ctx.fillText(`Gold:${s.playerGold}`, W - 152, 48);
-        ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.fillText('I=Inv  C=Craft  K=Skills  M=Menu  L=Load', W - 152, 58);
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(W - 280, 8, 272, 96);
+        ctx.fillStyle = '#fff'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
+        ctx.fillText(`Lv.${s.level}  HP:${s.hp}/${s.maxHp}`, W - 268, 28);
+        ctx.fillStyle = '#4a8'; ctx.fillRect(W - 268, 36, Math.max(0, (s.hp / s.maxHp) * 180), 10);
+        ctx.fillStyle = '#888'; ctx.fillRect(W - 88, 36, 72, 10);
+        ctx.fillStyle = `hsl(0, 0%, ${50 + (s.xp / s.xpToNext) * 30}%)`; ctx.fillRect(W - 268, 52, Math.max(0, (s.xp / s.xpToNext) * 180), 8);
+        ctx.fillStyle = '#888'; ctx.font = '14px monospace'; ctx.fillText(`Gold:${s.playerGold}`, W - 268, 74);
+        ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.fillText('I=Inv  C=Craft  K=Skills  M=Menu  L=Load', W - 268, 94);
       }
 
       // --- Battle overlay ---
       if (s.battleActive && s.battleEnemy) {
-        ctx.fillStyle = `rgba(0,0,0,${s.battleFade * 0.85})`; ctx.fillRect(0, 0, W, H);
         const e = s.battleEnemy;
+        const bf = s.battleFade;
 
-        // Enemy sprite area
-        const eSize = 80; const ex_ = W / 2 - eSize / 2, ey_ = 40;
-        ctx.fillStyle = 'rgba(20,10,15,0.6)'; ctx.fillRect(ex_ - 20, ey_ - 10, eSize + 40, eSize + 20);
-        ctx.font = '40px monospace'; ctx.textAlign = 'center';
-        ctx.fillText(e.icon, W / 2, ey_ + eSize / 2 + 10);
-        if (e.isBoss) { ctx.fillStyle = `rgba(255,200,0,${0.3 + Math.sin(s.time * 0.05) * 0.2})`; ctx.beginPath(); ctx.arc(W / 2, ey_ + eSize / 2, 44, 0, Math.PI * 2); ctx.fill(); }
+        // Battle arena background
+        const arenaTop = H * 0.02, arenaBot = H * 0.65;
+        const skyGrad = ctx.createLinearGradient(0, arenaTop, 0, arenaBot);
+        skyGrad.addColorStop(0, `rgba(8,12,25,${bf * 0.95})`);
+        skyGrad.addColorStop(0.4, `rgba(12,20,35,${bf * 0.92})`);
+        skyGrad.addColorStop(1, `rgba(15,25,20,${bf * 0.9})`);
+        ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, W, arenaBot);
 
-        ctx.fillStyle = '#c88'; ctx.font = 'bold 9px monospace'; ctx.fillText(e.name, W / 2, ey_ + eSize + 14);
-        ctx.fillStyle = '#a44'; ctx.fillRect(W / 2 - 60, ey_ + eSize + 20, 120, 8);
-        ctx.fillStyle = '#e44'; ctx.fillRect(W / 2 - 60, ey_ + eSize + 20, Math.max(0, (e.hp / e.maxHp) * 120), 8);
-        ctx.fillStyle = '#fff'; ctx.font = '6px monospace'; ctx.fillText(`${e.hp}/${e.maxHp}`, W / 2, ey_ + eSize + 27);
-        if (e.isBoss && e.maxPhase !== undefined && e.phase !== undefined && e.maxPhase > 1) { ctx.fillStyle = '#fa0'; ctx.font = '7px monospace'; ctx.fillText(`Phase ${e.phase}/${e.maxPhase}`, W / 2, ey_ + eSize + 38); }
+        const groundY = arenaBot - H * 0.18;
+        const groundGrad = ctx.createLinearGradient(0, groundY, 0, arenaBot);
+        groundGrad.addColorStop(0, `rgba(20,35,25,${bf * 0.9})`);
+        groundGrad.addColorStop(1, `rgba(12,20,15,${bf * 0.95})`);
+        ctx.fillStyle = groundGrad; ctx.fillRect(0, groundY, W, arenaBot - groundY);
 
-        // Player stats bottom
-        const py_ = H - 120;
-        ctx.fillStyle = '#448'; ctx.fillRect(20, py_, 160, 8);
-        ctx.fillStyle = '#48f'; ctx.fillRect(20, py_, Math.max(0, (s.hp / s.maxHp) * 160), 8);
-        ctx.fillStyle = '#fff'; ctx.font = '7px monospace'; ctx.textAlign = 'left'; ctx.fillText(`HP: ${s.hp}/${s.maxHp}`, 22, py_ + 7);
+        // Horizon line glow
+        ctx.fillStyle = `rgba(60,120,80,${bf * 0.15})`; ctx.fillRect(0, groundY - 2, W, 4);
 
-        // Battle log
-        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(20, py_ + 14, W - 260, 60);
-        ctx.fillStyle = '#ddd'; ctx.font = '7px monospace';
-        const logLines = s.battleLog.slice(-3);
-        for (let i = 0; i < logLines.length; i++) ctx.fillText(logLines[i], 24, py_ + 26 + i * 14);
+        // Dim overlay for remaining screen
+        ctx.fillStyle = `rgba(0,0,0,${bf * 0.7})`; ctx.fillRect(0, arenaBot, W, H - arenaBot);
 
-        // Battle menu
+        // --- Enemy platform (top-right) ---
+        const ePlatX = W * 0.68, ePlatY = groundY - H * 0.04;
+        ctx.fillStyle = `rgba(30,50,40,${bf * 0.6})`;
+        ctx.beginPath(); ctx.ellipse(ePlatX, ePlatY, 70, 16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(50,80,60,${bf * 0.3})`;
+        ctx.beginPath(); ctx.ellipse(ePlatX, ePlatY - 2, 65, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Enemy icon
+        const eIconX = ePlatX, eIconY = ePlatY - 56;
+        if (e.isBoss) {
+          ctx.fillStyle = `rgba(255,200,0,${(0.25 + Math.sin(s.time * 0.05) * 0.15) * bf})`;
+          ctx.beginPath(); ctx.arc(eIconX, eIconY, 50, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.font = '52px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const eOpacity = e.hp <= 0 ? Math.max(0, bf * 0.3) : bf;
+        ctx.globalAlpha = eOpacity;
+        ctx.fillText(e.icon, eIconX, eIconY);
+        ctx.textBaseline = 'alphabetic';
+
+        // Enemy flash overlay
+        if (s.battleEnemyFlash > 0) {
+          const flashAlpha = (s.battleEnemyFlash / 12) * 0.6 * bf;
+          ctx.fillStyle = `rgba(255,255,255,${flashAlpha})`;
+          ctx.beginPath(); ctx.arc(eIconX, eIconY, 36, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // --- Enemy info box (top-left) ---
+        const eBoxX = W * 0.04, eBoxY = H * 0.06, eBoxW = W * 0.38, eBoxH = 72;
+        ctx.fillStyle = `rgba(15,20,30,${bf * 0.85})`; roundRect(ctx, eBoxX, eBoxY, eBoxW, eBoxH, 12);
+        ctx.strokeStyle = `rgba(180,200,220,${bf * 0.25})`; ctx.lineWidth = 2;
+        roundRectStroke(ctx, eBoxX, eBoxY, eBoxW, eBoxH, 12);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#c88'; ctx.font = 'bold 18px monospace';
+        ctx.fillText(e.name, eBoxX + 16, eBoxY + 24);
+        ctx.fillStyle = '#8a8'; ctx.font = '14px monospace';
+        ctx.fillText(`Lv.${e.level}`, eBoxX + eBoxW - 70, eBoxY + 24);
+
+        // Enemy HP bar (smooth)
+        const eHpPct = Math.max(0, s.battleEnemyDisplayHp / e.maxHp);
+        const eBarX = eBoxX + 16, eBarY = eBoxY + 36, eBarW = eBoxW - 32, eBarH = 16;
+        const eHpColor = eHpPct > 0.5 ? '#4a8' : eHpPct > 0.25 ? '#ca8' : '#c44';
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, eBarX, eBarY, eBarW, eBarH, 4);
+        ctx.fillStyle = eHpColor; roundRect(ctx, eBarX, eBarY, Math.max(0, eBarW * eHpPct), eBarH, 4);
+        // HP bar shine
+        ctx.fillStyle = `rgba(255,255,255,${0.1 * bf})`;
+        roundRect(ctx, eBarX, eBarY, Math.max(0, eBarW * eHpPct), eBarH / 2, 4);
+        ctx.fillStyle = '#fff'; ctx.font = '12px monospace'; ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(s.battleEnemyDisplayHp)}/${e.maxHp}`, eBarX + eBarW, eBarY + eBarH + 16);
+
+        if (e.isBoss && e.maxPhase !== undefined && e.phase !== undefined && e.maxPhase > 1) {
+          ctx.fillStyle = '#fa0'; ctx.font = '14px monospace'; ctx.textAlign = 'left';
+          ctx.fillText(`Phase ${e.phase}/${e.maxPhase}`, eBoxX + 16, eBoxY + eBoxH + 14);
+        }
+
+        // --- Player platform (bottom-left) ---
+        const pPlatX = W * 0.28, pPlatY = arenaBot + H * 0.02;
+        ctx.fillStyle = `rgba(25,40,35,${bf * 0.6})`;
+        ctx.beginPath(); ctx.ellipse(pPlatX, pPlatY, 80, 18, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(40,70,55,${bf * 0.3})`;
+        ctx.beginPath(); ctx.ellipse(pPlatX, pPlatY - 2, 75, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Player sprite (from behind)
+        const pSprX = pPlatX, pSprY = pPlatY - 60;
+        ctx.globalAlpha = bf;
+        // Body
+        ctx.fillStyle = '#3a6a8a'; ctx.fillRect(pSprX - 14, pSprY + 8, 28, 24);
+        // Shoulders
+        ctx.fillStyle = '#4a7a9a'; ctx.fillRect(pSprX - 18, pSprY + 8, 36, 10);
+        // Head (back of head - dark hair)
+        ctx.fillStyle = '#2a1a0a'; ctx.fillRect(pSprX - 10, pSprY - 8, 20, 18);
+        ctx.fillStyle = '#1a0a00'; ctx.fillRect(pSprX - 8, pSprY - 6, 16, 14);
+        // Ears hint
+        ctx.fillStyle = '#e8c090'; ctx.fillRect(pSprX - 10, pSprY + 2, 3, 4);
+        ctx.fillRect(pSprX + 7, pSprY + 2, 3, 4);
+        // Cape hint
+        ctx.fillStyle = '#2a4a6a'; ctx.fillRect(pSprX - 12, pSprY + 14, 24, 8);
+        // Legs
+        ctx.fillStyle = '#2a2a3a';
+        ctx.fillRect(pSprX - 10, pSprY + 32, 8, 14);
+        ctx.fillRect(pSprX + 2, pSprY + 32, 8, 14);
+        // Sword on back
+        ctx.fillStyle = '#8a8a9a'; ctx.fillRect(pSprX + 16, pSprY - 4, 3, 30);
+        ctx.fillStyle = '#c8a848'; ctx.fillRect(pSprX + 14, pSprY + 12, 7, 4);
+
+        // Player flash overlay
+        if (s.battlePlayerFlash > 0) {
+          const pFlashAlpha = (s.battlePlayerFlash / 12) * 0.5 * bf;
+          ctx.fillStyle = `rgba(255,255,255,${pFlashAlpha})`;
+          ctx.fillRect(pSprX - 20, pSprY - 10, 40, 58);
+        }
+        ctx.globalAlpha = 1;
+
+        // --- Player info box (bottom-right of arena) ---
+        const pBoxX = W * 0.48, pBoxY = arenaBot - H * 0.08, pBoxW = W * 0.38, pBoxH = 80;
+        ctx.fillStyle = `rgba(15,20,30,${bf * 0.85})`; roundRect(ctx, pBoxX, pBoxY, pBoxW, pBoxH, 12);
+        ctx.strokeStyle = `rgba(180,200,220,${bf * 0.25})`; ctx.lineWidth = 2;
+        roundRectStroke(ctx, pBoxX, pBoxY, pBoxW, pBoxH, 12);
+
+        ctx.textAlign = 'left';
+        const pName = s.playerName || 'Hero';
+        ctx.fillStyle = '#8af'; ctx.font = 'bold 18px monospace';
+        ctx.fillText(pName, pBoxX + 16, pBoxY + 24);
+        ctx.fillStyle = '#8a8'; ctx.font = '14px monospace';
+        ctx.fillText(`Lv.${s.level}`, pBoxX + pBoxW - 70, pBoxY + 24);
+
+        // Player HP bar (smooth)
+        const pHpPct = Math.max(0, s.battlePlayerDisplayHp / s.maxHp);
+        const pBarX = pBoxX + 16, pBarY = pBoxY + 36, pBarW = pBoxW - 32, pBarH = 14;
+        const pHpColor = pHpPct > 0.5 ? '#4a8' : pHpPct > 0.25 ? '#ca8' : '#c44';
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, pBarX, pBarY, pBarW, pBarH, 4);
+        ctx.fillStyle = pHpColor; roundRect(ctx, pBarX, pBarY, Math.max(0, pBarW * pHpPct), pBarH, 4);
+        ctx.fillStyle = `rgba(255,255,255,${0.1 * bf})`;
+        roundRect(ctx, pBarX, pBarY, Math.max(0, pBarW * pHpPct), pBarH / 2, 4);
+
+        // Player MP bar
+        const pMpPct = Math.max(0, s.mp / s.maxMp);
+        const pMpY = pBarY + pBarH + 6;
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, pBarX, pMpY, pBarW, 10, 3);
+        ctx.fillStyle = '#48f'; roundRect(ctx, pBarX, pMpY, Math.max(0, pBarW * pMpPct), 10, 3);
+        ctx.fillStyle = `rgba(255,255,255,${0.08 * bf})`;
+        roundRect(ctx, pBarX, pMpY, Math.max(0, pBarW * pMpPct), 5, 3);
+
+        ctx.fillStyle = '#aaa'; ctx.font = '12px monospace'; ctx.textAlign = 'right';
+        ctx.fillText(`HP ${Math.round(s.battlePlayerDisplayHp)}/${s.maxHp}  MP ${s.mp}/${s.maxMp}`, pBoxX + pBoxW - 16, pBoxY + pBoxH - 6);
+
+        // --- Bottom panel ---
+        const panelH = H * 0.22, panelY = H - panelH;
+        ctx.fillStyle = `rgba(12,15,25,${bf * 0.92})`; ctx.fillRect(0, panelY, W, panelH);
+        ctx.strokeStyle = `rgba(120,160,180,${bf * 0.3})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, panelY); ctx.lineTo(W, panelY); ctx.stroke();
+
+        // Battle message (left side of panel)
+        const msgX = 24, msgY = panelY + 24;
+        ctx.textAlign = 'left';
+        const latestMsg = s.battleLog.length > 0 ? s.battleLog[s.battleLog.length - 1] : '';
+        ctx.fillStyle = '#ddd'; ctx.font = '18px monospace';
+
+        // Typewriter effect for current message
+        const twSpeed = 0.8;
+        const twLen = Math.min(latestMsg.length, Math.floor(s.time * twSpeed) % (latestMsg.length + 10));
+        ctx.fillText(latestMsg.substring(0, twLen), msgX, msgY);
+
+        // Battle menu (right side of panel)
         if (s.battleTurn === 'player' && !s.battleAnimating) {
-          const mx = W - 220, my = py_ - 10, mw = 200;
-          ctx.fillStyle = 'rgba(10,10,20,0.9)'; ctx.fillRect(mx, my, mw, 100);
+          const menuX = W * 0.5, menuW = W * 0.48;
+          const menuY = panelY + 8;
 
           if (s.battleSubMenu === '') {
-            const opts = ['Attack', 'Items', 'Potion', 'Flee'];
+            // 2x2 grid: FIGHT(top-left), SKILLS(top-right), ITEMS(bottom-left), FLEE(bottom-right)
+            const opts = [
+              { label: 'FIGHT', icon: '⚔️', row: 0, col: 0 },
+              { label: 'SKILLS', icon: '✨', row: 0, col: 1 },
+              { label: 'ITEMS', icon: '🧪', row: 1, col: 0 },
+              { label: 'FLEE', icon: '💨', row: 1, col: 1 },
+            ];
+            const optW = menuW / 2, optH = (panelH - 16) / 2;
             for (let i = 0; i < opts.length; i++) {
-              ctx.fillStyle = s.battleChoice === i ? '#4af' : '#aaa';
-              ctx.font = s.battleChoice === i ? 'bold 8px monospace' : '8px monospace';
+              const o = opts[i];
+              const ox = menuX + o.col * optW, oy = menuY + o.row * optH;
+              const sel = s.battleChoice === i;
+              if (sel) {
+                ctx.fillStyle = 'rgba(60,140,220,0.15)';
+                roundRect(ctx, ox + 4, oy + 2, optW - 8, optH - 4, 8);
+              }
               ctx.textAlign = 'left';
-              ctx.fillText(`${s.battleChoice === i ? '>' : ' '} ${opts[i]}`, mx + 12, my + 20 + i * 20);
+              ctx.fillStyle = sel ? '#6cf' : '#aaa';
+              ctx.font = sel ? 'bold 20px monospace' : '20px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              ctx.fillText(`${cursor}${o.icon} ${o.label}`, ox + 14, oy + optH / 2 + 6);
             }
           } else if (s.battleSubMenu === 'skills') {
-            ctx.fillStyle = '#8af'; ctx.font = '7px monospace'; ctx.textAlign = 'left'; ctx.fillText('> Skills', mx + 12, my + 14);
+            const optH = Math.min(36, (panelH - 20) / Math.max(1, s.learnedAbilities.length + 1));
             for (let i = 0; i < s.learnedAbilities.length; i++) {
               const ab = getAbility(s.learnedAbilities[i]);
-              ctx.fillStyle = s.battleSubChoice === i ? '#4f4' : '#aaa';
-              ctx.font = s.battleSubChoice === i ? 'bold 7px monospace' : '7px monospace';
-              ctx.fillText(`${s.battleSubChoice === i ? '>' : ' '} ${ab.icon} ${ab.name} (${ab.power})`, mx + 12, my + 32 + i * 14);
+              const oy = menuY + 4 + i * optH;
+              const sel = s.battleSubChoice === i;
+              if (sel) {
+                ctx.fillStyle = 'rgba(60,220,100,0.12)';
+                roundRect(ctx, menuX + 4, oy, menuW - 8, optH - 2, 6);
+              }
+              ctx.textAlign = 'left';
+              ctx.fillStyle = sel ? '#4f4' : '#aaa';
+              ctx.font = sel ? 'bold 18px monospace' : '18px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              const mpColor = ab.cost > s.mp ? '#c66' : '#88f';
+              ctx.fillText(`${cursor}${ab.icon} ${ab.name}`, menuX + 14, oy + optH - 8);
+              ctx.fillStyle = mpColor; ctx.font = '14px monospace'; ctx.textAlign = 'right';
+              ctx.fillText(`${ab.cost}MP  PWR:${ab.power}`, menuX + menuW - 14, oy + optH - 8);
             }
-            ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.fillText('Q back', mx + 12, my + 90);
+            // Back option
+            const backY = menuY + 4 + s.learnedAbilities.length * optH;
+            ctx.fillStyle = '#666'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
+            ctx.fillText('  ◂ Back (Q)', menuX + 14, backY + optH - 6);
+          } else if (s.battleSubMenu === 'items') {
+            const optH = 36;
+            const oy = menuY + 4;
+            const potionCount = s.inventory.filter(i => i.id === 'potion').length;
+            ctx.textAlign = 'left';
+            if (potionCount > 0) {
+              const sel = s.battleSubChoice === 0;
+              ctx.fillStyle = sel ? 'rgba(60,220,100,0.12)' : 'transparent';
+              if (sel) roundRect(ctx, menuX + 4, oy, menuW - 8, optH - 2, 6);
+              ctx.fillStyle = sel ? '#4f4' : '#aaa';
+              ctx.font = sel ? 'bold 18px monospace' : '18px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              ctx.fillText(`${cursor}🧪 Health Potion`, menuX + 14, oy + optH - 8);
+              ctx.fillStyle = '#8a8'; ctx.font = '14px monospace'; ctx.textAlign = 'right';
+              ctx.fillText(`x${potionCount}`, menuX + menuW - 14, oy + optH - 8);
+            } else {
+              ctx.fillStyle = '#666'; ctx.font = '18px monospace';
+              ctx.fillText('  No items...', menuX + 14, oy + optH - 8);
+            }
+            const backY = oy + optH;
+            ctx.fillStyle = '#666'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
+            ctx.fillText('  ◂ Back (Q)', menuX + 14, backY + optH - 6);
           }
         }
 
         if (s.battleTurn === 'enemy' && !s.battleAnimating) {
-          ctx.fillStyle = '#c66'; ctx.font = '9px monospace'; ctx.textAlign = 'center'; ctx.fillText('Enemy is acting...', W / 2, py_ + 50);
+          const dots = '.'.repeat(1 + Math.floor(s.time * 0.04) % 3);
+          ctx.fillStyle = '#c66'; ctx.font = '18px monospace'; ctx.textAlign = 'left';
+          ctx.fillText(`Enemy is acting${dots}`, 24, panelY + 24);
+        }
+
+        // Defeat overlay
+        if (s.hp <= 0 && s.battleActive) {
+          ctx.fillStyle = `rgba(0,0,0,${0.6 + Math.sin(s.time * 0.03) * 0.1})`; ctx.fillRect(0, 0, W, H);
+          ctx.fillStyle = '#c66'; ctx.font = 'bold 28px monospace'; ctx.textAlign = 'center';
+          ctx.fillText('You have been defeated...', W / 2, H / 2);
         }
       }
+
+      // --- Battle transition flash ---
+      if (s.battleFade > 0 && s.battleActive) { ctx.fillStyle = `rgba(255,255,255,${(1 - s.battleFade) * 0.3})`; ctx.fillRect(0, 0, W, H); }
 
       // --- Inventory overlay ---
       if (s.inventoryOpen) {
         ctx.fillStyle = 'rgba(0,0,0,0.88)'; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#ddd'; ctx.font = '10px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('INVENTORY', W / 2, 30);
+        ctx.fillStyle = '#ddd'; ctx.font = '20px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('INVENTORY', W / 2, 40);
 
-        ctx.fillStyle = '#888'; ctx.font = '7px monospace';
-        ctx.fillText(`[Tab: ${s.inventoryTab === 0 ? 'Items' : 'Quests'}]`, W / 2, 44);
+        ctx.fillStyle = '#888'; ctx.font = '14px monospace';
+        ctx.fillText(`[Tab: ${s.inventoryTab === 0 ? 'Items' : 'Quests'}]`, W / 2, 60);
 
         if (s.inventoryTab === 0) {
-          ctx.fillStyle = '#aaa'; ctx.font = '7px monospace'; ctx.textAlign = 'left';
-          const startY = 60;
+          ctx.fillStyle = '#aaa'; ctx.font = '14px monospace'; ctx.textAlign = 'left';
+          const startY = 80;
           if (s.inventory.length === 0) { ctx.fillText('(empty)', 40, startY); }
           for (let i = 0; i < Math.min(s.inventory.length, 15); i++) {
             const item = s.inventory[i];
             ctx.fillStyle = s.inventoryChoice === i ? 'rgba(80,170,255,0.3)' : 'transparent';
-            ctx.fillRect(30, startY + i * 18, W - 60, 17);
+            ctx.fillRect(30, startY + i * 32, W - 60, 30);
             ctx.fillStyle = s.inventoryChoice === i ? '#4af' : '#bbb';
-            ctx.font = s.inventoryChoice === i ? 'bold 8px monospace' : '8px monospace';
-            ctx.fillText(`${item.icon || '📦'} ${item.name}`, 40, startY + i * 18 + 12);
-            if (item.id === 'potion') { ctx.fillStyle = '#484'; ctx.font = '6px monospace'; ctx.fillText('[E] use', W - 80, startY + i * 18 + 12); }
+            ctx.font = s.inventoryChoice === i ? 'bold 16px monospace' : '16px monospace';
+            ctx.fillText(`${item.icon || '📦'} ${item.name}`, 40, startY + i * 32 + 22);
+            if (item.id === 'potion') { ctx.fillStyle = '#484'; ctx.font = '12px monospace'; ctx.fillText('[E] use', W - 120, startY + i * 32 + 22); }
           }
-          ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.textAlign = 'center'; ctx.fillText('E=use  Q=close  Tab=switch', W / 2, H - 20);
+          ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.fillText('E=use  Q=close  Tab=switch', W / 2, H - 20);
         } else {
-          // Quests tab
-          ctx.fillStyle = '#aaa'; ctx.font = '7px monospace'; ctx.textAlign = 'left';
+          ctx.fillStyle = '#aaa'; ctx.font = '14px monospace'; ctx.textAlign = 'left';
           for (let i = 0; i < s.quests.length; i++) {
             const q = s.quests[i];
             ctx.fillStyle = q.completed ? '#484' : '#da8';
-            ctx.fillText(`${q.completed ? '✓' : '○'} ${q.name}`, 40, 60 + i * 30);
+            ctx.fillText(`${q.completed ? '✓' : '○'} ${q.name}`, 40, 80 + i * 50);
             ctx.fillStyle = q.completed ? '#464' : '#986';
-            ctx.font = '6px monospace';
-            ctx.fillText(q.desc, 40, 60 + i * 30 + 12);
+            ctx.font = '12px monospace';
+            ctx.fillText(q.desc, 40, 80 + i * 50 + 20);
             for (const o of q.objectives) {
-              ctx.fillText(`  ${o.current}/${o.count}`, 40, 60 + i * 30 + 24);
+              ctx.fillText(`  ${o.current}/${o.count}`, 40, 80 + i * 50 + 38);
             }
           }
-          ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.textAlign = 'center'; ctx.fillText('Q=close  Tab=switch', W / 2, H - 20);
+          ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.fillText('Q=close  Tab=switch', W / 2, H - 20);
         }
       }
 
       // --- Craft overlay ---
       if (s.craftOpen) {
         ctx.fillStyle = 'rgba(0,0,0,0.88)'; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#ddd'; ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillText('CRAFTING', W / 2, 30);
-        ctx.fillStyle = '#aaa'; ctx.font = '7px monospace'; ctx.textAlign = 'left';
+        ctx.fillStyle = '#ddd'; ctx.font = '20px monospace'; ctx.textAlign = 'center'; ctx.fillText('CRAFTING', W / 2, 40);
+        ctx.fillStyle = '#aaa'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
         for (let i = 0; i < RECIPES.length; i++) {
           const r = RECIPES[i]; const canCraft = r.ingredients.every(ing => s.inventory.filter(x => x.id === ing.itemId).length >= ing.count);
           ctx.fillStyle = s.craftChoice === i ? 'rgba(80,170,255,0.3)' : 'transparent';
-          ctx.fillRect(30, 50 + i * 44, W - 60, 42);
+          ctx.fillRect(30, 60 + i * 70, W - 60, 66);
           ctx.fillStyle = s.craftChoice === i ? '#4af' : canCraft ? '#4a4' : '#666';
-          ctx.font = s.craftChoice === i ? 'bold 8px monospace' : '8px monospace';
-          ctx.fillText(`${r.icon} ${r.name}`, 40, 50 + i * 44 + 14);
+          ctx.font = s.craftChoice === i ? 'bold 16px monospace' : '16px monospace';
+          ctx.fillText(`${r.icon} ${r.name}`, 40, 60 + i * 70 + 24);
           ctx.fillStyle = canCraft ? '#4a4' : '#866';
-          ctx.font = '6px monospace';
+          ctx.font = '12px monospace';
           const parts = r.ingredients.map(ing => `${ing.count}x ${ing.itemId} (${s.inventory.filter(x => x.id === ing.itemId).length})`).join(' ');
-          ctx.fillText(parts, 40, 50 + i * 44 + 28);
-          if (canCraft) { ctx.fillStyle = '#484'; ctx.font = '6px monospace'; ctx.fillText('[E] craft', W - 80, 50 + i * 44 + 14); }
+          ctx.fillText(parts, 40, 60 + i * 70 + 44);
+          if (canCraft) { ctx.fillStyle = '#484'; ctx.font = '12px monospace'; ctx.fillText('[E] craft', W - 120, 60 + i * 70 + 24); }
         }
-        ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.textAlign = 'center'; ctx.fillText('E=craft  Q=close', W / 2, H - 20);
+        ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.fillText('E=craft  Q=close', W / 2, H - 20);
       }
 
       // --- Level up popup ---
       if (s.showLevelUp) {
-        ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillRect(W / 2 - 120, H / 2 - 60, 240, 120);
-        ctx.fillStyle = '#ff0'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('LEVEL UP!', W / 2, H / 2 - 32);
-        ctx.fillStyle = '#fff'; ctx.font = '9px monospace';
-        ctx.fillText(`You are now Lv.${s.level}!`, W / 2, H / 2 - 12);
-        ctx.fillStyle = '#aaa'; ctx.font = '7px monospace';
-        ctx.fillText('HP+8  ATK+2  DEF+1  MP+3', W / 2, H / 2 + 10);
-        ctx.fillStyle = '#4af'; ctx.font = '7px monospace';
-        ctx.fillText(`+${s.sp} skill point${s.sp > 1 ? 's' : ''} available!`, W / 2, H / 2 + 28);
-        ctx.fillStyle = '#888'; ctx.font = '7px monospace';
+        ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillRect(W / 2 - 200, H / 2 - 100, 400, 200);
+        ctx.fillStyle = '#ff0'; ctx.font = 'bold 24px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('LEVEL UP!', W / 2, H / 2 - 60);
+        ctx.fillStyle = '#fff'; ctx.font = '18px monospace';
+        ctx.fillText(`You are now Lv.${s.level}!`, W / 2, H / 2 - 28);
+        ctx.fillStyle = '#aaa'; ctx.font = '14px monospace';
+        ctx.fillText('HP+8  ATK+2  DEF+1  MP+3', W / 2, H / 2 + 4);
+        ctx.fillStyle = '#4af'; ctx.font = '14px monospace';
+        ctx.fillText(`+${s.sp} skill point${s.sp > 1 ? 's' : ''} available!`, W / 2, H / 2 + 32);
+        ctx.fillStyle = '#888'; ctx.font = '14px monospace';
         const blink = Math.sin(s.time * 0.08) > 0;
-        if (blink) ctx.fillText('Press E to continue', W / 2, H / 2 + 50);
+        if (blink) ctx.fillText('Press E to continue', W / 2, H / 2 + 72);
         if (s.ePressed) s.showLevelUp = false;
       }
 
       // --- Menu overlay ---
       if (s.menuOpen) {
         ctx.fillStyle = 'rgba(0,0,0,0.88)'; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#ddd'; ctx.font = '10px monospace'; ctx.textAlign = 'center'; ctx.fillText('MENU', W / 2, 30);
-        ctx.fillStyle = '#aaa'; ctx.font = '8px monospace'; ctx.textAlign = 'left';
+        ctx.fillStyle = '#ddd'; ctx.font = '20px monospace'; ctx.textAlign = 'center'; ctx.fillText('MENU', W / 2, 40);
+        ctx.fillStyle = '#aaa'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
         const items = [
           `Level: ${s.level}  XP: ${s.xp}/${s.xpToNext}`,
           `HP: ${s.hp}/${s.maxHp}  MP: ${s.mp}/${s.maxMp}`,
@@ -1443,88 +1695,85 @@ export default function AdventurePage() {
         ];
         for (let i = 0; i < items.length; i++) {
           ctx.fillStyle = i >= 7 ? '#8a8' : '#ccc';
-          ctx.fillText(items[i], 40, 60 + i * 22);
+          ctx.fillText(items[i], 40, 80 + i * 36);
         }
-        ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.textAlign = 'center'; ctx.fillText('K=Skills  M=close', W / 2, H - 20);
+        ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.fillText('K=Skills  M=close', W / 2, H - 20);
       }
 
       // --- Skills overlay ---
       if (s.skillsOpen) {
         ctx.fillStyle = 'rgba(0,0,0,0.88)'; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = '#ddd'; ctx.font = '10px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('SKILLS', W / 2, 30);
-        ctx.fillStyle = '#4af'; ctx.font = '8px monospace';
-        ctx.fillText(`Skill Points: ${s.sp}`, W / 2, 48);
-        const sy = 72;
+        ctx.fillStyle = '#ddd'; ctx.font = '20px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('SKILLS', W / 2, 40);
+        ctx.fillStyle = '#4af'; ctx.font = '16px monospace';
+        ctx.fillText(`Skill Points: ${s.sp}`, W / 2, 64);
+        const sy = 90;
         for (let i = 0; i < ABILITIES.length; i++) {
           const ab = ABILITIES[i], learned = s.learnedAbilities.includes(ab.id), canLearn = !learned && s.sp > 0;
           ctx.fillStyle = s.skillChoice === i ? 'rgba(80,170,255,0.25)' : 'transparent';
-          ctx.fillRect(40, sy + i * 50, W - 80, 46);
+          ctx.fillRect(40, sy + i * 80, W - 80, 76);
           ctx.textAlign = 'left';
           ctx.fillStyle = s.skillChoice === i ? '#4af' : learned ? '#4a4' : '#aaa';
-          ctx.font = s.skillChoice === i ? 'bold 9px monospace' : '9px monospace';
-          ctx.fillText(`${ab.icon} ${ab.name}${learned ? ' ✓' : ''}`, 50, sy + i * 50 + 16);
-          ctx.fillStyle = '#888'; ctx.font = '7px monospace';
-          ctx.fillText(ab.desc, 50, sy + i * 50 + 30);
-          ctx.fillStyle = '#666'; ctx.font = '6px monospace';
-          ctx.fillText(`MP: ${ab.cost}  Power: ${ab.power}  Type: ${ab.type}`, 50, sy + i * 50 + 42);
-          if (canLearn) { ctx.fillStyle = '#4af'; ctx.font = '6px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] Learn (1 SP)', W - 50, sy + i * 50 + 16); }
-          if (learned) { ctx.fillStyle = '#484'; ctx.font = '6px monospace'; ctx.textAlign = 'right'; ctx.fillText('LEARNED', W - 50, sy + i * 50 + 16); }
+          ctx.font = s.skillChoice === i ? 'bold 18px monospace' : '18px monospace';
+          ctx.fillText(`${ab.icon} ${ab.name}${learned ? ' ✓' : ''}`, 50, sy + i * 80 + 26);
+          ctx.fillStyle = '#888'; ctx.font = '14px monospace';
+          ctx.fillText(ab.desc, 50, sy + i * 80 + 48);
+          ctx.fillStyle = '#666'; ctx.font = '12px monospace';
+          ctx.fillText(`MP: ${ab.cost}  Power: ${ab.power}  Type: ${ab.type}`, 50, sy + i * 80 + 66);
+          if (canLearn) { ctx.fillStyle = '#4af'; ctx.font = '12px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] Learn (1 SP)', W - 50, sy + i * 80 + 26); }
+          if (learned) { ctx.fillStyle = '#484'; ctx.font = '12px monospace'; ctx.textAlign = 'right'; ctx.fillText('LEARNED', W - 50, sy + i * 80 + 26); }
         }
-        ctx.fillStyle = '#666'; ctx.font = '6px monospace'; ctx.textAlign = 'center';
+        ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
         ctx.fillText('E=learn  Q=close', W / 2, H - 20);
       }
 
       // --- Dialogue ---
       if (s.dialogueActive) {
-        const bh = 80, bw = Math.min(W - 80, 500), bx = (W - bw) / 2, by = H - bh - 30;
+        const bh = 140, bw = Math.min(W - 80, 600), bx = (W - bw) / 2, by = H - bh - 40;
         ctx.fillStyle = 'rgba(10,10,20,0.92)'; ctx.fillRect(bx, by, bw, bh);
         ctx.strokeStyle = 'rgba(180,200,220,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, bh);
-        if (s.dialogueNpc) { ctx.fillStyle = '#8ab8d0'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'left'; ctx.fillText(s.dialogueNpc, bx + 12, by + 16); }
-        ctx.fillStyle = '#c8d8e0'; ctx.font = '8px monospace'; ctx.textAlign = 'left';
+        if (s.dialogueNpc) { ctx.fillStyle = '#8ab8d0'; ctx.font = 'bold 16px monospace'; ctx.textAlign = 'left'; ctx.fillText(s.dialogueNpc, bx + 16, by + 26); }
+        ctx.fillStyle = '#c8d8e0'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
         const line = s.dialogueLines[s.dialogueIndex] || '';
         const words = line.split(' ');
-        let lx = bx + 12, ly = by + (s.dialogueNpc ? 32 : 20);
-        for (const word of words) { const w = word.length * 5; if (lx + w > bx + bw - 20) { lx = bx + 12; ly += 14; } ctx.fillText(word, lx, ly); lx += w + 6; }
-        if (s.dialogueIndex < s.dialogueLines.length - 1 || s.cutsceneActive) { if (Math.sin(s.time * 0.1) > 0) { ctx.fillStyle = '#8ab8d0'; ctx.font = '8px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E]', bx + bw - 14, by + bh - 8); } }
-        else { ctx.fillStyle = '#8ab8d0'; ctx.font = '8px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] close', bx + bw - 14, by + bh - 8); }
+        let lx = bx + 16, ly = by + (s.dialogueNpc ? 52 : 32);
+        for (const word of words) { const w = word.length * 10; if (lx + w > bx + bw - 24) { lx = bx + 16; ly += 26; } ctx.fillText(word, lx, ly); lx += w + 12; }
+        if (s.dialogueIndex < s.dialogueLines.length - 1 || s.cutsceneActive) { if (Math.sin(s.time * 0.1) > 0) { ctx.fillStyle = '#8ab8d0'; ctx.font = '16px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E]', bx + bw - 16, by + bh - 14); } }
+        else { ctx.fillStyle = '#8ab8d0'; ctx.font = '16px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] close', bx + bw - 16, by + bh - 14); }
       }
 
       // --- Sign ---
       if (s.signActive) {
-        const bh = 80, bw = Math.min(W - 80, 400), bx = (W - bw) / 2, by = (H - bh) / 2;
+        const bh = 140, bw = Math.min(W - 80, 500), bx = (W - bw) / 2, by = (H - bh) / 2;
         ctx.fillStyle = 'rgba(20,15,10,0.92)'; ctx.fillRect(bx, by, bw, bh);
         ctx.strokeStyle = 'rgba(200,180,140,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, bh);
-        ctx.fillStyle = '#c8b890'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
+        ctx.fillStyle = '#c8b890'; ctx.font = '16px monospace'; ctx.textAlign = 'center';
         const lines = s.signText.split('\n');
-        for (let i = 0; i < lines.length; i++) ctx.fillText(lines[i], bx + bw / 2, by + 28 + i * 18);
-        if (Math.sin(s.time * 0.1) > 0) { ctx.fillStyle = '#c8b890'; ctx.font = '8px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] close', bx + bw - 14, by + bh - 8); }
+        for (let i = 0; i < lines.length; i++) ctx.fillText(lines[i], bx + bw / 2, by + 40 + i * 32);
+        if (Math.sin(s.time * 0.1) > 0) { ctx.fillStyle = '#c8b890'; ctx.font = '16px monospace'; ctx.textAlign = 'right'; ctx.fillText('[E] close', bx + bw - 16, by + bh - 14); }
       }
 
       // --- Shop ---
       if (s.shopActive) {
-        const sw = Math.min(W - 80, 400), sh = Math.min(H - 80, 300), sx_ = (W - sw) / 2, sy_ = (H - sh) / 2;
+        const sw = Math.min(W - 80, 500), sh = Math.min(H - 80, 400), sx_ = (W - sw) / 2, sy_ = (H - sh) / 2;
         ctx.fillStyle = 'rgba(15,12,20,0.95)'; ctx.fillRect(sx_, sy_, sw, sh);
         ctx.strokeStyle = 'rgba(200,180,100,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(sx_, sy_, sw, sh);
-        ctx.fillStyle = '#d8c878'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'left'; ctx.fillText(`${s.dialogueNpc}'s Wares`, sx_ + 14, sy_ + 20);
-        ctx.fillStyle = '#889898'; ctx.font = '7px monospace'; ctx.fillText(`Gold: ${s.playerGold}`, sx_ + sw - 80, sy_ + 20);
-        let iy = sy_ + 38;
+        ctx.fillStyle = '#d8c878'; ctx.font = 'bold 18px monospace'; ctx.textAlign = 'left'; ctx.fillText(`${s.dialogueNpc}'s Wares`, sx_ + 16, sy_ + 30);
+        ctx.fillStyle = '#889898'; ctx.font = '14px monospace'; ctx.fillText(`Gold: ${s.playerGold}`, sx_ + sw - 140, sy_ + 30);
+        let iy = sy_ + 54;
         for (let i = 0; i < s.shopItems.length; i++) {
           const item = s.shopItems[i], sel = i === s.shopSelected;
-          ctx.fillStyle = sel ? 'rgba(100,180,200,0.2)' : 'transparent'; ctx.fillRect(sx_ + 8, iy, sw - 16, 28);
-          if (sel) { ctx.strokeStyle = 'rgba(100,180,200,0.5)'; ctx.lineWidth = 1; ctx.strokeRect(sx_ + 8, iy, sw - 16, 28); }
-          ctx.font = '14px monospace'; ctx.textAlign = 'left'; ctx.fillText(item.icon, sx_ + 16, iy + 20);
-          ctx.font = '8px monospace'; ctx.fillStyle = '#c8d8e0'; ctx.fillText(item.name, sx_ + 40, iy + 14);
-          ctx.fillStyle = sel ? '#e8d878' : '#889898'; ctx.fillText(`${item.price}g`, sx_ + 40, iy + 24);
+          ctx.fillStyle = sel ? 'rgba(100,180,200,0.2)' : 'transparent'; ctx.fillRect(sx_ + 10, iy, sw - 20, 44);
+          if (sel) { ctx.strokeStyle = 'rgba(100,180,200,0.5)'; ctx.lineWidth = 1; ctx.strokeRect(sx_ + 10, iy, sw - 20, 44); }
+          ctx.font = '24px monospace'; ctx.textAlign = 'left'; ctx.fillText(item.icon, sx_ + 20, iy + 32);
+          ctx.font = '16px monospace'; ctx.fillStyle = '#c8d8e0'; ctx.fillText(item.name, sx_ + 52, iy + 22);
+          ctx.fillStyle = sel ? '#e8d878' : '#889898'; ctx.fillText(`${item.price}g`, sx_ + 52, iy + 40);
           const owned = s.inventory.filter(inv => inv.id === item.id).length;
-          ctx.fillStyle = '#687878'; ctx.font = '7px monospace'; ctx.textAlign = 'right'; ctx.fillText(`x${owned}`, sx_ + sw - 20, iy + 14);
-          iy += 32;
+          ctx.fillStyle = '#687878'; ctx.font = '14px monospace'; ctx.textAlign = 'right'; ctx.fillText(`x${owned}`, sx_ + sw - 24, iy + 22);
+          iy += 50;
         }
-        ctx.fillStyle = 'rgba(200,200,200,0.4)'; ctx.font = '7px monospace'; ctx.textAlign = 'center'; ctx.fillText('E buy  |  arrow keys  |  Q close', sx_ + sw / 2, sy_ + sh - 12);
+        ctx.fillStyle = 'rgba(200,200,200,0.4)'; ctx.font = '14px monospace'; ctx.textAlign = 'center'; ctx.fillText('E buy  |  arrow keys  |  Q close', sx_ + sw / 2, sy_ + sh - 16);
       }
-
-      // --- Battle transition flash ---
-      if (s.battleFade > 0 && s.battleActive) { ctx.fillStyle = `rgba(255,255,255,${(1 - s.battleFade) * 0.3})`; ctx.fillRect(0, 0, W, H); }
 
       requestAnimationFrame(loop);
     }
@@ -1626,14 +1875,14 @@ export default function AdventurePage() {
 
       {!menuVisible && (
         <>
-          <div className="fixed top-4 left-4 z-10 px-3 py-1.5 bg-black/60 rounded text-xs text-white/60 font-mono">
+          <div className="fixed top-4 left-4 z-10 px-4 py-2 bg-black/60 rounded text-sm text-white/60 font-mono">
             WASD · E interact · I inv · C craft · K skills · M menu · L load
           </div>
-          <div className="fixed bottom-4 left-4 z-10 flex gap-3 text-[10px] text-white/30 font-mono">
+          <div className="fixed bottom-4 left-4 z-10 flex gap-3 text-sm text-white/30 font-mono">
             <span>Lv.{s.level}</span><span>HP {s.hp}/{s.maxHp}</span><span>Gold {s.playerGold}</span><span>{s.isRaining ? 'Rain' : 'Clear'}</span>
           </div>
           {s.shopActive && (
-            <div className="fixed bottom-4 right-4 z-10 flex gap-2 text-[10px] text-white/40 font-mono">
+            <div className="fixed bottom-4 right-4 z-10 flex gap-2 text-sm text-white/40 font-mono">
               <button className="px-2 py-1 bg-black/60 rounded hover:bg-black/80" onClick={() => { if (s.shopSelected > 0) s.shopSelected--; }}>▲</button>
               <button className="px-2 py-1 bg-black/60 rounded hover:bg-black/80" onClick={() => { if (s.shopSelected < s.shopItems.length - 1) s.shopSelected++; }}>▼</button>
               <button className="px-3 py-1 bg-black/60 rounded hover:bg-black/80" onClick={() => buyItemFromComponent(s.shopSelected)}>Buy</button>
