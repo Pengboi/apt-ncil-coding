@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import HoloCard from "./components/HoloCard";
+import CardPriceDetail from "./components/CardPriceDetail";
 
 interface Card {
   id: string;
@@ -25,10 +26,11 @@ interface SetInfo {
 interface TCGCardProps {
   card: Card;
   index: number;
+  onClick: () => void;
 }
 
 // Individual TCG Card with 3D holographic effect
-function TCGCard({ card, index }: TCGCardProps) {
+function TCGCard({ card, index, onClick }: TCGCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 });
   const [glowPosition, setGlowPosition] = useState({ x: 50, y: 50 });
@@ -71,7 +73,7 @@ function TCGCard({ card, index }: TCGCardProps) {
   return (
     <div
       ref={cardRef}
-      className="relative group"
+      className="relative group cursor-pointer"
       style={{
         transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
         transformStyle: "preserve-3d",
@@ -81,6 +83,7 @@ function TCGCard({ card, index }: TCGCardProps) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
+      onClick={onClick}
     >
       {/* Holographic overlay effect */}
       <div
@@ -195,6 +198,7 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
   const [error, setError] = useState<string | null>(null);
   const [loadingPrices, setLoadingPrices] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 50);
@@ -458,7 +462,12 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
                 {/* Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                   {group.cards.map((card, index) => (
-                    <TCGCard key={card.id} card={card} index={index} />
+                    <TCGCard 
+                      key={card.id} 
+                      card={card} 
+                      index={index} 
+                      onClick={() => setSelectedCard(card)}
+                    />
                   ))}
                 </div>
               </div>
@@ -474,6 +483,14 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
               Fetching prices...
             </span>
           </div>
+        )}
+
+        {/* Card Price Detail Modal */}
+        {selectedCard && (
+          <CardPriceDetail
+            card={selectedCard}
+            onClose={() => setSelectedCard(null)}
+          />
         )}
       </div>
     </div>
