@@ -12,6 +12,7 @@ import {
   XP_BASE,
   XP_MULTIPLIER,
   WEAPONS,
+  WEAPON_PICKUP_AMMO,
 } from '../constants';
 
 export class Player implements IPlayer {
@@ -358,11 +359,42 @@ export class Player implements IPlayer {
   
   unlockWeapon(weaponId: string): boolean {
     const weapon = this.weapons.find(w => w.id === weaponId);
-    if (weapon && !weapon.isUnlocked) {
+    if (!weapon) return false;
+
+    const pickupAmmo = WEAPON_PICKUP_AMMO[weaponId] || weapon.maxAmmo;
+
+    if (!weapon.isUnlocked) {
       weapon.isUnlocked = true;
+      weapon.ammo = pickupAmmo;
+      return true;
+    }
+
+    weapon.ammo = Math.min(weapon.maxAmmo, weapon.ammo + pickupAmmo);
+    return true;
+  }
+
+  removeWeaponIfEmpty(weaponId: string): boolean {
+    const weapon = this.weapons.find(w => w.id === weaponId);
+    if (!weapon || weapon.id === 'pistol') return false;
+    if (weapon.ammo <= 0) {
+      weapon.isUnlocked = false;
+      weapon.ammo = 0;
+      if (this.weapons[this.currentWeaponIndex]?.id === weaponId) {
+        this.switchToFirstAvailableWeapon();
+      }
       return true;
     }
     return false;
+  }
+
+  switchToFirstAvailableWeapon(): void {
+    for (let i = 0; i < this.weapons.length; i++) {
+      if (this.weapons[i].isUnlocked) {
+        this.currentWeaponIndex = i;
+        return;
+      }
+    }
+    this.currentWeaponIndex = 0;
   }
   
   // ----------------------------------------------------------

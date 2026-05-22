@@ -219,13 +219,6 @@ export const cityArea: Area = {
   
   connections: [
     {
-      toAreaId: 'bootcamp',
-      fromX: 50,
-      fromY: 700,
-      toSpawnX: 2300,
-      toSpawnY: 500,
-    },
-    {
       toAreaId: 'bunker',
       fromX: 2950,
       fromY: 700,
@@ -268,9 +261,9 @@ export const bunkerArea: Area = {
     createPlatform(1970, 600, 200, 50), // 40px gap
     
     // Lower path continues to exit
-    createPlatform(2210, 580, 180, 50), // Step up slightly
-    createPlatform(2430, 560, 200, 50), // 40px gap - rising
-    createPlatform(2670, 560, 130, 50), // 40px gap - exit platform
+    createPlatform(2210, 550, 180, 50), // Step up
+    createPlatform(2430, 520, 200, 50), // 40px gap - rising
+    createPlatform(2670, 500, 130, 50), // 40px gap - near exit level
     
     // ============================================================
     // UPPER CATWALK PATH - Alternative high route
@@ -357,20 +350,13 @@ export const bunkerArea: Area = {
   ],
   
   savePoints: [
-    createSavePoint(50, 440, 'bunker'),      // Start save
+    createSavePoint(100, 440, 'bunker'),      // Start save
     createSavePoint(1000, 560, 'bunker'),    // Lower tunnel midpoint
     createSavePoint(1350, 300, 'bunker'),    // Upper catwalk
     createSavePoint(2300, 520, 'bunker'),    // Pre-exit
   ],
   
   connections: [
-    {
-      toAreaId: 'city',
-      fromX: 50,
-      fromY: 500,
-      toSpawnX: 2900,
-      toSpawnY: 500,
-    },
     {
       toAreaId: 'mountain',
       fromX: 2770,
@@ -517,13 +503,6 @@ export const mountainArea: Area = {
   ],
   
   connections: [
-    {
-      toAreaId: 'bunker',
-      fromX: 50,
-      fromY: 600,
-      toSpawnX: 2770,
-      toSpawnY: 500,
-    },
     {
       toAreaId: 'hq',
       fromX: 3150,
@@ -674,15 +653,8 @@ export const hqArea: Area = {
   
   connections: [
     {
-      toAreaId: 'mountain',
-      fromX: 50,
-      fromY: 600,
-      toSpawnX: 3040,
-      toSpawnY: 500,
-    },
-    {
       toAreaId: 'skyfortress',
-      fromX: 3040,
+      fromX: 2380,
       fromY: 520,
       toSpawnX: 100,
       toSpawnY: 500,
@@ -813,13 +785,6 @@ export const skyFortressArea: Area = {
   ],
   
   connections: [
-    {
-      toAreaId: 'hq',
-      fromX: 50,
-      fromY: 600,
-      toSpawnX: 2760,
-      toSpawnY: 500,
-    },
     {
       toAreaId: 'volcanolab',
       fromX: 2950,
@@ -959,13 +924,6 @@ export const volcanoLabArea: Area = {
   
   connections: [
     {
-      toAreaId: 'skyfortress',
-      fromX: 50,
-      fromY: 600,
-      toSpawnX: 2900,
-      toSpawnY: 450,
-    },
-    {
       toAreaId: 'voidcore',
       fromX: 3150,
       fromY: 470,
@@ -1097,17 +1055,11 @@ export const voidCoreArea: Area = {
     createSavePoint(150, 540, 'voidcore'),   // Moved forward from entrance
     createSavePoint(780, 360, 'voidcore'),
     createSavePoint(1380, 180, 'voidcore'),
-    createSavePoint(2240, 350, 'voidcore'),  // Pre-boss save
+    createSavePoint(2350, 340, 'voidcore'),  // Pre-boss save (on arena platform)
   ],
   
   connections: [
-    {
-      toAreaId: 'volcanolab',
-      fromX: 50,
-      fromY: 600,
-      toSpawnX: 3100,
-      toSpawnY: 470,
-    },
+    // No back exit - no going back from the final dimension
     // No exit - boss must be defeated
   ],
   

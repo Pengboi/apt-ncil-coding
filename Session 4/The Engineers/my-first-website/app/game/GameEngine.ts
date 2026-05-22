@@ -3,7 +3,7 @@ import { Bullet } from './entities/Bullet';
 import { Camera } from './world/Camera';
 import { Area, InputState, GameScreen, SaveData, Enemy } from './types';
 import { getStartingArea, getAreaById, ALL_AREAS } from './data/areas';
-import { CANVAS_WIDTH, CANVAS_HEIGHT, DT, COLORS } from './constants';
+import { CANVAS_WIDTH, CANVAS_HEIGHT, DT, COLORS, WEAPON_PICKUP_AMMO } from './constants';
 
 // ============================================================
 // GAME ENGINE - Core Game Loop & State Management
@@ -145,8 +145,14 @@ export class GameEngine {
   
   handleMenuClick(mouseX: number, mouseY: number): void {
     if (this.screen === 'victory') {
-      // Click anywhere on victory screen returns to menu
-      this.returnToMenu();
+      const btnWidth = 250;
+      const btnHeight = 50;
+      const btnX = CANVAS_WIDTH / 2 - btnWidth / 2;
+      const btnY = CANVAS_HEIGHT - 120;
+      if (mouseX >= btnX && mouseX <= btnX + btnWidth &&
+          mouseY >= btnY && mouseY <= btnY + btnHeight) {
+        this.returnToMenu();
+      }
       return;
     }
 
@@ -267,6 +273,16 @@ export class GameEngine {
     // Check platform collisions
     this.handlePlatformCollisions();
     
+    // Clamp player within area bounds horizontally
+    if (this.player.x < 0) {
+      this.player.x = 0;
+      this.player.vx = 0;
+    }
+    if (this.player.x > this.currentArea.width - this.player.width) {
+      this.player.x = this.currentArea.width - this.player.width;
+      this.player.vx = 0;
+    }
+
     // Check if player fell off world
     if (this.player.y > this.currentArea.height + 200) {
       this.handlePlayerDeath();
@@ -423,8 +439,8 @@ export class GameEngine {
         break;
       case 'weapon':
         if (pickup.weaponId) {
+          const wasAlreadyUnlocked = this.player.weapons.find(w => w.id === pickup.weaponId)?.isUnlocked;
           this.player.unlockWeapon(pickup.weaponId);
-          // Get weapon name for better notification
           const weaponNames: Record<string, string> = {
             'rifle': 'Assault Rifle',
             'shotgun': 'Shotgun',
@@ -432,7 +448,13 @@ export class GameEngine {
             'lmg': 'Light Machine Gun',
           };
           const weaponName = weaponNames[pickup.weaponId] || pickup.weaponId;
-          console.log(`🎉 UNLOCKED: ${weaponName}! Press ${this.player.weapons.findIndex(w => w.id === pickup.weaponId) + 1} to equip`);
+          const weaponRef = this.player.weapons.find(w => w.id === pickup.weaponId);
+          const slot = this.player.weapons.findIndex(w => w.id === pickup.weaponId) + 1;
+          if (wasAlreadyUnlocked && weaponRef) {
+            console.log(`+${WEAPON_PICKUP_AMMO[pickup.weaponId] || 0} ammo for ${weaponName}! (${weaponRef.ammo}/${weaponRef.maxAmmo})`);
+          } else {
+            console.log(`UNLOCKED: ${weaponName}! Press ${slot} to equip`);
+          }
         }
         break;
     }
@@ -535,42 +557,101 @@ export class GameEngine {
     const weapon = this.player.getCurrentWeapon();
     if (!weapon || !weapon.isUnlocked) return;
     
+    if (weapon.ammo !== Infinity && weapon.ammo <= 0) return;
+    
     // Check fire rate (cooldown)
     const now = performance.now();
     const fireInterval = 1000 / (weapon.fireRate * this.player.stats.fireRate);
     
     if (now - this.lastShotTime < fireInterval) return;
     
-    // Fire! (Unlimited ammo - no ammo check)
     this.fireBullet(weapon);
-    // weapon.ammo--;  // Unlimited ammo - don't decrement
+    if (weapon.ammo !== Infinity) {
+      weapon.ammo--;
+      if (weapon.ammo <= 0) {
+        this.player.removeWeaponIfEmpty(weapon.id);
+      }
+    }
     this.lastShotTime = now;
   }
   
-  private fireBullet(weapon: { damage: number; bulletSpeed: number; color: string }): void {
-    // Get gun position (at player's gun hand)
+  private fireBullet(weapon: { id: string; damage: number; bulletSpeed: number; color: string }): void {
     const gunOffsetX = this.player.isFacingRight ? this.player.width + 5 : -25;
     const gunOffsetY = 20;
     
     const startX = this.player.x + gunOffsetX + 10;
     const startY = this.player.y + gunOffsetY;
     
-    // Calculate damage with multipliers
     const damage = weapon.damage * this.player.stats.damage * this.damageMultiplier;
-    
-    // Create bullet toward mouse position
-    const bullet = new Bullet(
-      startX,
-      startY,
-      this.input.mouseWorldX,
-      this.input.mouseWorldY,
-      weapon.bulletSpeed,
-      damage,
-      true,
-      weapon.color
-    );
-    
-    this.bullets.push(bullet);
+    const weaponId = weapon.id || '';
+
+    if (weaponId === 'shotgun') {
+      const pelletCount = 6;
+      const spreadAngle = 0.3;
+      const baseAngle = Math.atan2(
+        this.input.mouseWorldY - startY,
+        this.input.mouseWorldX - startX
+      );
+      for (let i = 0; i < pelletCount; i++) {
+        const angle = baseAngle + (Math.random() - 0.5) * spreadAngle * 2;
+        const targetX = startX + Math.cos(angle) * 1000;
+        const targetY = startY + Math.sin(angle) * 1000;
+        const speedVariation = weapon.bulletSpeed * (0.85 + Math.random() * 0.3);
+        const bullet = new Bullet(
+          startX,
+          startY,
+          targetX,
+          targetY,
+          speedVariation,
+          damage,
+          true,
+          weapon.color,
+          3
+        );
+        this.bullets.push(bullet);
+      }
+    } else if (weaponId === 'sniper') {
+      const bullet = new Bullet(
+        startX,
+        startY,
+        this.input.mouseWorldX,
+        this.input.mouseWorldY,
+        weapon.bulletSpeed,
+        damage,
+        true,
+        weapon.color,
+        8
+      );
+      this.bullets.push(bullet);
+    } else if (weaponId === 'lmg') {
+      const jitterX = this.input.mouseWorldX + (Math.random() - 0.5) * 30;
+      const jitterY = this.input.mouseWorldY + (Math.random() - 0.5) * 30;
+      const bullet = new Bullet(
+        startX,
+        startY,
+        jitterX,
+        jitterY,
+        weapon.bulletSpeed,
+        damage,
+        true,
+        weapon.color,
+        2
+      );
+      this.bullets.push(bullet);
+    } else {
+      const bullet = new Bullet(
+        startX,
+        startY,
+        this.input.mouseWorldX,
+        this.input.mouseWorldY,
+        weapon.bulletSpeed,
+        damage,
+        true,
+        weapon.color,
+        4
+      );
+      this.bullets.push(bullet);
+    }
   }
   
   // ----------------------------------------------------------
@@ -707,12 +788,12 @@ export class GameEngine {
         enemy.vx = 0;
       }
 
-      // Shooting (soldiers, heavies, and boss)
-      if ((enemy.type === 'soldier' || enemy.type === 'heavy' || enemy.type === 'boss') && distance <= enemy.attackRange) {
-        // Fire rate: 1 shot per second for soldiers, 0.5 for heavies, 0.8 for boss
+      // Shooting (soldiers, heavies, boss, and ninjas/drones)
+      if ((enemy.type === 'soldier' || enemy.type === 'heavy' || enemy.type === 'boss' || enemy.type === 'drone') && distance <= enemy.attackRange) {
         let fireRate = 1000;
         if (enemy.type === 'heavy') fireRate = 2000;
         if (enemy.type === 'boss') fireRate = 800;
+        if (enemy.type === 'drone') fireRate = 1500;
 
         if (now - enemy.lastAttackTime > fireRate) {
           // Boss fires a burst of 3 shots
@@ -837,30 +918,40 @@ export class GameEngine {
     const gunX = enemy.x + enemy.width / 2;
     const gunY = enemy.y + enemy.height / 2;
 
-    // Add some inaccuracy
     const inaccuracy = 20;
     const targetXWithSpread = targetX + (Math.random() - 0.5) * inaccuracy;
     const targetYWithSpread = targetY + (Math.random() - 0.5) * inaccuracy;
 
-    const bullet = new Bullet(
-      gunX,
-      gunY,
-      targetXWithSpread,
-      targetYWithSpread,
-      400,  // Enemy bullets are slower
-      enemy.damage,
-      false,  // Not player bullet
-      '#e74c3c'  // Red for enemy bullets
-    );
-
-    this.enemyBullets.push(bullet);
-
-    // Trigger shooting animation for grunt, soldier, and heavy types
-    if (enemy.type !== 'drone') {
-      enemy.isShooting = true;
-      enemy.animationTimer = 0;
-      enemy.animationState = 'shoot';
+    if (enemy.type === 'drone') {
+      const bullet = new Bullet(
+        gunX,
+        gunY,
+        targetXWithSpread,
+        targetYWithSpread,
+        350,
+        enemy.damage,
+        false,
+        '#555',
+        5
+      );
+      this.enemyBullets.push(bullet);
+    } else {
+      const bullet = new Bullet(
+        gunX,
+        gunY,
+        targetXWithSpread,
+        targetYWithSpread,
+        400,
+        enemy.damage,
+        false,
+        '#e74c3c'
+      );
+      this.enemyBullets.push(bullet);
     }
+
+    enemy.isShooting = true;
+    enemy.animationTimer = 0;
+    enemy.animationState = 'shoot';
   }
   
   private updateEnemyBullets(dt: number): void {
@@ -1840,10 +1931,17 @@ export class GameEngine {
     ctx.fillText(rank, CANVAS_WIDTH / 2, currentY + 80);
     ctx.shadowBlur = 0;
 
+    // Play Again button
+    const btnWidth = 250;
+    const btnHeight = 50;
+    const btnX = CANVAS_WIDTH / 2 - btnWidth / 2;
+    const btnY = CANVAS_HEIGHT - 120;
+    this.renderButton(ctx, btnX, btnY, btnWidth, btnHeight, 'Play Again', '#2980b9');
+
     // Continue hint
     ctx.fillStyle = '#7f8c8d';
     ctx.font = '16px Arial';
-    ctx.fillText('Press ENTER or CLICK to return to Menu', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 40);
+    ctx.fillText('Press ENTER or click PLAY AGAIN to return to Menu', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 40);
   }
 
   private renderButton(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, text: string, color: string, disabled: boolean = false): void {
@@ -1999,17 +2097,46 @@ export class GameEngine {
       // Get the appropriate sprite
       let spriteKey: string;
       if (enemy.type === 'drone') {
-        // Drones use simple circle rendering (no sprite)
-        ctx.fillStyle = COLORS.enemyDrone;
-        ctx.beginPath();
-        ctx.arc(
-          enemy.x + enemy.width / 2,
-          enemy.y + enemy.height / 2,
-          enemy.width / 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
+        // Ninja - uses ninja sprite rendering
+        let spriteKey: string;
+        if (enemy.animationState === 'shoot' && enemy.isShooting) {
+          const shootFrame = Math.floor(enemy.animationTimer * 8) % 4;
+          spriteKey = `ninja_shoot${shootFrame}`;
+        } else if (enemy.animationState === 'walk') {
+          const walkFrame = Math.floor(enemy.animationTimer * 6) % 2;
+          spriteKey = `ninja_walk${walkFrame + 1}`;
+        } else {
+          spriteKey = 'ninja_idle';
+        }
+
+        const sprite = this.enemySprites.get(spriteKey);
+
+        ctx.save();
+        if (!enemy.isFacingRight) {
+          ctx.translate(enemy.x + enemy.width, enemy.y);
+          ctx.scale(-1, 1);
+          if (sprite) {
+            ctx.drawImage(sprite, 0, 0, enemy.width, enemy.height);
+          }
+        } else {
+          if (sprite) {
+            ctx.drawImage(sprite, enemy.x, enemy.y, enemy.width, enemy.height);
+          }
+        }
+        ctx.restore();
+
+        if (!sprite) {
+          ctx.fillStyle = COLORS.enemyDrone;
+          ctx.beginPath();
+          ctx.arc(
+            enemy.x + enemy.width / 2,
+            enemy.y + enemy.height / 2,
+            enemy.width / 2,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+        }
       } else if (enemy.type === 'boss') {
         // BOSS - Special large rendering with effects
         this.renderBoss(ctx, enemy);
@@ -2180,19 +2307,44 @@ export class GameEngine {
   
   private renderEnemyBullets(ctx: CanvasRenderingContext2D): void {
     for (const bullet of this.enemyBullets) {
-      // Only render if visible
       if (!this.camera.isVisible(bullet.x - 10, bullet.y - 10, 20, 20)) {
         continue;
       }
-      
-      // Enemy bullets are red
-      ctx.fillStyle = '#e74c3c';
+
+      const rotation = performance.now() / 100;
+      ctx.save();
+      ctx.translate(bullet.x, bullet.y);
+      ctx.rotate(rotation);
+
+      // Ninja star - 4 pointed star
+      ctx.fillStyle = '#555';
       ctx.beginPath();
-      ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+      for (let i = 0; i < 4; i++) {
+        const angle = (i * Math.PI) / 2;
+        const outerR = bullet.radius * 1.5;
+        const innerR = bullet.radius * 0.4;
+        ctx.lineTo(Math.cos(angle - 0.2) * innerR, Math.sin(angle - 0.2) * innerR);
+        ctx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
+        ctx.lineTo(Math.cos(angle + 0.2) * innerR, Math.sin(angle + 0.2) * innerR);
+      }
+      ctx.closePath();
       ctx.fill();
-      
-      // Red glow
-      ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
+
+      // Blade edges
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Center dot
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(0, 0, 1, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      // Glow
+      ctx.fillStyle = 'rgba(230, 126, 34, 0.15)';
       ctx.beginPath();
       ctx.arc(bullet.x, bullet.y, bullet.radius * 3, 0, Math.PI * 2);
       ctx.fill();
@@ -2223,6 +2375,14 @@ export class GameEngine {
         this.enemySprites.set(`${type}_shoot${i}`, this.createEnemySprite(type, 'shoot', i));
       }
     }
+
+    // Generate ninja (drone) sprites
+    for (let i = 0; i < 4; i++) {
+      this.enemySprites.set(`ninja_shoot${i}`, this.createNinjaSprite('shoot', i));
+    }
+    this.enemySprites.set('ninja_idle', this.createNinjaSprite('idle'));
+    this.enemySprites.set('ninja_walk1', this.createNinjaSprite('walk1'));
+    this.enemySprites.set('ninja_walk2', this.createNinjaSprite('walk2'));
 
     this.enemySpritesGenerated = true;
   }
@@ -2374,6 +2534,121 @@ export class GameEngine {
     // Right arm (holding gun stock)
     drawPixel(16 + armOffset, armY, 4, 6, colors.body);
     drawPixel(17 + armOffset, armY + 1, 2, 3, colors.skin);
+
+    return canvas;
+  }
+
+  private createNinjaSprite(
+    pose: 'idle' | 'walk1' | 'walk2' | 'shoot',
+    shootFrame: number = 0
+  ): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    const size = 24;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+
+    const pixelSize = 2;
+    const drawPixel = (x: number, y: number, w: number, h: number, color: string) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * pixelSize, y * pixelSize, w * pixelSize, h * pixelSize);
+    };
+
+    const robeColor = '#1a1a2e';
+    const robeAccent = '#e67e22';
+    const beltColor = '#4a2800';
+    const skinColor = '#c4956a';
+    const headbandColor = '#e74c3c';
+    const bladeColor = '#c0c0c0';
+
+    let bodyY = 4;
+    let leftLegX = 0;
+    let rightLegX = 0;
+    let armOffset = 0;
+    let throwFrame = false;
+
+    if (pose === 'walk1') {
+      leftLegX = 1;
+      rightLegX = -1;
+      bodyY = 3;
+    } else if (pose === 'walk2') {
+      leftLegX = -1;
+      rightLegX = 1;
+      bodyY = 3;
+    } else if (pose === 'shoot') {
+      armOffset = -1;
+      throwFrame = shootFrame >= 2;
+    }
+
+    // LEGS
+    const legColor = '#0f0f1a';
+    if (pose === 'walk1' || pose === 'walk2') {
+      drawPixel(3 + leftLegX, 17, 2, 4, legColor);
+      drawPixel(3, 19, 2, 2, robeColor);
+      drawPixel(7 + rightLegX, 17, 2, 4, legColor);
+      drawPixel(7, 19, 2, 2, robeColor);
+    } else {
+      drawPixel(3, 17, 2, 5, legColor);
+      drawPixel(7, 17, 2, 5, legColor);
+    }
+
+    // BODY - ninja robe
+    drawPixel(2, bodyY + 2, 8, 10, robeColor);
+    // Robe overlap V
+    drawPixel(5, bodyY + 8, 2, 4, '#0f0f1a');
+    // Belt
+    drawPixel(2, bodyY + 6, 8, 1, beltColor);
+    // Accent trim
+    drawPixel(2, bodyY + 2, 8, 1, robeAccent);
+    drawPixel(2, bodyY + 11, 8, 1, robeAccent);
+
+    // HEAD - hood/mask
+    const headY = bodyY - 4;
+    // Hood
+    drawPixel(3, headY, 6, 6, robeColor);
+    // Face mask
+    drawPixel(4, headY + 3, 4, 2, '#0a0a14');
+    // Eyes (glowing)
+    drawPixel(4, headY + 3, 1, 1, '#e74c3c');
+    drawPixel(7, headY + 3, 1, 1, '#e74c3c');
+    // Headband
+    drawPixel(2, headY + 1, 8, 1, headbandColor);
+    // Headband tail
+    drawPixel(9, headY + 1, 3, 1, headbandColor);
+    drawPixel(10, headY + 2, 2, 1, headbandColor);
+
+    // ARMS
+    const armY = bodyY + 4;
+    // Back arm
+    drawPixel(0, armY, 2, 5, robeColor);
+    drawPixel(0, armY + 4, 2, 1, skinColor);
+
+    if (pose === 'shoot') {
+      // Throwing arm extended
+      const recoil = throwFrame ? 1 : 0;
+      drawPixel(10 + armOffset + recoil, armY, 2, 3, robeColor);
+      drawPixel(11 + armOffset + recoil, armY + 2, 1, 2, skinColor);
+
+      // Ninja star in hand / thrown
+      if (!throwFrame) {
+        drawPixel(12 + armOffset, armY + 1, 2, 2, '#555');
+      } else {
+        // Star flying away
+        const starX = 12 + shootFrame;
+        drawPixel(starX, armY - 1, 2, 2, '#888');
+        drawPixel(starX - 1, armY, 2, 2, '#888');
+        drawPixel(starX + 1, armY, 2, 2, '#888');
+        drawPixel(starX, armY + 1, 2, 2, '#888');
+      }
+    } else {
+      // Idle/walk - arms at sides or one holding blade
+      drawPixel(10, armY, 2, 4, robeColor);
+      drawPixel(10, armY + 3, 1, 2, skinColor);
+
+      // Katana on back
+      drawPixel(1, headY, 1, 8, bladeColor);
+      drawPixel(0, headY, 2, 1, '#8b4513');
+    }
 
     return canvas;
   }
@@ -2536,10 +2811,11 @@ export class GameEngine {
     ctx.font = 'bold 14px Arial';
     ctx.fillText(weapon.name, 20, 125);
     
-    // Ammo counter (UNLIMITED)
-    ctx.fillStyle = '#2ecc71';
+    // Ammo counter
+    ctx.fillStyle = weapon.ammo === Infinity ? '#2ecc71' : (weapon.ammo > 0 ? '#fff' : '#e74c3c');
     ctx.font = 'bold 16px Arial';
-    ctx.fillText('∞', 20, 145);
+    const ammoText = weapon.ammo === Infinity ? '∞' : `${weapon.ammo}/${weapon.maxAmmo}`;
+    ctx.fillText(ammoText, 20, 145);
     
     // Current area
     ctx.textAlign = 'right';

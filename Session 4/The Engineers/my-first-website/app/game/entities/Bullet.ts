@@ -22,11 +22,12 @@ export class Bullet implements IBullet {
     speed: number,
     damage: number,
     isPlayerBullet: boolean = true,
-    color: string = '#f1c40f'
+    color: string = '#f1c40f',
+    radius: number = 4
   ) {
     this.x = x;
     this.y = y;
-    this.radius = 4;
+    this.radius = radius;
     this.damage = damage;
     this.isPlayerBullet = isPlayerBullet;
     this.color = color;
