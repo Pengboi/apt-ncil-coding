@@ -553,10 +553,7 @@ export const hqArea: Area = {
     // ============================================================
     createPlatform(2320, 450, 80, 30),      // Arena entry
     createPlatform(2480, 480, 200, 40),   // 80px gap - main arena
-    createPlatform(2760, 500, 140, 50),   // 80px gap - victory platform
-    
-    // Exit platform to Sky Fortress
-    createPlatform(2980, 520, 120, 40),   // Exit connection platform
+    createPlatform(2220, 400, 100, 30),   // Exit approach
     
     // ============================================================
     // LOWER STEALTH PATH - Longer but safer
@@ -654,8 +651,8 @@ export const hqArea: Area = {
   connections: [
     {
       toAreaId: 'skyfortress',
-      fromX: 2380,
-      fromY: 520,
+      fromX: 2270,
+      fromY: 360,
       toSpawnX: 100,
       toSpawnY: 500,
     },
