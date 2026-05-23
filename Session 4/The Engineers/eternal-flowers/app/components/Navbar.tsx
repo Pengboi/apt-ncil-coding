@@ -39,11 +39,7 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a href="#home" className="flex items-center group relative">
-            <img 
-              src="/images/eternal_flowers.png" 
-              alt="Eternal Flowers" 
-              className="h-12 w-auto object-contain transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(201,162,39,0.5)]"
-            />
+            <span className="font-display text-2xl text-[var(--charcoal)]">Eternal Flowers</span>
           </a>
 
           {/* Desktop Navigation */}
@@ -77,7 +73,7 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--burgundy)] text-[var(--cream)] text-[10px] rounded-full flex items-center justify-center font-semibold">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--burgundy)] text-[var(--charcoal)] text-[10px] rounded-full flex items-center justify-center font-semibold">
                   {cartCount}
                 </span>
               )}
@@ -98,8 +94,8 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
       <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="p-8 flex flex-col h-full">
           <div className="flex justify-between items-center mb-12">
-            <span className="font-display text-2xl text-[var(--cream)] italic">Menu</span>
-            <button onClick={() => setMobileMenuOpen(false)} className="text-[var(--cream)]">
+            <span className="font-display text-2xl text-[var(--charcoal)] italic">Menu</span>
+            <button onClick={() => setMobileMenuOpen(false)} className="text-[var(--charcoal)]">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -111,15 +107,15 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-2xl font-display text-[var(--cream)] hover:text-[var(--champagne)] transition-colors"
+                className="text-2xl font-display text-[var(--charcoal)] hover:text-[var(--charcoal)] transition-colors"
                 style={{ animationDelay: `${idx * 0.08}s` }}
               >
                 {link.label}
               </a>
             ))}
           </div>
-          <div className="mt-auto pt-8 border-t border-[var(--burgundy-light)]">
-            <p className="text-sm text-[var(--cream)]/60 font-italic-display">Handcrafted with love in the UK</p>
+          <div className="mt-auto pt-8 border-t border-[var(--charcoal)]/20">
+            <p className="text-sm text-[var(--charcoal)]/60 font-italic-display">Handcrafted with love in the UK</p>
           </div>
         </div>
       </div>

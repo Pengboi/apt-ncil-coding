@@ -173,10 +173,10 @@ export default function CheckoutModal({
             </button>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center p-6">
-            <svg className="w-12 h-12 text-[var(--taupe)] opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+            <svg className="w-12 h-12 text-[var(--charcoal)] opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
-            <p className="text-xl text-[var(--taupe)] font-display italic mb-4">Your cart is empty</p>
+            <p className="text-xl text-[var(--charcoal)] font-display italic mb-4">Your cart is empty</p>
             <button onClick={handleClose} className="btn-primary">
               Continue Shopping
             </button>
@@ -201,7 +201,7 @@ export default function CheckoutModal({
           <div>
             <h2 className="font-display text-2xl font-medium text-[var(--charcoal)]">Checkout</h2>
             {currentStep < 4 && (
-              <p className="text-xs text-[var(--taupe)] mt-1 uppercase tracking-widest">
+              <p className="text-xs text-[var(--charcoal)] mt-1 uppercase tracking-widest">
                 Step {currentStep} of 3: {steps[currentStep - 1]?.title}
               </p>
             )}
@@ -225,8 +225,8 @@ export default function CheckoutModal({
                 <div key={step.number} className="flex items-center flex-1">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-all duration-300 ${
                     currentStep >= step.number 
-                      ? 'bg-[var(--burgundy)] border-[var(--burgundy)] text-[var(--cream)]' 
-                      : 'bg-transparent border-[var(--taupe)]/30 text-[var(--taupe)]'
+                      ? 'bg-[var(--burgundy)] border-[var(--burgundy)] text-[var(--charcoal)]' 
+                      : 'bg-transparent border-[var(--taupe)]/30 text-[var(--charcoal)]'
                   }`}>
                     {currentStep > step.number ? (
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -235,7 +235,7 @@ export default function CheckoutModal({
                     ) : step.number}
                   </div>
                   <span className={`ml-2 text-xs font-medium uppercase tracking-wider hidden sm:block ${
-                    currentStep >= step.number ? 'text-[var(--charcoal)]' : 'text-[var(--taupe)]'
+                    currentStep >= step.number ? 'text-[var(--charcoal)]' : 'text-[var(--charcoal)]'
                   }`}>
                     {step.title}
                   </span>
@@ -260,7 +260,7 @@ export default function CheckoutModal({
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                    First Name <span className="text-[var(--burgundy)]">*</span>
+                    First Name <span className="text-[var(--charcoal)]">*</span>
                   </label>
                   <input 
                     type="text" 
@@ -269,11 +269,11 @@ export default function CheckoutModal({
                     className={`input-field ${errors.firstName ? 'error' : ''}`}
                     placeholder="Enter first name"
                   />
-                  {errors.firstName && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.firstName}</p>}
+                  {errors.firstName && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.firstName}</p>}
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                    Last Name <span className="text-[var(--burgundy)]">*</span>
+                    Last Name <span className="text-[var(--charcoal)]">*</span>
                   </label>
                   <input 
                     type="text" 
@@ -282,13 +282,13 @@ export default function CheckoutModal({
                     className={`input-field ${errors.lastName ? 'error' : ''}`}
                     placeholder="Enter last name"
                   />
-                  {errors.lastName && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.lastName}</p>}
+                  {errors.lastName && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.lastName}</p>}
                 </div>
               </div>
 
               <div>
                 <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                  Email Address <span className="text-[var(--burgundy)]">*</span>
+                  Email Address <span className="text-[var(--charcoal)]">*</span>
                 </label>
                 <input 
                   type="email" 
@@ -297,12 +297,12 @@ export default function CheckoutModal({
                   className={`input-field ${errors.email ? 'error' : ''}`}
                   placeholder="your@email.com"
                 />
-                {errors.email && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.email}</p>}
               </div>
 
               <div>
                 <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                  Phone Number <span className="text-[var(--burgundy)]">*</span>
+                  Phone Number <span className="text-[var(--charcoal)]">*</span>
                 </label>
                 <input 
                   type="tel" 
@@ -311,8 +311,8 @@ export default function CheckoutModal({
                   className={`input-field ${errors.phone ? 'error' : ''}`}
                   placeholder="+44 123 456 7890"
                 />
-                {errors.phone && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.phone}</p>}
-                <p className="text-[10px] text-[var(--taupe)] mt-1">We&apos;ll only use this to contact you about your order</p>
+                {errors.phone && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.phone}</p>}
+                <p className="text-[10px] text-[var(--charcoal)] mt-1">We&apos;ll only use this to contact you about your order</p>
               </div>
             </div>
           )}
@@ -324,7 +324,7 @@ export default function CheckoutModal({
               
               <div>
                 <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                  Street Address <span className="text-[var(--burgundy)]">*</span>
+                  Street Address <span className="text-[var(--charcoal)]">*</span>
                 </label>
                 <input 
                   type="text" 
@@ -333,7 +333,7 @@ export default function CheckoutModal({
                   className={`input-field ${errors.shippingAddress1 ? 'error' : ''}`}
                   placeholder="123 Main Street"
                 />
-                {errors.shippingAddress1 && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingAddress1}</p>}
+                {errors.shippingAddress1 && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.shippingAddress1}</p>}
               </div>
 
               <div>
@@ -352,7 +352,7 @@ export default function CheckoutModal({
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                    City <span className="text-[var(--burgundy)]">*</span>
+                    City <span className="text-[var(--charcoal)]">*</span>
                   </label>
                   <input 
                     type="text" 
@@ -361,11 +361,11 @@ export default function CheckoutModal({
                     className={`input-field ${errors.shippingCity ? 'error' : ''}`}
                     placeholder="London"
                   />
-                  {errors.shippingCity && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingCity}</p>}
+                  {errors.shippingCity && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.shippingCity}</p>}
                 </div>
                 <div>
                   <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                    Postcode <span className="text-[var(--burgundy)]">*</span>
+                    Postcode <span className="text-[var(--charcoal)]">*</span>
                   </label>
                   <input 
                     type="text" 
@@ -374,7 +374,7 @@ export default function CheckoutModal({
                     className={`input-field ${errors.shippingPostcode ? 'error' : ''}`}
                     placeholder="SW1A 1AA"
                   />
-                  {errors.shippingPostcode && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.shippingPostcode}</p>}
+                  {errors.shippingPostcode && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.shippingPostcode}</p>}
                 </div>
               </div>
 
@@ -420,7 +420,7 @@ export default function CheckoutModal({
                   className="input-field"
                   placeholder="Add a personal message for the recipient..."
                 />
-                <p className="text-[10px] text-[var(--taupe)] mt-1">This will be printed on a card and included with your order</p>
+                <p className="text-[10px] text-[var(--charcoal)] mt-1">This will be printed on a card and included with your order</p>
               </div>
 
               {/* Billing Address Section */}
@@ -430,7 +430,7 @@ export default function CheckoutModal({
                 <label className="flex items-center gap-3 p-4 bg-[var(--linen)]/50 rounded-lg cursor-pointer hover:bg-[var(--linen)] transition-colors">
                   <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.sameAsShipping ? 'bg-[var(--burgundy)] border-[var(--burgundy)]' : 'border-[var(--taupe)]'}`}>
                     {formData.sameAsShipping && (
-                      <svg className="w-3 h-3 text-[var(--cream)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <svg className="w-3 h-3 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                     )}
@@ -448,7 +448,7 @@ export default function CheckoutModal({
                   <div className="mt-6 space-y-6 animate-fade-in-up">
                     <div>
                       <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                        Billing Street Address <span className="text-[var(--burgundy)]">*</span>
+                        Billing Street Address <span className="text-[var(--charcoal)]">*</span>
                       </label>
                       <input 
                         type="text" 
@@ -457,7 +457,7 @@ export default function CheckoutModal({
                         className={`input-field ${errors.billingAddress1 ? 'error' : ''}`}
                         placeholder="123 Main Street"
                       />
-                      {errors.billingAddress1 && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingAddress1}</p>}
+                      {errors.billingAddress1 && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.billingAddress1}</p>}
                     </div>
 
                     <div>
@@ -476,7 +476,7 @@ export default function CheckoutModal({
                     <div className="grid sm:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                          Billing City <span className="text-[var(--burgundy)]">*</span>
+                          Billing City <span className="text-[var(--charcoal)]">*</span>
                         </label>
                         <input 
                           type="text" 
@@ -485,11 +485,11 @@ export default function CheckoutModal({
                           className={`input-field ${errors.billingCity ? 'error' : ''}`}
                           placeholder="London"
                         />
-                        {errors.billingCity && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingCity}</p>}
+                        {errors.billingCity && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.billingCity}</p>}
                       </div>
                       <div>
                         <label className="block text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-2">
-                          Billing Postcode <span className="text-[var(--burgundy)]">*</span>
+                          Billing Postcode <span className="text-[var(--charcoal)]">*</span>
                         </label>
                         <input 
                           type="text" 
@@ -498,7 +498,7 @@ export default function CheckoutModal({
                           className={`input-field ${errors.billingPostcode ? 'error' : ''}`}
                           placeholder="SW1A 1AA"
                         />
-                        {errors.billingPostcode && <p className="text-xs text-[var(--burgundy)] mt-1">{errors.billingPostcode}</p>}
+                        {errors.billingPostcode && <p className="text-xs text-[var(--charcoal)] mt-1">{errors.billingPostcode}</p>}
                       </div>
                     </div>
 
@@ -542,21 +542,21 @@ export default function CheckoutModal({
                     <div className="flex-1 min-w-0">
                       <h4 className="font-display font-medium text-[var(--charcoal)] text-sm truncate">{item.name}</h4>
                       {item.selectedColor && (
-                        <p className="text-[10px] text-[var(--taupe)] capitalize">
+                        <p className="text-[10px] text-[var(--charcoal)] capitalize">
                           Colour: {item.selectedColor.replace('-', ' ')}
                         </p>
                       )}
                       {item.ribbonText && (
-                        <p className="text-[10px] text-[var(--burgundy)] truncate font-italic-display">
+                        <p className="text-[10px] text-[var(--charcoal)] truncate font-italic-display">
                           Ribbon: &ldquo;{item.ribbonText}&rdquo;
                         </p>
                       )}
                       {item.glitter && (
-                        <p className="text-[10px] text-[var(--champagne)] truncate">
+                        <p className="text-[10px] text-[var(--charcoal)] truncate">
                           Glitter Finish (+£5)
                         </p>
                       )}
-                      <p className="text-xs text-[var(--taupe)]">Qty: {item.quantity}</p>
+                      <p className="text-xs text-[var(--charcoal)]">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-[var(--charcoal)] text-sm">£{((item.price + (item.glitter ? 5 : 0)) * item.quantity).toFixed(2)}</p>
@@ -568,7 +568,7 @@ export default function CheckoutModal({
               {/* Customer Summary */}
               <div className="bg-[var(--linen)]/50 p-4 rounded-lg">
                 <h4 className="text-[10px] font-medium text-[var(--charcoal)] uppercase tracking-[0.2em] mb-3">Delivering To</h4>
-                <p className="text-sm text-[var(--taupe)]">
+                <p className="text-sm text-[var(--charcoal)]">
                   {formData.firstName} {formData.lastName}<br />
                   {formData.shippingAddress1}<br />
                   {formData.shippingAddress2 && <>{formData.shippingAddress2}<br /></>}
@@ -577,7 +577,7 @@ export default function CheckoutModal({
                 </p>
                 {formData.giftMessage && (
                   <div className="mt-3 pt-3 border-t border-[var(--linen)]">
-                    <p className="text-[10px] text-[var(--burgundy)] font-medium uppercase tracking-wider">Gift message included</p>
+                    <p className="text-[10px] text-[var(--charcoal)] font-medium uppercase tracking-wider">Gift message included</p>
                   </div>
                 )}
               </div>
@@ -585,19 +585,19 @@ export default function CheckoutModal({
               {/* Totals */}
               <div className="border-t border-[var(--linen)] pt-4">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-[var(--taupe)]">Subtotal</span>
+                  <span className="text-[var(--charcoal)]">Subtotal</span>
                   <span className="text-[var(--charcoal)]">£{total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-[var(--taupe)]">Shipping</span>
+                  <span className="text-[var(--charcoal)]">Shipping</span>
                   <span className="text-[var(--charcoal)]">{shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`}</span>
                 </div>
                 {shippingCost === 0 && (
-                  <p className="text-[10px] text-[var(--burgundy)] mb-2">You qualify for free shipping!</p>
+                  <p className="text-[10px] text-[var(--charcoal)] mb-2">You qualify for free shipping!</p>
                 )}
                 <div className="flex justify-between text-lg font-medium border-t border-[var(--linen)] pt-2">
                   <span className="font-display text-[var(--charcoal)]">Total</span>
-                  <span className="font-display text-[var(--burgundy)]">£{finalTotal.toFixed(2)}</span>
+                  <span className="font-display text-[var(--charcoal)]">£{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -632,7 +632,7 @@ export default function CheckoutModal({
                           e.target.value = formatted;
                         }}
                       />
-                      <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-4 text-[var(--taupe)]" fill="none" stroke="currentColor" viewBox="0 0 24 16" strokeWidth={1.5}>
+                      <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-4 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 16" strokeWidth={1.5}>
                         <rect x="1" y="1" width="22" height="14" rx="2" />
                         <line x1="1" y1="6" x2="23" y2="6" />
                       </svg>
@@ -688,10 +688,10 @@ export default function CheckoutModal({
                 </div>
                 
                 <div className="mt-5 pt-4 border-t border-[var(--linen)] flex items-center gap-2">
-                  <svg className="w-4 h-4 text-[var(--champagne)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <svg className="w-4 h-4 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                   </svg>
-                  <p className="text-[10px] text-[var(--taupe)]">
+                  <p className="text-[10px] text-[var(--charcoal)]">
                     Your payment details are encrypted and secure
                   </p>
                 </div>
@@ -703,17 +703,17 @@ export default function CheckoutModal({
           {currentStep === 4 && (
             <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in-up py-12">
               <div className="w-16 h-16 bg-[var(--burgundy)] rounded-full flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-[var(--cream)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-8 h-8 text-[var(--charcoal)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
               <h3 className="font-display text-3xl font-medium text-[var(--charcoal)] mb-3">Order Placed</h3>
-              <p className="text-[var(--taupe)] mb-8 max-w-sm leading-relaxed">
+              <p className="text-[var(--charcoal)] mb-8 max-w-sm leading-relaxed">
                 Thank you for your order, {formData.firstName}. We&apos;ve sent a confirmation to {formData.email}.
               </p>
               <div className="bg-[var(--linen)] px-8 py-4 rounded-lg mb-8">
-                <p className="text-[10px] text-[var(--taupe)] uppercase tracking-widest mb-1">Order Total</p>
-                <p className="font-display text-3xl font-medium text-[var(--burgundy)]">£{finalTotal.toFixed(2)}</p>
+                <p className="text-[10px] text-[var(--charcoal)] uppercase tracking-widest mb-1">Order Total</p>
+                <p className="font-display text-3xl font-medium text-[var(--charcoal)]">£{finalTotal.toFixed(2)}</p>
               </div>
               <button onClick={handleClose} className="btn-primary">
                 Continue Shopping
@@ -739,7 +739,7 @@ export default function CheckoutModal({
               {currentStep < 3 ? (
                 <button 
                   onClick={handleNext}
-                  className="flex-1 py-3 px-6 bg-[var(--burgundy)] text-[var(--cream)] text-xs font-medium uppercase tracking-widest rounded-full hover:bg-[var(--burgundy-light)] transition-colors"
+                  className="flex-1 py-3 px-6 bg-[var(--burgundy)] text-[var(--charcoal)] text-xs font-medium uppercase tracking-widest rounded-full hover:bg-[var(--burgundy-light)] transition-colors"
                 >
                   Continue
                 </button>
@@ -747,7 +747,7 @@ export default function CheckoutModal({
                 <button 
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="flex-1 py-3 px-6 bg-[var(--burgundy)] text-[var(--cream)] text-xs font-medium uppercase tracking-widest rounded-full hover:bg-[var(--burgundy-light)] transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-6 bg-[var(--burgundy)] text-[var(--charcoal)] text-xs font-medium uppercase tracking-widest rounded-full hover:bg-[var(--burgundy-light)] transition-colors flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -764,7 +764,7 @@ export default function CheckoutModal({
             {currentStep === 1 && (
               <button 
                 onClick={onBackToCart}
-                className="w-full py-3 text-[var(--burgundy)] text-xs font-medium uppercase tracking-widest hover:text-[var(--burgundy-light)] transition-colors text-center"
+                className="w-full py-3 text-[var(--charcoal)] text-xs font-medium uppercase tracking-widest hover:text-[var(--burgundy-light)] transition-colors text-center"
               >
                 Back to Cart
               </button>

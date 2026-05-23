@@ -2,12 +2,12 @@
 
 :root {
   --cream: #FAF7F2;
-  --linen: #F5EDE0;
-  --burgundy: #6B0F1A;
-  --burgundy-light: #8B1F2E;
+  --linen: #F7EFF0;
+  --burgundy: #FCE4EC;
+  --burgundy-light: #FEF0F5;
   --blush: #E8C4C4;
-  --champagne: #C9A227;
-  --warm-gold: #D4A574;
+  --champagne: #D4A0A0;
+  --warm-gold: #D4A0A0;
   --charcoal: #2C1810;
   --taupe: #8B7355;
   --rose-pale: #F0E0E0;
@@ -79,7 +79,7 @@ body {
 /* Selection */
 ::selection {
   background: var(--blush);
-  color: var(--burgundy);
+  color: var(--charcoal);
 }
 
 /* Animations */
@@ -200,7 +200,7 @@ body {
   justify-content: center;
   padding: 1rem 2.5rem;
   background-color: var(--burgundy);
-  color: var(--cream);
+  color: var(--charcoal);
   font-family: var(--font-jost);
   font-weight: 500;
   font-size: 0.875rem;
@@ -215,7 +215,7 @@ body {
 .btn-primary:hover {
   background-color: var(--burgundy-light);
   border-color: var(--burgundy-light);
-  box-shadow: 0 8px 30px rgba(107, 15, 26, 0.25);
+  box-shadow: 0 8px 30px rgba(139, 144, 152, 0.25);
 }
 
 .btn-secondary {
@@ -224,7 +224,7 @@ body {
   justify-content: center;
   padding: 1rem 2.5rem;
   background-color: transparent;
-  color: var(--burgundy);
+  color: var(--charcoal);
   font-family: var(--font-jost);
   font-weight: 500;
   font-size: 0.875rem;
@@ -238,8 +238,8 @@ body {
 
 .btn-secondary:hover {
   background-color: var(--burgundy);
-  color: var(--cream);
-  box-shadow: 0 8px 30px rgba(107, 15, 26, 0.2);
+  color: var(--charcoal);
+  box-shadow: 0 8px 30px rgba(139, 144, 152, 0.2);
 }
 
 .btn-cream {
@@ -248,7 +248,7 @@ body {
   justify-content: center;
   padding: 1rem 2.5rem;
   background-color: var(--cream);
-  color: var(--burgundy);
+  color: var(--charcoal);
   font-family: var(--font-jost);
   font-weight: 500;
   font-size: 0.875rem;
@@ -262,7 +262,7 @@ body {
 
 .btn-cream:hover {
   background-color: transparent;
-  color: var(--cream);
+  color: var(--charcoal);
 }
 
 /* Navigation Link */
@@ -279,7 +279,7 @@ body {
 }
 
 .nav-link:hover {
-  color: var(--burgundy);
+  color: var(--charcoal);
 }
 
 .nav-link::after {
@@ -364,7 +364,7 @@ body {
 }
 
 .input-field::placeholder {
-  color: var(--taupe);
+  color: var(--charcoal);
   opacity: 0.6;
 }
 
