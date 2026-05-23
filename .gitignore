@@ -72,3 +72,6 @@ my_*.py
 # OS
 Thumbs.db
 .DS_Store
+
+# Geometry Dash AI
+geometry-dash-ai/data/.outdated/
