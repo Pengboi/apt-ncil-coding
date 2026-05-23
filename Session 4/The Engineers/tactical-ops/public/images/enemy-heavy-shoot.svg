@@ -1,0 +1,57 @@
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heavy Shooting (LMG Fire) -->
+  
+  <!-- Back leg (braced) -->
+  <rect x="2" y="34" width="10" height="14" fill="#1a1a2e"/>
+  <rect x="0" y="44" width="12" height="4" fill="#0a0a14"/>
+  
+  <!-- Front leg (wide) -->
+  <rect x="22" y="32" width="10" height="16" fill="#1a1a2e"/>
+  <rect x="20" y="44" width="12" height="4" fill="#0a0a14"/>
+  
+  <!-- Body (braced for recoil) -->
+  <rect x="4" y="14" width="26" height="22" fill="#2d132c"/>
+  <rect x="6" y="16" width="22" height="16" fill="#4a2349"/>
+  
+  <!-- Armor -->
+  <rect x="8" y="18" width="6" height="8" fill="#1a0f19"/>
+  <rect x="20" y="18" width="6" height="8" fill="#1a0f19"/>
+  
+  <!-- Back arm (stock) -->
+  <rect x="2" y="16" width="8" height="10" fill="#2d132c"/>
+  <rect x="0" y="24" width="6" height="6" fill="#1a0f19"/>
+  
+  <!-- Front arm (foregrip) -->
+  <rect x="28" y="18" width="8" height="5" fill="#2d132c"/>
+  <rect x="34" y="17" width="6" height="6" fill="#1a0f19"/>
+  
+  <!-- Head -->
+  <rect x="10" y="2" width="14" height="14" fill="#b0855a"/>
+  
+  <!-- Helmet -->
+  <rect x="7" y="0" width="20" height="10" fill="#1a0f19"/>
+  <rect x="7" y="8" width="20" height="3" fill="#2d132c"/>
+  <rect x="6" y="8" width="22" height="1" fill="#0a0510"/>
+  
+  <!-- Visor -->
+  <rect x="11" y="6" width="12" height="4" fill="#1a1a1a"/>
+  <rect x="12" y="7" width="3" height="2" fill="#c0392b"/>
+  <rect x="17" y="7" width="3" height="2" fill="#c0392b"/>
+  
+  <!-- LMG (firing) -->
+  <rect x="0" y="18" width="4" height="5" fill="#333344"/>
+  <rect x="28" y="16" width="24" height="5" fill="#4a4a5a"/>
+  <rect x="30" y="16" width="10" height="5" fill="#333344"/>
+  <rect x="48" y="17" width="8" height="3" fill="#2a2a3a"/>
+  <rect x="36" y="21" width="4" height="8" fill="#333344"/>
+  <rect x="38" y="14" width="4" height="2" fill="#555"/>
+  <rect x="38" y="21" width="4" height="2" fill="#555"/>
+  
+  <!-- Muzzle flash (large) -->
+  <rect x="54" y="15" width="6" height="6" fill="#ffff00"/>
+  <rect x="58" y="13" width="4" height="2" fill="#ffffaa"/>
+  <rect x="58" y="21" width="4" height="2" fill="#ffffaa"/>
+  <rect x="60" y="16" width="8" height="2" fill="#ff8800"/>
+  <rect x="62" y="12" width="2" height="2" fill="#ff4400"/>
+  <rect x="62" y="22" width="2" height="2" fill="#ff4400"/>
+</svg>

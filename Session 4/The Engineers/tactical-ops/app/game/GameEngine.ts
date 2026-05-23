@@ -808,12 +808,16 @@ export class GameEngine {
 
       // Melee damage for grunts (contact)
       if (enemy.type === 'grunt' && distance < 30) {
-        // Damage player every second when touching
         if (now - enemy.lastAttackTime > 1000) {
           this.player.takeDamage(enemy.damage);
           enemy.lastAttackTime = now;
+          enemy.isShooting = true;
+          enemy.animationTimer = 0;
+          enemy.animationState = 'shoot';
         }
       }
+
+      this.updateEnemyAnimation(enemy, dt);
     }
   }
 
@@ -2080,7 +2084,10 @@ export class GameEngine {
   }
   
   private renderEnemies(ctx: CanvasRenderingContext2D): void {
-    // Generate sprites on first render
+    if (this.enemyImageSprites.size === 0) {
+      this.loadEnemySprites();
+    }
+
     if (!this.enemySpritesGenerated) {
       this.generateEnemySprites();
     }
@@ -2091,100 +2098,55 @@ export class GameEngine {
         continue;
       }
 
-      // Update animation state based on enemy behavior
-      this.updateEnemyAnimation(enemy);
-
-      // Get the appropriate sprite
-      let spriteKey: string;
-      if (enemy.type === 'drone') {
-        // Ninja - uses ninja sprite rendering
-        let spriteKey: string;
-        if (enemy.animationState === 'shoot' && enemy.isShooting) {
-          const shootFrame = Math.floor(enemy.animationTimer * 8) % 4;
-          spriteKey = `ninja_shoot${shootFrame}`;
-        } else if (enemy.animationState === 'walk') {
-          const walkFrame = Math.floor(enemy.animationTimer * 6) % 2;
-          spriteKey = `ninja_walk${walkFrame + 1}`;
-        } else {
-          spriteKey = 'ninja_idle';
-        }
-
-        const sprite = this.enemySprites.get(spriteKey);
-
-        ctx.save();
-        if (!enemy.isFacingRight) {
-          ctx.translate(enemy.x + enemy.width, enemy.y);
-          ctx.scale(-1, 1);
-          if (sprite) {
-            ctx.drawImage(sprite, 0, 0, enemy.width, enemy.height);
-          }
-        } else {
-          if (sprite) {
-            ctx.drawImage(sprite, enemy.x, enemy.y, enemy.width, enemy.height);
-          }
-        }
-        ctx.restore();
-
-        if (!sprite) {
-          ctx.fillStyle = COLORS.enemyDrone;
-          ctx.beginPath();
-          ctx.arc(
-            enemy.x + enemy.width / 2,
-            enemy.y + enemy.height / 2,
-            enemy.width / 2,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-        }
-      } else if (enemy.type === 'boss') {
-        // BOSS - Special large rendering with effects
+      if (enemy.type === 'boss') {
         this.renderBoss(ctx, enemy);
-      } else {
-        // Human enemies use sprites
-        const typeKey = enemy.type as 'grunt' | 'soldier' | 'heavy';
+        continue;
+      }
 
-        if (enemy.animationState === 'shoot' && enemy.isShooting) {
-          // Shooting animation - cycle through 4 frames
-          const shootFrame = Math.floor(enemy.animationTimer * 8) % 4;
-          spriteKey = `${typeKey}_shoot${shootFrame}`;
-        } else if (enemy.animationState === 'walk') {
-          // Walking animation - alternate between walk frames
-          const walkFrame = Math.floor(enemy.animationTimer * 6) % 2;
-          spriteKey = `${typeKey}_walk${walkFrame + 1}`;
-        } else {
-          // Idle
-          spriteKey = `${typeKey}_idle`;
-        }
+      const sprite = this.getEnemySprite(enemy);
+      const isShootState = enemy.animationState === 'shoot' && enemy.isShooting;
+      const shootSpriteWidth = this.getShootSpriteWidth(enemy.type);
 
-        const sprite = this.enemySprites.get(spriteKey);
-        const spriteSize = typeKey === 'heavy' ? 48 : 36;
+      ctx.save();
 
-        ctx.save();
+      if (isShootState) {
+        const offsetX = (shootSpriteWidth - enemy.width) / 2;
 
         if (!enemy.isFacingRight) {
-          // Flip sprite when facing left
+          ctx.translate(enemy.x + enemy.width + offsetX, enemy.y);
+          ctx.scale(-1, 1);
+          if (sprite) {
+            ctx.drawImage(sprite, 0, 0, shootSpriteWidth, enemy.height);
+          } else {
+            this.drawEnemyFallback(ctx, enemy, shootSpriteWidth);
+          }
+        } else {
+          if (sprite) {
+            ctx.drawImage(sprite, enemy.x - offsetX, enemy.y, shootSpriteWidth, enemy.height);
+          } else {
+            this.drawEnemyFallback(ctx, enemy, enemy.width);
+          }
+        }
+      } else {
+        if (!enemy.isFacingRight) {
           ctx.translate(enemy.x + enemy.width, enemy.y);
           ctx.scale(-1, 1);
           if (sprite) {
             ctx.drawImage(sprite, 0, 0, enemy.width, enemy.height);
+          } else {
+            this.drawEnemyFallback(ctx, enemy, enemy.width);
           }
         } else {
           if (sprite) {
             ctx.drawImage(sprite, enemy.x, enemy.y, enemy.width, enemy.height);
+          } else {
+            this.drawEnemyFallback(ctx, enemy, enemy.width);
           }
-        }
-
-        ctx.restore();
-
-        // Fallback if sprite not found
-        if (!sprite) {
-          ctx.fillStyle = COLORS.enemyGrunt;
-          ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
         }
       }
 
-      // Health bar
+      ctx.restore();
+
       const hpPercent = enemy.hp / enemy.maxHp;
       ctx.fillStyle = '#333';
       ctx.fillRect(enemy.x, enemy.y - 10, enemy.width, 6);
@@ -2193,11 +2155,39 @@ export class GameEngine {
     }
   }
 
+  private drawEnemyFallback(ctx: CanvasRenderingContext2D, enemy: Enemy, width: number): void {
+    const typeKey = enemy.type as 'grunt' | 'soldier' | 'heavy' | 'drone';
+
+    let spriteKey: string;
+    if (enemy.animationState === 'shoot' && enemy.isShooting) {
+      const shootFrame = Math.floor(enemy.animationTimer * 8) % 4;
+      spriteKey = typeKey === 'drone' ? `ninja_shoot${shootFrame}` : `${typeKey}_shoot${shootFrame}`;
+    } else if (enemy.animationState === 'walk') {
+      const walkFrame = Math.floor(enemy.animationTimer * 6) % 4;
+      spriteKey = typeKey === 'drone' ? `ninja_walk${walkFrame + 1}` : `${typeKey}_walk${walkFrame + 1}`;
+    } else {
+      spriteKey = typeKey === 'drone' ? 'ninja_idle' : `${typeKey}_idle`;
+    }
+
+    const fallback = this.enemySprites.get(spriteKey);
+
+    if (fallback) {
+      ctx.drawImage(fallback, 0, 0, width, enemy.height);
+    } else if (enemy.type === 'drone') {
+      ctx.fillStyle = COLORS.enemyDrone;
+      ctx.beginPath();
+      ctx.arc(width / 2, enemy.height / 2, enemy.width / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = COLORS.enemyGrunt;
+      ctx.fillRect(0, 0, width, enemy.height);
+    }
+  }
+
   private renderBoss(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
     const centerX = enemy.x + enemy.width / 2;
     const centerY = enemy.y + enemy.height / 2;
 
-    // Boss aura/pulse effect
     const pulse = Math.sin(performance.now() / 300) * 0.2 + 0.8;
     const auraGradient = ctx.createRadialGradient(centerX, centerY, 20, centerX, centerY, 80);
     auraGradient.addColorStop(0, `rgba(192, 57, 43, ${0.4 * pulse})`);
@@ -2208,57 +2198,61 @@ export class GameEngine {
     ctx.arc(centerX, centerY, 80, 0, Math.PI * 2);
     ctx.fill();
 
-    // Boss body - larger and more menacing
-    ctx.fillStyle = '#2c0a0a';
-    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+    const sprite = this.getEnemySprite(enemy);
+    const isShootState = enemy.animationState === 'shoot' && enemy.isShooting;
+    const shootSpriteWidth = this.getShootSpriteWidth('boss');
+    const drawWidth = isShootState ? shootSpriteWidth : enemy.width;
+    const offsetX = isShootState ? (shootSpriteWidth - enemy.width) / 2 : 0;
 
-    // Armor plates
-    ctx.fillStyle = '#5c1919';
-    ctx.fillRect(enemy.x + 10, enemy.y + 10, enemy.width - 20, enemy.height - 20);
+    ctx.save();
+    if (!enemy.isFacingRight) {
+      ctx.translate(enemy.x + enemy.width + offsetX, enemy.y);
+      ctx.scale(-1, 1);
+      if (sprite) {
+        ctx.drawImage(sprite, 0, 0, drawWidth, enemy.height);
+      } else {
+        const fallbackKey = isShootState ? 'boss_shoot0' :
+          enemy.animationState === 'walk' ? 'boss_walk1' : 'boss_idle';
+        const fallback = this.enemySprites.get(fallbackKey);
+        if (fallback) {
+          ctx.drawImage(fallback, 0, 0, drawWidth, enemy.height);
+        } else {
+          ctx.fillStyle = '#2c0a0a';
+          ctx.fillRect(0, 0, drawWidth, enemy.height);
+        }
+      }
+    } else {
+      if (sprite) {
+        ctx.drawImage(sprite, enemy.x - offsetX, enemy.y, drawWidth, enemy.height);
+      } else {
+        const fallbackKey = isShootState ? 'boss_shoot0' :
+          enemy.animationState === 'walk' ? 'boss_walk1' : 'boss_idle';
+        const fallback = this.enemySprites.get(fallbackKey);
+        if (fallback) {
+          ctx.drawImage(fallback, enemy.x - offsetX, enemy.y, drawWidth, enemy.height);
+        } else {
+          ctx.fillStyle = '#2c0a0a';
+          ctx.fillRect(enemy.x - offsetX, enemy.y, drawWidth, enemy.height);
+        }
+      }
+    }
+    ctx.restore();
 
-    // Glowing core
-    const corePulse = Math.sin(performance.now() / 200) * 0.3 + 0.7;
-    ctx.fillStyle = `rgba(255, 50, 50, ${corePulse})`;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY + 10, 15, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Boss helmet/head
-    ctx.fillStyle = '#1a0505';
-    ctx.fillRect(enemy.x + 15, enemy.y - 15, enemy.width - 30, 25);
-
-    // Glowing eyes
-    ctx.fillStyle = '#ff0000';
-    ctx.beginPath();
-    ctx.arc(enemy.x + 25, enemy.y - 5, 4, 0, Math.PI * 2);
-    ctx.arc(enemy.x + enemy.width - 25, enemy.y - 5, 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Shoulder cannons
-    ctx.fillStyle = '#3d0e0e';
-    ctx.fillRect(enemy.x - 10, enemy.y + 15, 15, 25);
-    ctx.fillRect(enemy.x + enemy.width - 5, enemy.y + 15, 15, 25);
-
-    // BOSS label
     ctx.fillStyle = '#ff0000';
     ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('BOSS', centerX, enemy.y - 25);
 
-    // Enhanced health bar - longer and with segments
     const hpPercent = enemy.hp / enemy.maxHp;
     const barWidth = enemy.width + 20;
     const barX = enemy.x - 10;
 
-    // Bar background
     ctx.fillStyle = '#333';
     ctx.fillRect(barX, enemy.y - 15, barWidth, 10);
 
-    // Health segments (10 segments)
     ctx.fillStyle = hpPercent > 0.5 ? '#e74c3c' : '#ff0000';
     ctx.fillRect(barX, enemy.y - 15, barWidth * hpPercent, 10);
 
-    // Segment dividers
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 1;
     for (let i = 1; i < 10; i++) {
@@ -2268,29 +2262,42 @@ export class GameEngine {
       ctx.stroke();
     }
 
-    // HP text
     ctx.fillStyle = '#fff';
     ctx.font = '10px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(`${Math.ceil(enemy.hp)}/${enemy.maxHp}`, centerX, enemy.y - 8);
   }
 
-  private updateEnemyAnimation(enemy: Enemy): void {
-    // Increment animation timer
-    enemy.animationTimer += 0.016; // ~60fps
+  private updateEnemyAnimation(enemy: Enemy, dt: number): void {
+    const shootDurations: Record<string, number> = {
+      grunt: 0.4,
+      soldier: 0.5,
+      heavy: 0.8,
+      drone: 0.4,
+      boss: 0.6,
+    };
 
-    // Determine animation state based on velocity and shooting
+    enemy.animationTimer += dt;
+
+    let newState: 'idle' | 'walk' | 'shoot';
+
     if (enemy.isShooting) {
-      enemy.animationState = 'shoot';
-      // Reset shooting flag after animation completes (4 frames at 8fps = 0.5s)
-      if (enemy.animationTimer > 0.5) {
+      newState = 'shoot';
+      const duration = shootDurations[enemy.type] ?? 0.5;
+      if (enemy.animationTimer > duration) {
         enemy.isShooting = false;
         enemy.animationTimer = 0;
+        newState = Math.abs(enemy.vx) > 1 ? 'walk' : 'idle';
       }
     } else if (Math.abs(enemy.vx) > 1) {
-      enemy.animationState = 'walk';
+      newState = 'walk';
     } else {
-      enemy.animationState = 'idle';
+      newState = 'idle';
+    }
+
+    if (newState !== enemy.animationState) {
+      enemy.animationState = newState;
+      enemy.animationTimer = 0;
     }
   }
   
@@ -2352,7 +2359,64 @@ export class GameEngine {
   }
 
   // ============================================================
-  // ENEMY SPRITE GENERATION - Procedural Pixel Art Soldiers
+  // ENEMY SPRITES - SVG Image Loading (like player)
+  // ============================================================
+  private enemyImageSprites: Map<string, HTMLImageElement> = new Map();
+  private enemyImageSpritesLoaded: Set<string> = new Set();
+  private enemyWalkTimers: Map<number, number> = new Map();
+
+  private loadEnemySprites(): void {
+    const types = ['grunt', 'soldier', 'heavy', 'drone', 'boss'];
+    const poses = ['idle', 'walk', 'shoot'];
+
+    for (const type of types) {
+      for (const pose of poses) {
+        const key = `${type}_${pose}`;
+        if (this.enemyImageSprites.has(key)) continue;
+
+        const img = new Image();
+        img.src = `/images/enemy-${type}-${pose}.svg`;
+        img.onload = () => {
+          this.enemyImageSpritesLoaded.add(key);
+        };
+        this.enemyImageSprites.set(key, img);
+      }
+    }
+  }
+
+  private getEnemySprite(enemy: Enemy): HTMLImageElement | null {
+    let pose: string;
+
+    if (enemy.animationState === 'shoot' && enemy.isShooting) {
+      pose = 'shoot';
+    } else if (enemy.animationState === 'walk') {
+      if (!this.enemyWalkTimers.has(enemy.x)) {
+        this.enemyWalkTimers.set(enemy.x, 0);
+      }
+      const timer = this.enemyWalkTimers.get(enemy.x)! + 0.1;
+      this.enemyWalkTimers.set(enemy.x, timer);
+      const walkFrame = Math.floor(timer) % 2;
+      pose = walkFrame === 0 ? 'walk' : 'idle';
+    } else {
+      pose = 'idle';
+      this.enemyWalkTimers.delete(enemy.x);
+    }
+
+    const key = `${enemy.type}_${pose}`;
+    const img = this.enemyImageSprites.get(key);
+    const loaded = this.enemyImageSpritesLoaded.has(key);
+
+    return img && loaded ? img : null;
+  }
+
+  private getShootSpriteWidth(type: string): number {
+    if (type === 'boss') return 96;
+    if (type === 'drone') return 32;
+    return 48;
+  }
+
+  // ============================================================
+  // ENEMY SPRITE GENERATION - Procedural Fallback
   // ============================================================
   private enemySprites: Map<string, HTMLCanvasElement> = new Map();
   private enemySpritesGenerated: boolean = false;
@@ -2360,36 +2424,40 @@ export class GameEngine {
   private generateEnemySprites(): void {
     if (this.enemySpritesGenerated) return;
 
-    // Generate sprites for each enemy type
     const types: Array<'grunt' | 'soldier' | 'heavy'> = ['grunt', 'soldier', 'heavy'];
 
     for (const type of types) {
-      // Idle sprite
       this.enemySprites.set(`${type}_idle`, this.createEnemySprite(type, 'idle'));
-      // Walk sprite 1
-      this.enemySprites.set(`${type}_walk1`, this.createEnemySprite(type, 'walk1'));
-      // Walk sprite 2
-      this.enemySprites.set(`${type}_walk2`, this.createEnemySprite(type, 'walk2'));
-      // Shoot frames (4 frames like in the reference image)
+      for (let i = 1; i <= 4; i++) {
+        this.enemySprites.set(`${type}_walk${i}`, this.createEnemySprite(type, `walk${i}` as 'walk1' | 'walk2' | 'walk3' | 'walk4'));
+      }
       for (let i = 0; i < 4; i++) {
         this.enemySprites.set(`${type}_shoot${i}`, this.createEnemySprite(type, 'shoot', i));
       }
     }
 
-    // Generate ninja (drone) sprites
     for (let i = 0; i < 4; i++) {
       this.enemySprites.set(`ninja_shoot${i}`, this.createNinjaSprite('shoot', i));
     }
     this.enemySprites.set('ninja_idle', this.createNinjaSprite('idle'));
-    this.enemySprites.set('ninja_walk1', this.createNinjaSprite('walk1'));
-    this.enemySprites.set('ninja_walk2', this.createNinjaSprite('walk2'));
+    for (let i = 1; i <= 4; i++) {
+      this.enemySprites.set(`ninja_walk${i}`, this.createNinjaSprite(`walk${i}` as 'walk1' | 'walk2' | 'walk3' | 'walk4'));
+    }
+
+    this.enemySprites.set('boss_idle', this.createBossSprite('idle'));
+    for (let i = 1; i <= 4; i++) {
+      this.enemySprites.set(`boss_walk${i}`, this.createBossSprite(`walk${i}` as 'walk1' | 'walk2' | 'walk3' | 'walk4'));
+    }
+    for (let i = 0; i < 4; i++) {
+      this.enemySprites.set(`boss_shoot${i}`, this.createBossSprite('shoot', i));
+    }
 
     this.enemySpritesGenerated = true;
   }
 
   private createEnemySprite(
     type: 'grunt' | 'soldier' | 'heavy',
-    pose: 'idle' | 'walk1' | 'walk2' | 'shoot',
+    pose: 'idle' | 'walk1' | 'walk2' | 'walk3' | 'walk4' | 'shoot',
     shootFrame: number = 0
   ): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
@@ -2398,148 +2466,225 @@ export class GameEngine {
     canvas.height = size;
     const ctx = canvas.getContext('2d')!;
 
-    // Color scheme based on type
     const colors = {
       grunt: { body: '#2c3e50', vest: '#34495e', helmet: '#1a252f', skin: '#d4a574' },
       soldier: { body: '#1e3a5f', vest: '#2c4a6e', helmet: '#152a3f', skin: '#c4956a' },
       heavy: { body: '#2d132c', vest: '#4a2349', helmet: '#1a0f19', skin: '#b0855a' },
     }[type];
 
-    // Scale factor for pixel art look
     const pixelSize = size <= 36 ? 2 : 3;
 
-    // Helper to draw a pixel rectangle
     const drawPixel = (x: number, y: number, w: number, h: number, color: string) => {
       ctx.fillStyle = color;
       ctx.fillRect(x * pixelSize, y * pixelSize, w * pixelSize, h * pixelSize);
     };
 
-    // Animation offsets for WALKING (forward/back motion, not up/down)
     let bodyY = 8;
     let leftLegX = 0;
     let rightLegX = 0;
-    let legBend = 0;
+    let leftLegY = 0;
+    let rightLegY = 0;
     let armOffset = 0;
+    let armY = 5;
+    let bodyLean = 0;
     let gunFlash = false;
 
-    if (pose === 'walk1') {
-      // Left leg forward, right leg back
-      leftLegX = 2;
-      rightLegX = -2;
-      bodyY = 7; // Slight bob
-      legBend = 1;
-    } else if (pose === 'walk2') {
-      // Left leg back, right leg forward
-      leftLegX = -2;
-      rightLegX = 2;
-      bodyY = 7; // Slight bob
-      legBend = 1;
-    } else if (pose === 'shoot') {
-      armOffset = -2;
-      gunFlash = shootFrame >= 2;
+    if (type === 'grunt') {
+      if (pose === 'walk1') {
+        leftLegX = 3; rightLegX = -2; bodyY = 7; bodyLean = 2;
+      } else if (pose === 'walk2') {
+        leftLegX = 1; rightLegX = 0; bodyY = 7; bodyLean = 1;
+      } else if (pose === 'walk3') {
+        leftLegX = -2; rightLegX = 3; bodyY = 7; bodyLean = 2;
+      } else if (pose === 'walk4') {
+        leftLegX = 0; rightLegX = 1; bodyY = 7; bodyLean = 1;
+      } else if (pose === 'shoot') {
+        bodyLean = 3; armOffset = -3; armY = 4; gunFlash = shootFrame >= 1 && shootFrame <= 2;
+      }
+    } else if (type === 'soldier') {
+      if (pose === 'walk1') {
+        leftLegX = 2; rightLegX = -1; bodyY = 7;
+      } else if (pose === 'walk2') {
+        leftLegX = 1; rightLegX = 0; bodyY = 8;
+      } else if (pose === 'walk3') {
+        leftLegX = -1; rightLegX = 2; bodyY = 7;
+      } else if (pose === 'walk4') {
+        leftLegX = 0; rightLegX = 1; bodyY = 8;
+      } else if (pose === 'shoot') {
+        armOffset = -2; gunFlash = shootFrame >= 2;
+      }
+    } else {
+      if (pose === 'walk1') {
+        leftLegX = 1; rightLegX = -1; bodyY = 7;
+      } else if (pose === 'walk2') {
+        bodyY = 8;
+      } else if (pose === 'walk3') {
+        leftLegX = -1; rightLegX = 1; bodyY = 7;
+      } else if (pose === 'walk4') {
+        bodyY = 8;
+      } else if (pose === 'shoot') {
+        armOffset = -1; gunFlash = shootFrame >= 1 && shootFrame <= 2;
+      }
     }
 
-    // LEGS (dark tactical pants) - proper marching animation
     const legColor = '#1a1a2e';
     const bootColor = '#0f0f1a';
 
-    if (pose === 'walk1' || pose === 'walk2') {
-      // Walking: legs extend forward/back with slight knee bend
-      // Left leg
-      drawPixel(6 + leftLegX, 22, 4, 4, legColor); // Thigh
-      drawPixel(6 + leftLegX * 0.5, 26, 4, 4, legColor); // Knee/shin
-      drawPixel(6, 30, 4, 2, bootColor); // Boot (stays planted or lifts slightly)
+    if (pose.startsWith('walk')) {
+      drawPixel(6 + leftLegX, 22 + leftLegY, 4, 4, legColor);
+      drawPixel(6 + Math.floor(leftLegX * 0.3), 26, 4, 4, legColor);
+      drawPixel(6, 30, 4, 2, bootColor);
 
-      // Right leg
-      drawPixel(14 + rightLegX, 22, 4, 4, legColor); // Thigh
-      drawPixel(14 + rightLegX * 0.5, 26, 4, 4, legColor); // Knee/shin
-      drawPixel(14, 30, 4, 2, bootColor); // Boot
+      drawPixel(14 + rightLegX, 22 + rightLegY, 4, 4, legColor);
+      drawPixel(14 + Math.floor(rightLegX * 0.3), 26, 4, 4, legColor);
+      drawPixel(14, 30, 4, 2, bootColor);
     } else {
-      // Idle/Shoot: standing position
-      // Left leg
       drawPixel(6, 22, 4, 10, legColor);
       drawPixel(6, 30, 4, 2, bootColor);
-      // Right leg
       drawPixel(14, 22, 4, 10, legColor);
       drawPixel(14, 30, 4, 2, bootColor);
     }
 
-    // BODY (tactical vest)
-    drawPixel(4, bodyY + 2, 16, 14, colors.body);
-    // Vest details
-    drawPixel(5, bodyY + 4, 14, 10, colors.vest);
-    // Vest pouches
-    drawPixel(6, bodyY + 6, 3, 3, '#1a1a2e');
-    drawPixel(14, bodyY + 6, 3, 3, '#1a1a2e');
+    drawPixel(4 + bodyLean, bodyY + 2, 16, 14, colors.body);
+    drawPixel(5 + bodyLean, bodyY + 4, 14, 10, colors.vest);
+    drawPixel(6 + bodyLean, bodyY + 6, 3, 3, '#1a1a2e');
+    drawPixel(14 + bodyLean, bodyY + 6, 3, 3, '#1a1a2e');
 
-    // HEAD
     const headY = bodyY - 6;
-    // Helmet
-    drawPixel(5, headY, 14, 8, colors.helmet);
-    // Helmet rim
-    drawPixel(4, headY + 2, 16, 2, '#0f0f1a');
-    // Face
-    drawPixel(8, headY + 3, 8, 4, colors.skin);
-    // Goggles/Visor
-    drawPixel(7, headY + 3, 10, 3, '#0f3460');
-    drawPixel(8, headY + 4, 8, 1, '#1a5fb4');
-    // Helmet detail
-    drawPixel(11, headY, 2, 2, '#4a4a5a');
+    drawPixel(5 + bodyLean, headY, 14, 8, colors.helmet);
+    drawPixel(4 + bodyLean, headY + 2, 16, 2, '#0f0f1a');
+    drawPixel(8 + bodyLean, headY + 3, 8, 4, colors.skin);
+    drawPixel(7 + bodyLean, headY + 3, 10, 3, '#0f3460');
+    drawPixel(8 + bodyLean, headY + 4, 8, 1, '#1a5fb4');
+    drawPixel(11 + bodyLean, headY, 2, 2, '#4a4a5a');
 
-    // ARMS and GUN
-    const armY = bodyY + 5;
-    // Left arm (holding gun foregrip)
-    drawPixel(2, armY, 4, 8, colors.body);
-    drawPixel(1, armY + 2, 3, 4, colors.skin);
+    const armDrawY = bodyY + armY;
 
-    // Gun (tan/beige rifle like in the image)
-    const gunColor = '#c4a574';
-    const gunDark = '#8b7355';
-    const gunY = armY + 1;
+    if (type === 'grunt') {
+      drawPixel(2 + bodyLean, armDrawY, 4, 8, colors.body);
+      drawPixel(1 + bodyLean, armDrawY + 2, 3, 4, colors.skin);
 
-    if (pose === 'shoot') {
-      // Gun recoils up slightly
-      const recoil = shootFrame === 2 ? -1 : shootFrame === 3 ? 0 : 0;
-      // Main rifle body
-      drawPixel(0, gunY + recoil, 20, 3, gunColor);
-      // Handguard
-      drawPixel(2, gunY + recoil, 8, 3, gunDark);
-      // Barrel
-      drawPixel(18, gunY + 1 + recoil, 6, 1, '#5a4a3a');
-      // Magazine
-      drawPixel(6, gunY + 3 + recoil, 3, 5, gunDark);
-      // Stock
-      drawPixel(-4, gunY + recoil, 4, 3, gunDark);
-
-      // Muzzle flash (when shooting)
-      if (gunFlash) {
-        const flashColors = ['#ffff00', '#ff8800', '#ff4400'];
-        const flashColor = flashColors[shootFrame - 2];
-        // Flash bursts
-        drawPixel(24, gunY + recoil, 4, 3, flashColor);
-        drawPixel(26, gunY - 1 + recoil, 3, 2, '#ffffaa');
-        drawPixel(26, gunY + 3 + recoil, 3, 2, '#ffffaa');
-        // Bullet tracer
-        drawPixel(28, gunY + 1 + recoil, 8, 1, '#ffff00');
+      if (pose === 'shoot') {
+        const meleeArmX = 18 + bodyLean + armOffset;
+        if (shootFrame === 0) {
+          drawPixel(meleeArmX - 4, armDrawY, 4, 8, colors.body);
+          drawPixel(meleeArmX - 5, armDrawY + 2, 3, 4, colors.skin);
+          drawPixel(meleeArmX - 6, armDrawY + 1, 6, 2, '#c0c0c0');
+          drawPixel(meleeArmX - 8, armDrawY + 1, 2, 2, '#c0c0c0');
+        } else if (shootFrame === 1) {
+          drawPixel(meleeArmX, armDrawY - 2, 4, 8, colors.body);
+          drawPixel(meleeArmX + 1, armDrawY, 3, 4, colors.skin);
+          drawPixel(meleeArmX + 3, armDrawY - 1, 6, 2, '#c0c0c0');
+          drawPixel(meleeArmX + 8, armDrawY - 1, 2, 2, '#c0c0c0');
+          drawPixel(meleeArmX + 6, armDrawY - 3, 3, 2, '#ffff00');
+          drawPixel(meleeArmX + 7, armDrawY - 5, 2, 2, '#ffff00');
+        } else if (shootFrame === 2) {
+          drawPixel(meleeArmX + 2, armDrawY - 1, 4, 7, colors.body);
+          drawPixel(meleeArmX + 3, armDrawY + 1, 3, 3, colors.skin);
+          drawPixel(meleeArmX + 5, armDrawY, 5, 2, '#c0c0c0');
+          drawPixel(meleeArmX + 9, armDrawY, 2, 2, '#c0c0c0');
+          drawPixel(meleeArmX + 7, armDrawY - 2, 4, 3, '#ff8800');
+          drawPixel(meleeArmX + 8, armDrawY - 4, 3, 2, '#ffff00');
+          drawPixel(meleeArmX + 6, armDrawY + 2, 3, 2, '#ff4400');
+        } else {
+          drawPixel(meleeArmX - 1, armDrawY, 4, 7, colors.body);
+          drawPixel(meleeArmX, armDrawY + 2, 3, 3, colors.skin);
+          drawPixel(meleeArmX + 2, armDrawY + 1, 4, 2, '#c0c0c0');
+          drawPixel(meleeArmX + 5, armDrawY + 1, 2, 2, '#c0c0c0');
+        }
+      } else {
+        drawPixel(16 + bodyLean, armDrawY, 4, 6, colors.body);
+        drawPixel(17 + bodyLean, armDrawY + 1, 2, 3, colors.skin);
+        drawPixel(18 + bodyLean, armDrawY, 1, 8, '#c0c0c0');
+        drawPixel(17 + bodyLean, armDrawY - 1, 3, 1, '#8b4513');
       }
-    } else {
-      // Idle/walk gun position
-      drawPixel(0, gunY, 18, 3, gunColor);
-      drawPixel(2, gunY, 8, 3, gunDark);
-      drawPixel(16, gunY + 1, 4, 1, '#5a4a3a');
-      drawPixel(6, gunY + 3, 3, 4, gunDark);
-      drawPixel(-2, gunY, 3, 3, gunDark);
-    }
+    } else if (type === 'soldier') {
+      drawPixel(2 + bodyLean, armDrawY, 4, 8, colors.body);
+      drawPixel(1 + bodyLean, armDrawY + 2, 3, 4, colors.skin);
 
-    // Right arm (holding gun stock)
-    drawPixel(16 + armOffset, armY, 4, 6, colors.body);
-    drawPixel(17 + armOffset, armY + 1, 2, 3, colors.skin);
+      const gunColor = '#c4a574';
+      const gunDark = '#8b7355';
+      const gunY = armDrawY + 1;
+
+      if (pose === 'shoot') {
+        const recoil = shootFrame === 2 ? -1 : 0;
+        drawPixel(0, gunY + recoil, 20, 3, gunColor);
+        drawPixel(2, gunY + recoil, 8, 3, gunDark);
+        drawPixel(18, gunY + 1 + recoil, 6, 1, '#5a4a3a');
+        drawPixel(6, gunY + 3 + recoil, 3, 5, gunDark);
+        drawPixel(-4, gunY + recoil, 4, 3, gunDark);
+        if (gunFlash) {
+          const flashColors = ['#ffff00', '#ff8800'];
+          const flashColor = flashColors[shootFrame - 2] ?? '#ffff00';
+          drawPixel(24, gunY + recoil, 4, 3, flashColor);
+          drawPixel(26, gunY - 1 + recoil, 3, 2, '#ffffaa');
+          drawPixel(26, gunY + 3 + recoil, 3, 2, '#ffffaa');
+          drawPixel(28, gunY + 1 + recoil, 8, 1, '#ffff00');
+        }
+      } else {
+        const walkBob = pose === 'walk1' || pose === 'walk3' ? -1 : 0;
+        drawPixel(0, gunY + walkBob, 18, 3, gunColor);
+        drawPixel(2, gunY + walkBob, 8, 3, gunDark);
+        drawPixel(16, gunY + 1 + walkBob, 4, 1, '#5a4a3a');
+        drawPixel(6, gunY + 3 + walkBob, 3, 4, gunDark);
+        drawPixel(-2, gunY + walkBob, 3, 3, gunDark);
+      }
+
+      drawPixel(16 + armOffset + bodyLean, armDrawY, 4, 6, colors.body);
+      drawPixel(17 + armOffset + bodyLean, armDrawY + 1, 2, 3, colors.skin);
+    } else {
+      drawPixel(2 + bodyLean, armDrawY, 5, 9, colors.body);
+      drawPixel(1 + bodyLean, armDrawY + 3, 3, 4, colors.skin);
+
+      const gunColor = '#4a4a5a';
+      const gunDark = '#333344';
+      const gunY = armDrawY;
+
+      if (pose === 'shoot') {
+        const recoil = shootFrame >= 2 ? 1 : 0;
+        const brace = shootFrame === 0 ? -2 : 0;
+        drawPixel(-2 + brace, gunY + recoil, 24, 4, gunColor);
+        drawPixel(0, gunY + recoil, 10, 4, gunDark);
+        drawPixel(20, gunY + 1 + recoil, 8, 2, '#2a2a3a');
+        drawPixel(8, gunY + 4 + recoil, 4, 6, gunDark);
+        drawPixel(-6, gunY + recoil, 5, 4, gunDark);
+        drawPixel(10, gunY - 2 + recoil, 3, 2, '#555');
+        drawPixel(10, gunY + 5 + recoil, 3, 2, '#555');
+        if (gunFlash) {
+          const flashIntensity = shootFrame === 1 ? 0 : 1;
+          if (flashIntensity === 0) {
+            drawPixel(28, gunY + recoil, 5, 4, '#ffff00');
+            drawPixel(30, gunY - 2 + recoil, 4, 2, '#ffffaa');
+            drawPixel(30, gunY + 5 + recoil, 4, 2, '#ffffaa');
+            drawPixel(32, gunY + recoil, 10, 2, '#ff8800');
+            drawPixel(33, gunY - 3 + recoil, 3, 2, '#ff4400');
+            drawPixel(33, gunY + 6 + recoil, 3, 2, '#ff4400');
+          } else {
+            drawPixel(28, gunY + recoil, 4, 3, '#ff8800');
+            drawPixel(30, gunY - 1 + recoil, 3, 2, '#ffaa44');
+            drawPixel(30, gunY + 4 + recoil, 3, 2, '#ffaa44');
+            drawPixel(32, gunY + recoil, 6, 2, '#ff6600');
+          }
+        }
+      } else {
+        drawPixel(-1, gunY, 22, 4, gunColor);
+        drawPixel(0, gunY, 10, 4, gunDark);
+        drawPixel(19, gunY + 1, 6, 2, '#2a2a3a');
+        drawPixel(8, gunY + 4, 4, 5, gunDark);
+        drawPixel(-4, gunY, 4, 4, gunDark);
+        drawPixel(10, gunY - 2, 3, 2, '#555');
+        drawPixel(10, gunY + 5, 3, 2, '#555');
+      }
+
+      drawPixel(17 + armOffset + bodyLean, armDrawY, 5, 7, colors.body);
+      drawPixel(18 + armOffset + bodyLean, armDrawY + 2, 3, 3, colors.skin);
+    }
 
     return canvas;
   }
 
   private createNinjaSprite(
-    pose: 'idle' | 'walk1' | 'walk2' | 'shoot',
+    pose: 'idle' | 'walk1' | 'walk2' | 'walk3' | 'walk4' | 'shoot',
     shootFrame: number = 0
   ): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
@@ -2564,90 +2709,190 @@ export class GameEngine {
     let bodyY = 4;
     let leftLegX = 0;
     let rightLegX = 0;
+    let leftLegY = 0;
+    let rightLegY = 0;
+    let bodyLean = 0;
     let armOffset = 0;
     let throwFrame = false;
+    let headbandTailWave = 0;
 
     if (pose === 'walk1') {
-      leftLegX = 1;
-      rightLegX = -1;
-      bodyY = 3;
+      leftLegX = 2; rightLegX = -1; bodyY = 3; bodyLean = 1; headbandTailWave = -1;
     } else if (pose === 'walk2') {
-      leftLegX = -1;
-      rightLegX = 1;
-      bodyY = 3;
+      leftLegX = 1; rightLegX = 0; bodyY = 4; bodyLean = 0; headbandTailWave = 0;
+    } else if (pose === 'walk3') {
+      leftLegX = -1; rightLegX = 2; bodyY = 3; bodyLean = 1; headbandTailWave = 1;
+    } else if (pose === 'walk4') {
+      leftLegX = 0; rightLegX = 1; bodyY = 4; bodyLean = 0; headbandTailWave = 0;
     } else if (pose === 'shoot') {
       armOffset = -1;
       throwFrame = shootFrame >= 2;
+      bodyLean = shootFrame === 1 ? 2 : 0;
     }
 
-    // LEGS
     const legColor = '#0f0f1a';
-    if (pose === 'walk1' || pose === 'walk2') {
-      drawPixel(3 + leftLegX, 17, 2, 4, legColor);
-      drawPixel(3, 19, 2, 2, robeColor);
-      drawPixel(7 + rightLegX, 17, 2, 4, legColor);
-      drawPixel(7, 19, 2, 2, robeColor);
+    if (pose.startsWith('walk')) {
+      drawPixel(3 + leftLegX, 17 + leftLegY, 2, 4, legColor);
+      drawPixel(3 + Math.floor(leftLegX * 0.3), 19, 2, 2, legColor);
+      drawPixel(7 + rightLegX, 17 + rightLegY, 2, 4, legColor);
+      drawPixel(7 + Math.floor(rightLegX * 0.3), 19, 2, 2, legColor);
     } else {
       drawPixel(3, 17, 2, 5, legColor);
       drawPixel(7, 17, 2, 5, legColor);
     }
 
-    // BODY - ninja robe
-    drawPixel(2, bodyY + 2, 8, 10, robeColor);
-    // Robe overlap V
-    drawPixel(5, bodyY + 8, 2, 4, '#0f0f1a');
-    // Belt
-    drawPixel(2, bodyY + 6, 8, 1, beltColor);
-    // Accent trim
-    drawPixel(2, bodyY + 2, 8, 1, robeAccent);
-    drawPixel(2, bodyY + 11, 8, 1, robeAccent);
+    drawPixel(2 + bodyLean, bodyY + 2, 8, 10, robeColor);
+    drawPixel(5 + bodyLean, bodyY + 8, 2, 4, '#0f0f1a');
+    drawPixel(2 + bodyLean, bodyY + 6, 8, 1, beltColor);
+    drawPixel(2 + bodyLean, bodyY + 2, 8, 1, robeAccent);
+    drawPixel(2 + bodyLean, bodyY + 11, 8, 1, robeAccent);
 
-    // HEAD - hood/mask
     const headY = bodyY - 4;
-    // Hood
-    drawPixel(3, headY, 6, 6, robeColor);
-    // Face mask
-    drawPixel(4, headY + 3, 4, 2, '#0a0a14');
-    // Eyes (glowing)
-    drawPixel(4, headY + 3, 1, 1, '#e74c3c');
-    drawPixel(7, headY + 3, 1, 1, '#e74c3c');
-    // Headband
-    drawPixel(2, headY + 1, 8, 1, headbandColor);
-    // Headband tail
-    drawPixel(9, headY + 1, 3, 1, headbandColor);
-    drawPixel(10, headY + 2, 2, 1, headbandColor);
+    drawPixel(3 + bodyLean, headY, 6, 6, robeColor);
+    drawPixel(4 + bodyLean, headY + 3, 4, 2, '#0a0a14');
+    drawPixel(4 + bodyLean, headY + 3, 1, 1, '#e74c3c');
+    drawPixel(7 + bodyLean, headY + 3, 1, 1, '#e74c3c');
+    drawPixel(2 + bodyLean, headY + 1, 8, 1, headbandColor);
+    drawPixel(9 + bodyLean + headbandTailWave, headY + 1, 3, 1, headbandColor);
+    drawPixel(10 + bodyLean + headbandTailWave, headY + 2, 2, 1, headbandColor);
 
-    // ARMS
     const armY = bodyY + 4;
-    // Back arm
-    drawPixel(0, armY, 2, 5, robeColor);
-    drawPixel(0, armY + 4, 2, 1, skinColor);
+    drawPixel(0 + bodyLean, armY, 2, 5, robeColor);
+    drawPixel(0 + bodyLean, armY + 4, 2, 1, skinColor);
 
     if (pose === 'shoot') {
-      // Throwing arm extended
       const recoil = throwFrame ? 1 : 0;
-      drawPixel(10 + armOffset + recoil, armY, 2, 3, robeColor);
-      drawPixel(11 + armOffset + recoil, armY + 2, 1, 2, skinColor);
+      drawPixel(10 + armOffset + recoil + bodyLean, armY, 2, 3, robeColor);
+      drawPixel(11 + armOffset + recoil + bodyLean, armY + 2, 1, 2, skinColor);
 
-      // Ninja star in hand / thrown
       if (!throwFrame) {
-        drawPixel(12 + armOffset, armY + 1, 2, 2, '#555');
+        drawPixel(12 + armOffset + bodyLean, armY + 1, 2, 2, '#555');
       } else {
-        // Star flying away
-        const starX = 12 + shootFrame;
+        const starX = 12 + shootFrame + bodyLean;
         drawPixel(starX, armY - 1, 2, 2, '#888');
         drawPixel(starX - 1, armY, 2, 2, '#888');
         drawPixel(starX + 1, armY, 2, 2, '#888');
         drawPixel(starX, armY + 1, 2, 2, '#888');
       }
     } else {
-      // Idle/walk - arms at sides or one holding blade
-      drawPixel(10, armY, 2, 4, robeColor);
-      drawPixel(10, armY + 3, 1, 2, skinColor);
+      const walkArm = pose === 'walk1' || pose === 'walk3' ? -1 : 0;
+      drawPixel(10 + bodyLean, armY + walkArm, 2, 4, robeColor);
+      drawPixel(10 + bodyLean, armY + 3 + walkArm, 1, 2, skinColor);
 
-      // Katana on back
-      drawPixel(1, headY, 1, 8, bladeColor);
-      drawPixel(0, headY, 2, 1, '#8b4513');
+      drawPixel(1 + bodyLean, headY, 1, 8, bladeColor);
+      drawPixel(0 + bodyLean, headY, 2, 1, '#8b4513');
+    }
+
+    return canvas;
+  }
+
+  private createBossSprite(
+    pose: 'idle' | 'walk1' | 'walk2' | 'walk3' | 'walk4' | 'shoot',
+    shootFrame: number = 0
+  ): HTMLCanvasElement {
+    const canvas = document.createElement('canvas');
+    canvas.width = 80;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d')!;
+
+    const pixelSize = 4;
+    const drawPixel = (x: number, y: number, w: number, h: number, color: string) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * pixelSize, y * pixelSize, w * pixelSize, h * pixelSize);
+    };
+
+    const armorDark = '#1a0505';
+    const armorMid = '#3d0e0e';
+    const armorLight = '#5c1919';
+    const coreColor = '#ff3232';
+    const skinColor = '#b0855a';
+    const cannonColor = '#2a0808';
+
+    let bodyY = 8;
+    let leftLegX = 0;
+    let rightLegX = 0;
+    let bodyLean = 0;
+    let leftCannonAngle = 0;
+    let rightCannonAngle = 0;
+    let coreGlow = false;
+    let muzzleFlash = false;
+
+    if (pose === 'walk1') {
+      leftLegX = 1; rightLegX = -1; bodyY = 7;
+    } else if (pose === 'walk2') {
+      leftLegX = 0; rightLegX = 0; bodyY = 8;
+    } else if (pose === 'walk3') {
+      leftLegX = -1; rightLegX = 1; bodyY = 7;
+    } else if (pose === 'walk4') {
+      leftLegX = 0; rightLegX = 0; bodyY = 8;
+    } else if (pose === 'shoot') {
+      if (shootFrame === 0) {
+        leftCannonAngle = -1; rightCannonAngle = -1; coreGlow = true;
+      } else if (shootFrame === 1) {
+        muzzleFlash = true; coreGlow = true;
+      } else if (shootFrame === 2) {
+        muzzleFlash = true; bodyLean = 1;
+      } else {
+        leftCannonAngle = 1; rightCannonAngle = 1;
+      }
+    }
+
+    const legColor = armorDark;
+    const bootColor = '#0a0202';
+
+    if (pose.startsWith('walk')) {
+      drawPixel(6 + leftLegX, 18, 5, 5, legColor);
+      drawPixel(6 + Math.floor(leftLegX * 0.3), 21, 5, 3, legColor);
+      drawPixel(6, 23, 6, 2, bootColor);
+
+      drawPixel(9 + rightLegX, 18, 5, 5, legColor);
+      drawPixel(9 + Math.floor(rightLegX * 0.3), 21, 5, 3, legColor);
+      drawPixel(9, 23, 6, 2, bootColor);
+    } else {
+      drawPixel(6, 18, 5, 7, legColor);
+      drawPixel(6, 23, 6, 2, bootColor);
+      drawPixel(9, 18, 5, 7, legColor);
+      drawPixel(9, 23, 6, 2, bootColor);
+    }
+
+    drawPixel(3 + bodyLean, bodyY + 2, 14, 12, armorDark);
+    drawPixel(4 + bodyLean, bodyY + 3, 12, 10, armorMid);
+    drawPixel(5 + bodyLean, bodyY + 5, 10, 6, armorLight);
+    drawPixel(6 + bodyLean, bodyY + 6, 3, 3, armorDark);
+    drawPixel(11 + bodyLean, bodyY + 6, 3, 3, armorDark);
+
+    const coreY = bodyY + 6;
+    drawPixel(7 + bodyLean, coreY, 6, 4, coreGlow ? '#ff5555' : coreColor);
+    if (coreGlow) {
+      drawPixel(6 + bodyLean, coreY + 1, 8, 2, '#ff8888');
+    }
+
+    const headY = bodyY - 5;
+    drawPixel(4 + bodyLean, headY, 12, 6, armorDark);
+    drawPixel(5 + bodyLean, headY + 1, 10, 4, armorMid);
+    drawPixel(6 + bodyLean, headY + 2, 8, 2, skinColor);
+    drawPixel(6 + bodyLean, headY + 2, 3, 1, '#ff0000');
+    drawPixel(11 + bodyLean, headY + 2, 3, 1, '#ff0000');
+    drawPixel(7 + bodyLean, headY, 6, 1, armorLight);
+
+    const cannonY = bodyY + 3;
+    drawPixel(-2, cannonY + leftCannonAngle, 4, 5, cannonColor);
+    drawPixel(-3, cannonY + leftCannonAngle, 3, 3, armorMid);
+    drawPixel(16, cannonY + rightCannonAngle, 4, 5, cannonColor);
+    drawPixel(18, cannonY + rightCannonAngle, 3, 3, armorMid);
+
+    if (muzzleFlash) {
+      const flashSize = shootFrame === 1 ? 3 : 2;
+      const flashColor = shootFrame === 1 ? '#ffff00' : '#ff8800';
+      drawPixel(-5, cannonY + leftCannonAngle, flashSize, 2, flashColor);
+      drawPixel(-6, cannonY + leftCannonAngle - 1, flashSize - 1, 1, '#ffffaa');
+      drawPixel(-6, cannonY + leftCannonAngle + 2, flashSize - 1, 1, '#ffffaa');
+      drawPixel(19, cannonY + rightCannonAngle, flashSize, 2, flashColor);
+      drawPixel(20, cannonY + rightCannonAngle - 1, flashSize - 1, 1, '#ffffaa');
+      drawPixel(20, cannonY + rightCannonAngle + 2, flashSize - 1, 1, '#ffffaa');
+
+      drawPixel(8 + bodyLean, coreY - 2, 4, 1, '#ff4400');
+      drawPixel(9 + bodyLean, coreY - 3, 2, 1, '#ff6600');
     }
 
     return canvas;

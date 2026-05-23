@@ -1,0 +1,49 @@
+<svg width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soldier Idle Stance (Tactical Ready) -->
+  
+  <!-- Legs -->
+  <rect x="6" y="32" width="8" height="16" fill="#2a3a5d"/>
+  <rect x="18" y="32" width="8" height="16" fill="#2a3a5d"/>
+  
+  <!-- Boots -->
+  <rect x="5" y="44" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="17" y="44" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="5" y="43" width="10" height="1" fill="#2a2a3e"/>
+  <rect x="17" y="43" width="10" height="1" fill="#2a2a3e"/>
+  
+  <!-- Body/Torso -->
+  <rect x="4" y="16" width="24" height="20" fill="#1e3a5f"/>
+  <rect x="6" y="18" width="20" height="14" fill="#2c4a6e"/>
+  
+  <!-- Vest pouches -->
+  <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+  <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+  
+  <!-- Arms -->
+  <rect x="0" y="18" width="6" height="14" fill="#1e3a5f"/>
+  <rect x="26" y="18" width="6" height="14" fill="#1e3a5f"/>
+  
+  <!-- Gloves -->
+  <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+  <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+  
+  <!-- Head -->
+  <rect x="8" y="4" width="16" height="14" fill="#c4956a"/>
+  
+  <!-- Helmet -->
+  <rect x="6" y="2" width="20" height="10" fill="#152a3f"/>
+  <rect x="6" y="10" width="20" height="3" fill="#1e3a5f"/>
+  <rect x="5" y="10" width="22" height="1" fill="#0f1a2f"/>
+  
+  <!-- Visor -->
+  <rect x="10" y="8" width="12" height="4" fill="#1a1a1a"/>
+  <rect x="11" y="9" width="4" height="2" fill="#e67e22"/>
+  <rect x="17" y="9" width="4" height="2" fill="#e67e22"/>
+  
+  <!-- Rifle held ready -->
+  <rect x="20" y="24" width="12" height="4" fill="#c4956a"/>
+  <rect x="28" y="22" width="4" height="2" fill="#b08555"/>
+  <rect x="16" y="25" width="4" height="2" fill="#b08555"/>
+  <rect x="24" y="28" width="3" height="5" fill="#8b6f4e"/>
+  <rect x="16" y="24" width="1" height="1" fill="#2a2a2a"/>
+</svg>
