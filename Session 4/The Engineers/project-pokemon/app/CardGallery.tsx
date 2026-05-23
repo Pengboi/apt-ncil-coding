@@ -239,36 +239,42 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
     const fetchPrices = async () => {
       setLoadingPrices(true);
       try {
+        const batchSize = 50;
         const cardsWithPrices = [...cards];
 
-        for (let i = 0; i < cardsWithPrices.length; i++) {
+        for (let i = 0; i < cards.length; i += batchSize) {
           if (cancelled) break;
+          const batch = cards.slice(i, i + batchSize);
+          const cardIds = batch.map(c => c.id);
 
-          const card = cardsWithPrices[i];
-          try {
-            const res = await fetch(
-              `/api/prices?name=${encodeURIComponent(card.name)}&cardId=${
-                card.id
-              }&setName=${encodeURIComponent(card.setName)}`
-            );
-            if (!cancelled && res.ok) {
-              const data = await res.json();
-              if (data.price) {
-                cardsWithPrices[i] = {
-                  ...card,
-                  price: data.price.price,
-                  previousPrice: data.price.previousPrice,
-                  priceSource: data.price.source,
-                  priceChange: data.price.change,
+          const res = await fetch('/api/prices/bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cardIds }),
+          });
+
+          if (!cancelled && res.ok) {
+            const data = await res.json();
+            const prices = data.prices || {};
+
+            for (let j = 0; j < batch.length; j++) {
+              const cardId = batch[j].id;
+              const priceData = prices[cardId];
+              if (priceData) {
+                const globalIdx = i + j;
+                cardsWithPrices[globalIdx] = {
+                  ...cardsWithPrices[globalIdx],
+                  price: priceData.price,
+                  previousPrice: priceData.previousPrice,
+                  priceSource: priceData.source,
+                  priceChange: priceData.change,
                 };
               }
             }
-          } catch {
-            // ignore errors for individual cards
-          }
 
-          if (!cancelled) {
-            setCards([...cardsWithPrices]);
+            if (!cancelled) {
+              setCards([...cardsWithPrices]);
+            }
           }
         }
       } finally {
@@ -284,7 +290,7 @@ export default function CardGallery({ name, searchName, onClose }: CardGalleryPr
 
   const filteredCards = useMemo(() => {
     const base = selectedSet === "all" ? cards : cards.filter((c) => c.setId === selectedSet);
-    return [...base].sort((a, b) => a.setName.localeCompare(b.setName));
+    return [...base].sort((a, b) => (b.releaseDate || "").localeCompare(a.releaseDate || ""));
   }, [cards, selectedSet]);
 
   const groupedCards = useMemo(() => {

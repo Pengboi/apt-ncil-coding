@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+
+const TCG_API = 'https://api.tcgdex.net/v2/en';
+const EUR_TO_GBP = 0.85;
+const USD_TO_GBP = 0.79;
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-
   try {
     const body = await request.json();
     const { cardIds } = body;
@@ -16,32 +17,67 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Maximum 100 card IDs per request' }, { status: 400 });
     }
 
-    const { data: snapshots } = await supabase
-      .from('price_snapshots')
-      .select('card_id, current_price, previous_price, change_percent, updated_at')
-      .in('card_id', cardIds);
-
-    const snapshotMap = new Map((snapshots || []).map(s => [s.card_id, s]));
-
-    const { data: cards } = await supabase
-      .from('cards')
-      .select('id, name, set_name, rarity, image_url')
-      .in('id', cardIds);
-
-    const cardMap = new Map((cards || []).map(c => [c.id, c]));
-
     const results: Record<string, any> = {};
-    for (const cardId of cardIds) {
-      const snapshot = snapshotMap.get(cardId);
-      const card = cardMap.get(cardId);
 
-      results[cardId] = {
-        current: snapshot?.current_price ?? null,
-        previous: snapshot?.previous_price ?? null,
-        change24h: snapshot?.change_percent ?? null,
-        lastUpdated: snapshot?.updated_at ?? null,
-        card: card || null,
-      };
+    const batchSize = 5;
+    for (let i = 0; i < cardIds.length; i += batchSize) {
+      const batch = cardIds.slice(i, i + batchSize);
+      const promises = batch.map(async (cardId: string) => {
+        try {
+          const res = await fetch(`${TCG_API}/cards/${cardId}`, {
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) return;
+
+          const data = await res.json();
+          const pricing = data?.pricing;
+          if (!pricing) return;
+
+          let price = 0;
+          let previousPrice = 0;
+          let source = '';
+
+          if (pricing.tcgplayer?.holofoil?.marketPrice) {
+            const marketUSD = pricing.tcgplayer.holofoil.marketPrice;
+            const trendUSD = pricing.tcgplayer.holofoil.trendPrice || marketUSD;
+            price = Math.round(marketUSD * USD_TO_GBP * 100) / 100;
+            previousPrice = Math.round(trendUSD * USD_TO_GBP * 100) / 100;
+            source = 'TCGPlayer';
+          } else if (pricing.tcgplayer?.normal?.marketPrice) {
+            const marketUSD = pricing.tcgplayer.normal.marketPrice;
+            const trendUSD = pricing.tcgplayer.normal.trendPrice || marketUSD;
+            price = Math.round(marketUSD * USD_TO_GBP * 100) / 100;
+            previousPrice = Math.round(trendUSD * USD_TO_GBP * 100) / 100;
+            source = 'TCGPlayer';
+          } else if (pricing.cardmarket?.trend) {
+            const trendEUR = pricing.cardmarket.trend;
+            const avg30EUR = pricing.cardmarket.avg30 || pricing.cardmarket.avg7 || pricing.cardmarket.avg || trendEUR;
+            price = Math.round(trendEUR * EUR_TO_GBP * 100) / 100;
+            previousPrice = Math.round(avg30EUR * EUR_TO_GBP * 100) / 100;
+            source = 'CardMarket';
+          }
+
+          if (price <= 0) return;
+
+          const changePercent = previousPrice > 0
+            ? Math.round(((price - previousPrice) / previousPrice) * 1000) / 10
+            : 0;
+
+          results[cardId] = {
+            price,
+            previousPrice,
+            source,
+            change: changePercent > 1 ? 'up' : changePercent < -1 ? 'down' : 'stable',
+            changePercent,
+          };
+        } catch {}
+      });
+
+      await Promise.all(promises);
+
+      if (i + batchSize < cardIds.length) {
+        await new Promise(r => setTimeout(r, 100));
+      }
     }
 
     return NextResponse.json({ prices: results });
