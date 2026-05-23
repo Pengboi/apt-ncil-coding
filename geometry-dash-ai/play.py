@@ -6,7 +6,7 @@ import cv2
 import torch
 from pynput import keyboard
 import config
-from capture import create_browser, wait_for_game, find_game_element, get_scale_factor, capture_frame, preprocess_frame, send_jump
+from capture import create_browser, wait_for_game, find_game_element, get_scale_factor, capture_frame, preprocess_frame, send_key_down, send_key_up
 from train import JumpNet
 
 PREVIEW_SCALE = 4
@@ -36,6 +36,7 @@ class AIPlayer:
         self.driver = None
         self.frame_buffer = None
         self.current_expert = config.CUBE_MODE
+        self.space_held = False
         self.latest_preview = None
         self.preview_lock = threading.Lock()
         self.frame_count = 0
@@ -84,6 +85,9 @@ class AIPlayer:
             key_char = ""
 
         if key_char == config.AI_TOGGLE_KEY:
+            if self.space_held and self.driver:
+                send_key_up(self.driver)
+                self.space_held = False
             self.ai_active = not self.ai_active
             self.frame_buffer = None
             self.frame_count = 0
@@ -92,6 +96,9 @@ class AIPlayer:
             print(f"\n[AI {status}] Expert: {expert}")
 
         if key_char == config.MODE_KEY:
+            if self.space_held and self.driver:
+                send_key_up(self.driver)
+                self.space_held = False
             self.current_expert = config.SHIP_MODE if self.current_expert == config.CUBE_MODE else config.CUBE_MODE
             self.frame_buffer = None
             label = MODE_LABELS[self.current_expert]
@@ -114,8 +121,13 @@ class AIPlayer:
 
                 action, probs = self.predict(self.frame_buffer)
 
-                if action == config.ACTION_JUMP:
-                    send_jump(self.driver)
+                should_hold = action == config.ACTION_JUMP
+                if should_hold and not self.space_held:
+                    send_key_down(self.driver)
+                    self.space_held = True
+                elif not should_hold and self.space_held:
+                    send_key_up(self.driver)
+                    self.space_held = False
 
                 if self.frame_count % 30 == 0:
                     idle_p, jump_p = probs[0], probs[1]

@@ -91,7 +91,13 @@ def preprocess_frame(frame):
     return frame.astype(np.float32) / 255.0
 
 
-def send_jump(driver):
+def send_key_down(driver):
     from selenium.webdriver.common.action_chains import ActionChains
     from selenium.webdriver.common.keys import Keys
-    ActionChains(driver).key_down(Keys.SPACE).pause(0.05).key_up(Keys.SPACE).perform()
+    ActionChains(driver).key_down(Keys.SPACE).perform()
+
+
+def send_key_up(driver):
+    from selenium.webdriver.common.action_chains import ActionChains
+    from selenium.webdriver.common.keys import Keys
+    ActionChains(driver).key_up(Keys.SPACE).perform()
