@@ -1,0 +1,806 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - navigation [ref=e4]:
+        - link "OzGames - There's A Place To Play! logo" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "OzGames - There's A Place To Play! logo" [ref=e7]
+        - generic [ref=e8]:
+          - textbox "Search..." [ref=e9]
+          - img [ref=e11] [cursor=pointer]
+      - list [ref=e14]:
+        - listitem [ref=e15] [cursor=pointer]:
+          - link "Home" [ref=e16]:
+            - /url: /
+            - img [ref=e17]
+            - generic [ref=e19]: Home
+        - listitem [ref=e20] [cursor=pointer]:
+          - link "Hot Games" [ref=e21]:
+            - /url: /hot-games
+            - img [ref=e22]
+            - generic [ref=e24]: Hot Games
+        - listitem [ref=e25] [cursor=pointer]:
+          - link "New Games" [ref=e26]:
+            - /url: /new-games
+            - img [ref=e27]
+            - generic [ref=e29]: New Games
+        - listitem [ref=e30] [cursor=pointer]:
+          - link "Action Games icon Action Games" [ref=e31]:
+            - /url: /games/action-games
+            - img "Action Games icon" [ref=e32]
+            - generic [ref=e33]: Action Games
+        - listitem [ref=e34] [cursor=pointer]:
+          - link "Adventure Games icon Adventure Games" [ref=e35]:
+            - /url: /games/adventure-games
+            - img "Adventure Games icon" [ref=e36]
+            - generic [ref=e37]: Adventure Games
+        - listitem [ref=e38] [cursor=pointer]:
+          - link "Arcade Classics icon Arcade Classics" [ref=e39]:
+            - /url: /games/arcade-classics
+            - img "Arcade Classics icon" [ref=e40]
+            - generic [ref=e41]: Arcade Classics
+        - listitem [ref=e42] [cursor=pointer]:
+          - link "Casual & Fun Games icon Casual & Fun Games" [ref=e43]:
+            - /url: /games/casual-amp-fun-games
+            - img "Casual & Fun Games icon" [ref=e44]
+            - generic [ref=e45]: Casual & Fun Games
+        - listitem [ref=e46] [cursor=pointer]:
+          - link "Clicker Games icon Clicker Games" [ref=e47]:
+            - /url: /games/clicker-games
+            - img "Clicker Games icon" [ref=e48]
+            - generic [ref=e49]: Clicker Games
+        - listitem [ref=e50] [cursor=pointer]:
+          - link "Multiplayer Games icon Multiplayer Games" [ref=e51]:
+            - /url: /games/multiplayer-games
+            - img "Multiplayer Games icon" [ref=e52]
+            - generic [ref=e53]: Multiplayer Games
+        - listitem [ref=e54] [cursor=pointer]:
+          - link "Platformer Games icon Platformer Games" [ref=e55]:
+            - /url: /games/platformer-games
+            - img "Platformer Games icon" [ref=e56]
+            - generic [ref=e57]: Platformer Games
+        - listitem [ref=e58] [cursor=pointer]:
+          - link "Puzzle & Brain Games icon Puzzle & Brain Games" [ref=e59]:
+            - /url: /games/puzzle-amp-brain-games
+            - img "Puzzle & Brain Games icon" [ref=e60]
+            - generic [ref=e61]: Puzzle & Brain Games
+        - listitem [ref=e62] [cursor=pointer]:
+          - link "Racing & Driving Games icon Racing & Driving Games" [ref=e63]:
+            - /url: /games/racing-amp-driving-games
+            - img "Racing & Driving Games icon" [ref=e64]
+            - generic [ref=e65]: Racing & Driving Games
+        - listitem [ref=e66] [cursor=pointer]:
+          - link "Simulation Games icon Simulation Games" [ref=e67]:
+            - /url: /games/simulation-games
+            - img "Simulation Games icon" [ref=e68]
+            - generic [ref=e69]: Simulation Games
+        - listitem [ref=e70] [cursor=pointer]:
+          - link "Sports Games icon Sports Games" [ref=e71]:
+            - /url: /games/sports-games
+            - img "Sports Games icon" [ref=e72]
+            - generic [ref=e73]: Sports Games
+        - listitem [ref=e74] [cursor=pointer]:
+          - link "IO Games icon IO Games" [ref=e75]:
+            - /url: /tag/io-games
+            - img "IO Games icon" [ref=e76]
+            - generic [ref=e77]: IO Games
+        - listitem [ref=e78] [cursor=pointer]:
+          - link "Horror Games icon Horror Games" [ref=e79]:
+            - /url: /tag/horror
+            - img "Horror Games icon" [ref=e80]
+            - generic [ref=e81]: Horror Games
+        - listitem [ref=e82] [cursor=pointer]:
+          - link "Ball Games icon Ball Games" [ref=e83]:
+            - /url: /tag/ball
+            - img "Ball Games icon" [ref=e84]
+            - generic [ref=e85]: Ball Games
+        - listitem [ref=e86] [cursor=pointer]:
+          - link "Endless Games icon Endless Games" [ref=e87]:
+            - /url: /tag/endless
+            - img "Endless Games icon" [ref=e88]
+            - generic [ref=e89]: Endless Games
+        - listitem [ref=e90] [cursor=pointer]:
+          - link "Ragdoll Games icon Ragdoll Games" [ref=e91]:
+            - /url: /tag/ragdoll
+            - img "Ragdoll Games icon" [ref=e92]
+            - generic [ref=e93]: Ragdoll Games
+      - generic [ref=e95]:
+        - generic [ref=e103]:
+          - iframe [ref=e106]:
+            - generic [ref=f1e5]:
+              - link "OzGames - There's A Place To Play!" [ref=f1e6] [cursor=pointer]:
+                - /url: /
+                - img "OzGames - There's A Place To Play!" [ref=f1e7]
+              - img "Geometry Dash img" [ref=f1e9]
+              - button "Play Now" [ref=f1e10] [cursor=pointer]:
+                - img [ref=f1e12]
+                - generic [ref=f1e14]: Play Now
+          - generic [ref=e107]:
+            - heading "Geometry Dash" [level=1] [ref=e108]
+            - generic [ref=e109]:
+              - button "Like" [ref=e110] [cursor=pointer]:
+                - img [ref=e111]
+              - paragraph [ref=e113]: 4.06K
+              - button "Fullscreen" [ref=e114] [cursor=pointer]:
+                - img "Full screen" [ref=e115]
+        - generic [ref=e118]:
+          - link "Wobbly Pets Wobbly Pets img" [ref=e119] [cursor=pointer]:
+            - /url: /wobbly-pets
+            - generic [ref=e120]:
+              - generic [ref=e121]: Wobbly Pets
+              - generic [ref=e123]:
+                - generic:
+                  - img "Wobbly Pets img"
+          - link "Backyard Baseball Backyard Baseball img" [ref=e124] [cursor=pointer]:
+            - /url: /backyard-baseball
+            - generic [ref=e125]:
+              - generic [ref=e126]: Backyard Baseball
+              - generic [ref=e128]:
+                - generic:
+                  - img "Backyard Baseball img"
+          - link "Wurst Dash New Wurst Dash img" [ref=e129] [cursor=pointer]:
+            - /url: /wurst-dash
+            - generic [ref=e130]:
+              - generic [ref=e131]: Wurst Dash
+              - generic [ref=e132]: New
+              - generic [ref=e134]:
+                - generic:
+                  - img "Wurst Dash img"
+          - link "Farting Flight Farting Flight img" [ref=e135] [cursor=pointer]:
+            - /url: /farting-flight
+            - generic [ref=e136]:
+              - generic [ref=e137]: Farting Flight
+              - generic [ref=e139]:
+                - generic:
+                  - img "Farting Flight img"
+          - link "Tap Brawl Tap Brawl img" [ref=e140] [cursor=pointer]:
+            - /url: /tap-brawl
+            - generic [ref=e141]:
+              - generic [ref=e142]: Tap Brawl
+              - generic [ref=e144]:
+                - generic:
+                  - img "Tap Brawl img"
+          - link "Long Leg Master Long Leg Master img" [ref=e145] [cursor=pointer]:
+            - /url: /long-leg-master
+            - generic [ref=e146]:
+              - generic [ref=e147]: Long Leg Master
+              - generic [ref=e149]:
+                - generic:
+                  - img "Long Leg Master img"
+          - link "Rooster Road Rooster Road img" [ref=e150] [cursor=pointer]:
+            - /url: /rooster-road
+            - generic [ref=e151]:
+              - generic [ref=e152]: Rooster Road
+              - generic [ref=e154]:
+                - generic:
+                  - img "Rooster Road img"
+          - link "Geometry Dash SubZero Geometry Dash SubZero img" [ref=e155] [cursor=pointer]:
+            - /url: /geo-dash-subzero
+            - generic [ref=e156]:
+              - generic [ref=e157]: Geometry Dash SubZero
+              - generic [ref=e159]:
+                - generic:
+                  - img "Geometry Dash SubZero img"
+          - link "Murder Murder img" [ref=e160] [cursor=pointer]:
+            - /url: /murder
+            - generic [ref=e161]:
+              - generic [ref=e162]: Murder
+              - generic [ref=e164]:
+                - generic:
+                  - img "Murder img"
+          - link "Color Surfer Color Surfer img" [ref=e165] [cursor=pointer]:
+            - /url: /color-surfer
+            - generic [ref=e166]:
+              - generic [ref=e167]: Color Surfer
+              - generic [ref=e169]:
+                - generic:
+                  - img "Color Surfer img"
+          - link "Track Dash Track Dash img" [ref=e170] [cursor=pointer]:
+            - /url: /track-dash
+            - generic [ref=e171]:
+              - generic [ref=e172]: Track Dash
+              - generic [ref=e174]:
+                - generic:
+                  - img "Track Dash img"
+          - link "Clash Royale Clash Royale img" [ref=e175] [cursor=pointer]:
+            - /url: /clash-royale
+            - generic [ref=e176]:
+              - generic [ref=e177]: Clash Royale
+              - generic [ref=e179]:
+                - generic:
+                  - img "Clash Royale img"
+          - link "Sky Dart Sky Dart img" [ref=e180] [cursor=pointer]:
+            - /url: /sky-dart
+            - generic [ref=e181]:
+              - generic [ref=e182]: Sky Dart
+              - generic [ref=e184]:
+                - generic:
+                  - img "Sky Dart img"
+          - link "Retro Rush Retro Rush img" [ref=e185] [cursor=pointer]:
+            - /url: /retro-rush
+            - generic [ref=e186]:
+              - generic [ref=e187]: Retro Rush
+              - generic [ref=e189]:
+                - generic:
+                  - img "Retro Rush img"
+          - link "Cuphead Cuphead img" [ref=e190] [cursor=pointer]:
+            - /url: /cuphead
+            - generic [ref=e191]:
+              - generic [ref=e192]: Cuphead
+              - generic [ref=e194]:
+                - generic:
+                  - img "Cuphead img"
+          - link "Ship Smasher Ship Smasher img" [ref=e195] [cursor=pointer]:
+            - /url: /ship-smasher
+            - generic [ref=e196]:
+              - generic [ref=e197]: Ship Smasher
+              - generic [ref=e199]:
+                - generic:
+                  - img "Ship Smasher img"
+          - link "Space Plan Space Plan img" [ref=e200] [cursor=pointer]:
+            - /url: /space-plan
+            - generic [ref=e201]:
+              - generic [ref=e202]: Space Plan
+              - generic [ref=e204]:
+                - generic:
+                  - img "Space Plan img"
+          - link "Ruby Raid Ruby Raid img" [ref=e205] [cursor=pointer]:
+            - /url: /ruby-raid
+            - generic [ref=e206]:
+              - generic [ref=e207]: Ruby Raid
+              - generic [ref=e209]:
+                - generic:
+                  - img "Ruby Raid img"
+          - link "YoHoHo.io YoHoHo.io img" [ref=e210] [cursor=pointer]:
+            - /url: /yohohoio
+            - generic [ref=e211]:
+              - generic [ref=e212]: YoHoHo.io
+              - generic [ref=e214]:
+                - generic:
+                  - img "YoHoHo.io img"
+          - link "Trees Hate You Trending Trees Hate You img" [ref=e215] [cursor=pointer]:
+            - /url: /trees-hate-you
+            - generic [ref=e216]:
+              - generic [ref=e217]: Trees Hate You
+              - generic [ref=e218]: Trending
+              - generic [ref=e220]:
+                - generic:
+                  - img "Trees Hate You img"
+          - link "Outhold Outhold img" [ref=e221] [cursor=pointer]:
+            - /url: /outhold
+            - generic [ref=e222]:
+              - generic [ref=e223]: Outhold
+              - generic [ref=e225]:
+                - generic:
+                  - img "Outhold img"
+          - link "Office Fury Office Fury img" [ref=e226] [cursor=pointer]:
+            - /url: /office-fury
+            - generic [ref=e227]:
+              - generic [ref=e228]: Office Fury
+              - generic [ref=e230]:
+                - generic:
+                  - img "Office Fury img"
+          - link "Escape Animals Updated Escape Animals img" [ref=e231] [cursor=pointer]:
+            - /url: /escape-animals
+            - generic [ref=e232]:
+              - generic [ref=e233]: Escape Animals
+              - generic [ref=e234]: Updated
+              - generic [ref=e236]:
+                - generic:
+                  - img "Escape Animals img"
+          - link "Ragdoll Launcher Ragdoll Launcher img" [ref=e237] [cursor=pointer]:
+            - /url: /ragdoll-launcher
+            - generic [ref=e238]:
+              - generic [ref=e239]: Ragdoll Launcher
+              - generic [ref=e241]:
+                - generic:
+                  - img "Ragdoll Launcher img"
+        - generic [ref=e242]:
+          - generic [ref=e244]:
+            - generic [ref=e245]: Embed URL
+            - textbox "Embed URL" [ref=e246]: https://ozgames.io/geo-dash.embed
+            - button "Copy" [ref=e247] [cursor=pointer]
+          - generic [ref=e249]:
+            - generic [ref=e250]: Embed Code
+            - textbox "Embed Code" [ref=e251]: <iframe src="https://ozgames.io/geo-dash.embed" width="1280" height="720" frameborder="0" border="0" scrolling="none"></iframe>
+            - button "Copy" [ref=e252] [cursor=pointer]
+        - generic [ref=e253]:
+          - link "Action Games img Action Games" [ref=e254] [cursor=pointer]:
+            - /url: /games/action-games
+            - generic [ref=e256]:
+              - img "Action Games img" [ref=e258]
+              - generic [ref=e259]: Action Games
+          - link "Racing & Driving Games img Racing & Driving Games" [ref=e260] [cursor=pointer]:
+            - /url: /games/racing-amp-driving-games
+            - generic [ref=e262]:
+              - img "Racing & Driving Games img" [ref=e264]
+              - generic [ref=e265]: Racing & Driving Games
+          - link "Multiplayer Games img Multiplayer Games" [ref=e266] [cursor=pointer]:
+            - /url: /games/multiplayer-games
+            - generic [ref=e268]:
+              - img "Multiplayer Games img" [ref=e270]
+              - generic [ref=e271]: Multiplayer Games
+          - link "Clicker Games img Clicker Games" [ref=e272] [cursor=pointer]:
+            - /url: /games/clicker-games
+            - generic [ref=e274]:
+              - img "Clicker Games img" [ref=e276]
+              - generic [ref=e277]: Clicker Games
+          - link "Sports Games img Sports Games" [ref=e278] [cursor=pointer]:
+            - /url: /games/sports-games
+            - generic [ref=e280]:
+              - img "Sports Games img" [ref=e282]
+              - generic [ref=e283]: Sports Games
+          - link "Platformer Games img Platformer Games" [ref=e284] [cursor=pointer]:
+            - /url: /games/platformer-games
+            - generic [ref=e286]:
+              - img "Platformer Games img" [ref=e288]
+              - generic [ref=e289]: Platformer Games
+          - link "Adventure Games img Adventure Games" [ref=e290] [cursor=pointer]:
+            - /url: /games/adventure-games
+            - generic [ref=e292]:
+              - img "Adventure Games img" [ref=e294]
+              - generic [ref=e295]: Adventure Games
+          - link "Arcade Classics img Arcade Classics" [ref=e296] [cursor=pointer]:
+            - /url: /games/arcade-classics
+            - generic [ref=e298]:
+              - img "Arcade Classics img" [ref=e300]
+              - generic [ref=e301]: Arcade Classics
+          - link "Casual & Fun Games img Casual & Fun Games" [ref=e302] [cursor=pointer]:
+            - /url: /games/casual-amp-fun-games
+            - generic [ref=e304]:
+              - img "Casual & Fun Games img" [ref=e306]
+              - generic [ref=e307]: Casual & Fun Games
+          - link "Simulation Games img Simulation Games" [ref=e308] [cursor=pointer]:
+            - /url: /games/simulation-games
+            - generic [ref=e310]:
+              - img "Simulation Games img" [ref=e312]
+              - generic [ref=e313]: Simulation Games
+          - link "Puzzle & Brain Games img Puzzle & Brain Games" [ref=e314] [cursor=pointer]:
+            - /url: /games/puzzle-amp-brain-games
+            - generic [ref=e316]:
+              - img "Puzzle & Brain Games img" [ref=e318]
+              - generic [ref=e319]: Puzzle & Brain Games
+        - list [ref=e322]:
+          - listitem [ref=e323]:
+            - link "Home »" [ref=e324] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e325]:
+            - link "Arcade Classics »" [ref=e326] [cursor=pointer]:
+              - /url: /games/arcade-classics
+          - listitem [ref=e327]: Geometry Dash
+        - generic [ref=e329]:
+          - generic [ref=e332]:
+            - paragraph [ref=e333]:
+              - text: Geometry Dash is a rhythm-based platformer where you control a square icon through various obstacle courses. Every jump and movement is timed to an electronic soundtrack. You can play Geometry Dash Unblocked and free directly in your browser on
+              - link "Ozgames.io" [ref=e334] [cursor=pointer]:
+                - /url: https://ozgames.io
+              - text: without downloading any files or software.
+            - heading "How to Play Geometry Dash" [level=2] [ref=e335]
+            - paragraph [ref=e336]: To complete a level, you must reach the finish line without hitting any spikes, saws, or walls. If you crash into an obstacle, your progress resets to the beginning of the stage. Success relies on your ability to match your jumps with the beat of the music. As you progress, the speed increases and the hazards become more complex, requiring better timing and muscle memory.
+            - heading "Basic Controls" [level=3] [ref=e337]
+            - paragraph [ref=e338]: "Using the correct inputs is necessary for precision. Use these keys to navigate the levels:"
+            - table [ref=e339]:
+              - rowgroup [ref=e340]:
+                - row "Key / Input Action" [ref=e341]:
+                  - cell "Key / Input" [ref=e342]:
+                    - paragraph [ref=e343]: Key / Input
+                  - cell "Action" [ref=e344]:
+                    - paragraph [ref=e345]: Action
+                - row "Spacebar / Up Arrow Jump or interact with jump orbs" [ref=e346]:
+                  - cell "Spacebar / Up Arrow" [ref=e347]:
+                    - paragraph [ref=e348]: Spacebar / Up Arrow
+                  - cell "Jump or interact with jump orbs" [ref=e349]:
+                    - paragraph [ref=e350]: Jump or interact with jump orbs
+                - row "Left Mouse Click Perform a jump or navigate game menus" [ref=e351]:
+                  - cell "Left Mouse Click" [ref=e352]:
+                    - paragraph [ref=e353]: Left Mouse Click
+                  - cell "Perform a jump or navigate game menus" [ref=e354]:
+                    - paragraph [ref=e355]: Perform a jump or navigate game menus
+                - row "Z / X Keys Place or remove checkpoints (Practice Mode only)" [ref=e356]:
+                  - cell "Z / X Keys" [ref=e357]:
+                    - paragraph [ref=e358]: Z / X Keys
+                  - cell "Place or remove checkpoints (Practice Mode only)" [ref=e359]:
+                    - paragraph [ref=e360]: Place or remove checkpoints (Practice Mode only)
+                - row "P Key Pause the game to adjust settings or sensitivity" [ref=e361]:
+                  - cell "P Key" [ref=e362]:
+                    - paragraph [ref=e363]: P Key
+                  - cell "Pause the game to adjust settings or sensitivity" [ref=e364]:
+                    - paragraph [ref=e365]: Pause the game to adjust settings or sensitivity
+            - heading "Icons and Transformations" [level=3] [ref=e366]
+            - paragraph [ref=e367]: "Portals placed throughout the map will change your icon's shape and how it moves:"
+            - list [ref=e368]:
+              - listitem [ref=e369]: "Cube: The standard mode for jumping over spikes and platforms."
+              - listitem [ref=e370]: "Ship: Hold the button to fly upward and release it to descend."
+              - listitem [ref=e371]: "Ball: Clicking switches your gravity between the floor and the ceiling."
+              - listitem [ref=e372]: "UFO: Tap to perform mid-air jumps, similar to Flappy Bird mechanics."
+            - heading "Quick Survival Tips for Beginners" [level=2] [ref=e373]
+            - paragraph [ref=e374]: "Geometry Dash online has a great difficulty curve. Use these practical strategies to improve your survival rate:"
+            - list [ref=e375]:
+              - listitem [ref=e376]: "Listen to the Beat: Most obstacles are placed in sync with the soundtrack. Use the rhythm to time your clicks rather than relying only on your eyes."
+              - listitem [ref=e377]: "Use Practice Mode: This mode allows you to drop checkpoints. It is the most effective way to memorize difficult sections and map layouts before attempting a Normal run."
+              - listitem [ref=e378]: "Prioritize Survival: Skip the secret coins during your first few attempts. These coins are often placed in traps and can cause unnecessary crashes. Focus on reaching 100% completion first."
+            - heading "Similar Rhythm & Geometry Games on Ozgames.io" [level=2] [ref=e379]
+            - paragraph [ref=e380]: "If you like high-speed reflex challenges, check out these other titles on our platform:"
+            - list [ref=e381]:
+              - listitem [ref=e382]:
+                - link "Geometry Dash World" [ref=e383] [cursor=pointer]:
+                  - /url: https://ozgames.io/geometry-dash-world
+              - listitem [ref=e384]:
+                - link "Geometry Dash Meltdown" [ref=e385] [cursor=pointer]:
+                  - /url: https://ozgames.io/geometry-dash-meltdown
+              - listitem [ref=e386]:
+                - link "Geometry Dash Spam" [ref=e388] [cursor=pointer]:
+                  - /url: https://ozgames.io/geometry-dash-spam
+            - paragraph
+            - heading "Ready to play?" [level=2] [ref=e389]
+            - paragraph [ref=e390]: Select your level and start the run. Click the Play Now button above to begin playing Geometry Dash Unblocked on Ozgames.io. Try to reach 100% completion and master the rhythm today!
+            - paragraph [ref=e391]:
+              - iframe [ref=e393]:
+                - generic [active] [ref=f2e1]:
+                  - generic "YouTube Video Player" [ref=f2e3]
+                  - generic [ref=f2e5]:
+                    - generic:
+                      - generic:
+                        - button "Play video" [ref=f2e10] [cursor=pointer]
+                        - button "Hide player controls" [ref=f2e12] [cursor=pointer]
+                        - generic [ref=f2e14]:
+                          - generic [ref=f2e19]:
+                            - generic [ref=f2e20]:
+                              - link "Geometry Dash – “Fingerdash” 100% Complete [All Coins] | GuitarHeroStyles" [ref=f2e21] [cursor=pointer]:
+                                - /url: https://www.youtube.com/watch?v=ttxZNV9pSzs
+                              - link "GuitarHeroStyles" [ref=f2e22] [cursor=pointer]:
+                                - /url: /channel/UCNd8lDD8JA7xtTle32P19IA
+                                - generic [ref=f2e23]: GuitarHeroStyles
+                            - generic [ref=f2e24]:
+                              - button [ref=f2e25] [cursor=pointer]
+                              - generic [ref=f2e27]:
+                                - generic: GuitarHeroStyles
+                                - generic: 4.64m subscribers
+                          - generic [ref=f2e28]:
+                            - button "Share" [ref=f2e31] [cursor=pointer]:
+                              - generic [ref=f2e35]:
+                                - img
+                            - link "Watch on YouTube" [ref=f2e42] [cursor=pointer]:
+                              - /url: https://www.youtube.com/watch?v=ttxZNV9pSzs
+                              - generic [ref=f2e45]:
+                                - text: Watch on
+                                - img [ref=f2e47]:
+                                  - generic [ref=f2e49]:
+                                    - img
+          - generic [ref=e395]:
+            - heading "Categories & Tags" [level=2] [ref=e396]
+            - generic [ref=e397]:
+              - generic [ref=e398]:
+                - link "Arcade Classics" [ref=e399] [cursor=pointer]:
+                  - /url: /games/arcade-classics
+                - generic [ref=e400]: "117"
+              - generic [ref=e401]:
+                - link "Platformer Games" [ref=e402] [cursor=pointer]:
+                  - /url: /games/platformer-games
+                - generic [ref=e403]: "39"
+              - generic [ref=e404]:
+                - link "fast-paced" [ref=e405] [cursor=pointer]:
+                  - /url: /tag/fast-paced
+                - generic [ref=e406]: "83"
+              - generic [ref=e407]:
+                - link "geometry" [ref=e408] [cursor=pointer]:
+                  - /url: /tag/geometry
+                - generic [ref=e409]: "10"
+              - generic [ref=e410]:
+                - link "music" [ref=e411] [cursor=pointer]:
+                  - /url: /tag/music
+                - generic [ref=e412]: "21"
+            - separator [ref=e414]
+            - generic [ref=e415]:
+              - generic [ref=e416]: Votes
+              - generic [ref=e421]:
+                - generic [ref=e423] [cursor=pointer]:
+                  - img "1" [ref=e424]
+                  - img "2" [ref=e425]
+                  - img "3" [ref=e426]
+                  - img "4" [ref=e427]
+                  - img "5" [ref=e428]
+                - generic [ref=e429]:
+                  - generic [ref=e430]: 4.4/5
+                  - generic [ref=e431]: 16 Votes
+            - generic [ref=e432]:
+              - generic [ref=e433]:
+                - generic [ref=e434]: 5 Star
+                - generic [ref=e438]: "13"
+              - generic [ref=e439]:
+                - generic [ref=e440]: 4 Star
+                - generic [ref=e444]: "1"
+              - generic [ref=e445]:
+                - generic [ref=e446]: 3 Star
+                - generic [ref=e450]: "1"
+              - generic [ref=e451]:
+                - generic [ref=e452]: 2 Star
+                - generic [ref=e455]: "0"
+              - generic [ref=e456]:
+                - generic [ref=e457]: 1 Star
+                - generic [ref=e461]: "1"
+            - generic [ref=e469]:
+              - textbox "Name" [ref=e471]
+              - textbox "Email" [ref=e473]
+              - textbox "Content" [ref=e475]
+              - generic [ref=e476]:
+                - checkbox "I'd read and agree to the terms and conditions." [ref=e477]
+                - text: I'd read and agree to the terms and conditions.
+              - button "Comment" [ref=e479] [cursor=pointer]
+      - generic [ref=e480]:
+        - generic [ref=e482]:
+          - generic [ref=e483]: New Games
+          - link "View More" [ref=e484] [cursor=pointer]:
+            - /url: /new-games
+        - generic [ref=e486]:
+          - link "School Fury School Fury img" [ref=e487] [cursor=pointer]:
+            - /url: /school-fury
+            - generic [ref=e488]:
+              - generic [ref=e489]: School Fury
+              - generic [ref=e491]:
+                - generic:
+                  - img "School Fury img"
+          - link "Rainbow Friends Survival Rainbow Friends Survival img" [ref=e492] [cursor=pointer]:
+            - /url: /rainbow-friends-survival
+            - generic [ref=e493]:
+              - generic [ref=e494]: Rainbow Friends Survival
+              - generic [ref=e496]:
+                - generic:
+                  - img "Rainbow Friends Survival img"
+          - link "Dead Paradise Dead Paradise img" [ref=e497] [cursor=pointer]:
+            - /url: /dead-paradise
+            - generic [ref=e498]:
+              - generic [ref=e499]: Dead Paradise
+              - generic [ref=e501]:
+                - generic:
+                  - img "Dead Paradise img"
+          - link "Penalty Challenge Multiplayer Penalty Challenge Multiplayer img" [ref=e502] [cursor=pointer]:
+            - /url: /penalty-challenge-multiplayer
+            - generic [ref=e503]:
+              - generic [ref=e504]: Penalty Challenge Multiplayer
+              - generic [ref=e506]:
+                - generic:
+                  - img "Penalty Challenge Multiplayer img"
+          - link "Tube Fight Tube Fight img" [ref=e507] [cursor=pointer]:
+            - /url: /tube-fight
+            - generic [ref=e508]:
+              - generic [ref=e509]: Tube Fight
+              - generic [ref=e511]:
+                - generic:
+                  - img "Tube Fight img"
+          - link "Wobbly Pets Wobbly Pets img" [ref=e512] [cursor=pointer]:
+            - /url: /wobbly-pets
+            - generic [ref=e513]:
+              - generic [ref=e514]: Wobbly Pets
+              - generic [ref=e516]:
+                - generic:
+                  - img "Wobbly Pets img"
+          - link "Zombie Derby 2 Zombie Derby 2 img" [ref=e517] [cursor=pointer]:
+            - /url: /zombie-derby-2
+            - generic [ref=e518]:
+              - generic [ref=e519]: Zombie Derby 2
+              - generic [ref=e521]:
+                - generic:
+                  - img "Zombie Derby 2 img"
+          - link "City Sniper City Sniper img" [ref=e522] [cursor=pointer]:
+            - /url: /city-sniper
+            - generic [ref=e523]:
+              - generic [ref=e524]: City Sniper
+              - generic [ref=e526]:
+                - generic:
+                  - img "City Sniper img"
+          - link "Backyard Baseball Backyard Baseball img" [ref=e527] [cursor=pointer]:
+            - /url: /backyard-baseball
+            - generic [ref=e528]:
+              - generic [ref=e529]: Backyard Baseball
+              - generic [ref=e531]:
+                - generic:
+                  - img "Backyard Baseball img"
+          - link "Wurst Dash New Wurst Dash img" [ref=e532] [cursor=pointer]:
+            - /url: /wurst-dash
+            - generic [ref=e533]:
+              - generic [ref=e534]: Wurst Dash
+              - generic [ref=e535]: New
+              - generic [ref=e537]:
+                - generic:
+                  - img "Wurst Dash img"
+          - link "FoodStars.io FoodStars.io img" [ref=e538] [cursor=pointer]:
+            - /url: /foodstarsio
+            - generic [ref=e539]:
+              - generic [ref=e540]: FoodStars.io
+              - generic [ref=e542]:
+                - generic:
+                  - img "FoodStars.io img"
+          - link "Hoop Legends Hoop Legends img" [ref=e543] [cursor=pointer]:
+            - /url: /hoop-legends
+            - generic [ref=e544]:
+              - generic [ref=e545]: Hoop Legends
+              - generic [ref=e547]:
+                - generic:
+                  - img "Hoop Legends img"
+          - link "Karate Bros Karate Bros img" [ref=e548] [cursor=pointer]:
+            - /url: /karate-bros
+            - generic [ref=e549]:
+              - generic [ref=e550]: Karate Bros
+              - generic [ref=e552]:
+                - generic:
+                  - img "Karate Bros img"
+          - link "Zombie Derby Zombie Derby img" [ref=e553] [cursor=pointer]:
+            - /url: /zombie-derby
+            - generic [ref=e554]:
+              - generic [ref=e555]: Zombie Derby
+              - generic [ref=e557]:
+                - generic:
+                  - img "Zombie Derby img"
+          - link "Fish Quest Fish Quest img" [ref=e558] [cursor=pointer]:
+            - /url: /fish-quest
+            - generic [ref=e559]:
+              - generic [ref=e560]: Fish Quest
+              - generic [ref=e562]:
+                - generic:
+                  - img "Fish Quest img"
+          - link "Mall Dash Mall Dash img" [ref=e563] [cursor=pointer]:
+            - /url: /mall-dash
+            - generic [ref=e564]:
+              - generic [ref=e565]: Mall Dash
+              - generic [ref=e567]:
+                - generic:
+                  - img "Mall Dash img"
+          - link "Math Bros Math Bros img" [ref=e568] [cursor=pointer]:
+            - /url: /math-bros
+            - generic [ref=e569]:
+              - generic [ref=e570]: Math Bros
+              - generic [ref=e572]:
+                - generic:
+                  - img "Math Bros img"
+          - link "Soccer Legends 2026 Soccer Legends 2026 img" [ref=e573] [cursor=pointer]:
+            - /url: /soccer-legends-2026
+            - generic [ref=e574]:
+              - generic [ref=e575]: Soccer Legends 2026
+              - generic [ref=e577]:
+                - generic:
+                  - img "Soccer Legends 2026 img"
+          - link "Farting Flight Farting Flight img" [ref=e578] [cursor=pointer]:
+            - /url: /farting-flight
+            - generic [ref=e579]:
+              - generic [ref=e580]: Farting Flight
+              - generic [ref=e582]:
+                - generic:
+                  - img "Farting Flight img"
+          - link "Tap Brawl Tap Brawl img" [ref=e583] [cursor=pointer]:
+            - /url: /tap-brawl
+            - generic [ref=e584]:
+              - generic [ref=e585]: Tap Brawl
+              - generic [ref=e587]:
+                - generic:
+                  - img "Tap Brawl img"
+          - link "Poppy Playtime Chapter 5 Poppy Playtime Chapter 5 img" [ref=e588] [cursor=pointer]:
+            - /url: /poppy-playtime-chapter-5
+            - generic [ref=e589]:
+              - generic [ref=e590]: Poppy Playtime Chapter 5
+              - generic [ref=e592]:
+                - generic:
+                  - img "Poppy Playtime Chapter 5 img"
+          - link "Slow Roads Slow Roads img" [ref=e593] [cursor=pointer]:
+            - /url: /slow-roads
+            - generic [ref=e594]:
+              - generic [ref=e595]: Slow Roads
+              - generic [ref=e597]:
+                - generic:
+                  - img "Slow Roads img"
+          - link "Angry Birds Angry Birds img" [ref=e598] [cursor=pointer]:
+            - /url: /angry-birds
+            - generic [ref=e599]:
+              - generic [ref=e600]: Angry Birds
+              - generic [ref=e602]:
+                - generic:
+                  - img "Angry Birds img"
+          - 'link "Ice Drop: GTA 5 New Ice Drop: GTA 5 img" [ref=e603] [cursor=pointer]':
+            - /url: /ice-drop-gta-5
+            - generic [ref=e604]:
+              - generic [ref=e605]: "Ice Drop: GTA 5"
+              - generic [ref=e606]: New
+              - generic [ref=e608]:
+                - generic:
+                  - 'img "Ice Drop: GTA 5 img"'
+          - link "Drift Rush Drift Rush img" [ref=e609] [cursor=pointer]:
+            - /url: /drift-rush
+            - generic [ref=e610]:
+              - generic [ref=e611]: Drift Rush
+              - generic [ref=e613]:
+                - generic:
+                  - img "Drift Rush img"
+          - link "Long Leg Master Long Leg Master img" [ref=e614] [cursor=pointer]:
+            - /url: /long-leg-master
+            - generic [ref=e615]:
+              - generic [ref=e616]: Long Leg Master
+              - generic [ref=e618]:
+                - generic:
+                  - img "Long Leg Master img"
+          - link "Doodle Cricket Doodle Cricket img" [ref=e619] [cursor=pointer]:
+            - /url: /doodle-cricket
+            - generic [ref=e620]:
+              - generic [ref=e621]: Doodle Cricket
+              - generic [ref=e623]:
+                - generic:
+                  - img "Doodle Cricket img"
+          - link "Bacon May Die Bacon May Die img" [ref=e624] [cursor=pointer]:
+            - /url: /bacon-may-die
+            - generic [ref=e625]:
+              - generic [ref=e626]: Bacon May Die
+              - generic [ref=e628]:
+                - generic:
+                  - img "Bacon May Die img"
+          - link "StealNow IO StealNow IO img" [ref=e629] [cursor=pointer]:
+            - /url: /stealnow-io
+            - generic [ref=e630]:
+              - generic [ref=e631]: StealNow IO
+              - generic [ref=e633]:
+                - generic:
+                  - img "StealNow IO img"
+          - link "Paper Minecraft Paper Minecraft img" [ref=e634] [cursor=pointer]:
+            - /url: /paper-minecraft
+            - generic [ref=e635]:
+              - generic [ref=e636]: Paper Minecraft
+              - generic [ref=e638]:
+                - generic:
+                  - img "Paper Minecraft img"
+          - 'link "GTA: Vice City GTA: Vice City img" [ref=e639] [cursor=pointer]':
+            - /url: /gta-vice-city
+            - generic [ref=e640]:
+              - generic [ref=e641]: "GTA: Vice City"
+              - generic [ref=e643]:
+                - generic:
+                  - 'img "GTA: Vice City img"'
+          - link "Redcoats.io Redcoats.io img" [ref=e644] [cursor=pointer]:
+            - /url: /redcoatsio
+            - generic [ref=e645]:
+              - generic [ref=e646]: Redcoats.io
+              - generic [ref=e648]:
+                - generic:
+                  - img "Redcoats.io img"
+    - generic [ref=e650]:
+      - generic [ref=e652]:
+        - text: "Disclaimer:"
+        - strong [ref=e653]:
+          - link "OzGames - There's A Place To Play!" [ref=e654] [cursor=pointer]:
+            - /url: /
+        - text: is an independent website and is not affiliated with any organizations.
+      - generic [ref=e655]:
+        - link "About us" [ref=e656] [cursor=pointer]:
+          - /url: /about-us
+        - link "Copyright infringement notice procedure" [ref=e657] [cursor=pointer]:
+          - /url: /copyright-infringement-notice-procedure
+        - link "Contact us" [ref=e658] [cursor=pointer]:
+          - /url: /contact-us
+        - link "Privacy policy" [ref=e659] [cursor=pointer]:
+          - /url: /privacy-policy
+        - link "Terms of use" [ref=e660] [cursor=pointer]:
+          - /url: /terms-of-use
+  - generic:
+    - img
+  - dialog "ozgames.io asks for your consent to use your personal data to:" [active] [ref=e664]:
+    - generic [ref=e666]:
+      - generic [ref=e667]:
+        - paragraph [ref=e669]: Welcome to ozgames.io
+        - heading "ozgames.io asks for your consent to use your personal data to:" [level=1] [ref=e670]
+      - list [ref=e672]:
+        - listitem [ref=e673]:
+          - img [ref=e676]
+          - generic [ref=e678]: Personalised advertising and content, advertising and content measurement, audience research and services development
+        - listitem [ref=e679]:
+          - img [ref=e682]
+          - generic [ref=e684]: Store and/or access information on a device
+      - button "Learn more" [ref=e685] [cursor=pointer]:
+        - img [ref=e688]
+        - generic [ref=e690]: Learn more
+      - generic [ref=e691]:
+        - paragraph [ref=e692]:
+          - text: Your personal data will be processed and information from your device (cookies, unique identifiers and other device data) may be stored by, accessed by and shared with 210 partners or used specifically by this site. We and our partners may use precise geolocation data.
+          - button "List of partners." [ref=e693] [cursor=pointer]
+        - paragraph [ref=e694]: Some vendors may process your personal data on the basis of legitimate interest, which you can object to by managing your options below. Look for a link at the bottom of this page or in the site menu to manage or withdraw consent in privacy and cookie settings.
+    - generic [ref=e697]:
+      - button "Consent" [ref=e698] [cursor=pointer]:
+        - paragraph [ref=e700]: Consent
+      - button "Manage options" [ref=e701] [cursor=pointer]:
+        - paragraph [ref=e703]: Manage options

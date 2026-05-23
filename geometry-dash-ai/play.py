@@ -6,7 +6,7 @@ import cv2
 import torch
 from pynput import keyboard
 import config
-from capture import create_browser, capture_frame, preprocess_frame, send_jump
+from capture import create_browser, wait_for_game, find_game_element, get_scale_factor, capture_frame, preprocess_frame, send_jump
 from train import JumpNet
 
 PREVIEW_SCALE = 4
@@ -99,12 +99,12 @@ class AIPlayer:
             print(f"  [EXPERT] >>> {label} <<<")
             print(f"{'=' * 40}")
 
-    def play_loop(self, driver):
+    def play_loop(self, driver, game_element, scale_factor):
         interval = 1.0 / config.FPS
         while self.is_running:
             if self.ai_active and self.current_expert in self.models:
                 start = time.time()
-                raw = capture_frame(driver)
+                raw = capture_frame(driver, game_element, scale_factor)
                 processed = preprocess_frame(raw)
 
                 if self.frame_buffer is None:
@@ -163,11 +163,15 @@ class AIPlayer:
         print(f"6. Press Ctrl+C to quit\n")
 
         self.driver = create_browser()
-        print("Browser opened! Click PLAY on the game, then press U to activate AI.\n")
-
+        print("Browser opened! Detecting game iframe...")
         time.sleep(3)
 
-        play_thread = threading.Thread(target=self.play_loop, args=(self.driver,), daemon=True)
+        game_element = wait_for_game(self.driver) or find_game_element(self.driver)
+        scale_factor = get_scale_factor(self.driver)
+        print(f"Game element found: {game_element.size['width']}x{game_element.size['height']} (scale={scale_factor})")
+        print("Click PLAY on the game, then press U to activate AI.\n")
+
+        play_thread = threading.Thread(target=self.play_loop, args=(self.driver, game_element, scale_factor), daemon=True)
         play_thread.start()
 
         listener = keyboard.Listener(on_press=self.on_key_press)

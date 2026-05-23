@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from pynput import keyboard
 import config
-from capture import create_browser, capture_frame, preprocess_frame
+from capture import create_browser, wait_for_game, find_game_element, get_scale_factor, capture_frame, preprocess_frame
 
 PREVIEW_SCALE = 4
 PREVIEW_WIDTH = config.FRAME_WIDTH * PREVIEW_SCALE
@@ -148,7 +148,7 @@ class Recorder:
         cv2.putText(preview_color, label, (4, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1, cv2.LINE_AA)
         return preview_color
 
-    def capture_loop(self, driver):
+    def capture_loop(self, driver, game_element, scale_factor):
         interval = 1.0 / config.FPS
         while self.is_running:
             should_record = False
@@ -157,7 +157,7 @@ class Recorder:
 
             if should_record:
                 start = time.time()
-                raw = capture_frame(driver)
+                raw = capture_frame(driver, game_element, scale_factor)
                 processed = preprocess_frame(raw)
                 current_mode = self.current_mode
                 with self.data_lock:
@@ -195,11 +195,15 @@ class Recorder:
         print(f"8. Press Ctrl+C to quit\n")
 
         driver = create_browser()
-        print("Browser opened! Click PLAY on the game, then press R to record.\n")
-
+        print("Browser opened! Detecting game iframe...")
         time.sleep(3)
 
-        capture_thread = threading.Thread(target=self.capture_loop, args=(driver,), daemon=True)
+        game_element = wait_for_game(driver) or find_game_element(driver)
+        scale_factor = get_scale_factor(driver)
+        print(f"Game element found: {game_element.size['width']}x{game_element.size['height']} (scale={scale_factor})")
+        print("Click PLAY on the game, then press R to record.\n")
+
+        capture_thread = threading.Thread(target=self.capture_loop, args=(driver, game_element, scale_factor), daemon=True)
         capture_thread.start()
 
         listener = keyboard.Listener(
