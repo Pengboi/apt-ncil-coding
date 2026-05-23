@@ -312,3 +312,209 @@ body {
 .animate-shake {
   animation: shake 0.5s ease-in-out;
 }
+
+/* ===== MENU THEME (Dark Forest) ===== */
+
+@keyframes title-pulse {
+  0%, 100% { text-shadow: 0 0 15px #b8860b88, 0 0 30px #b8860b44, 0 0 60px #b8860b22; }
+  50% { text-shadow: 0 0 25px #b8860bbb, 0 0 50px #b8860b66, 0 0 100px #b8860b44; }
+}
+
+@keyframes float-particle {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  15% { opacity: 0.5; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-100px) translateX(30px) scale(0.3); opacity: 0; }
+}
+
+@keyframes float-rune {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.15; }
+  85% { opacity: 0.15; }
+  100% { transform: translateY(-180px) rotate(180deg); opacity: 0; }
+}
+
+@keyframes firefly {
+  0%, 100% { opacity: 0; transform: translate(0, 0); }
+  25% { opacity: 0.6; }
+  50% { opacity: 0.2; transform: translate(20px, -30px); }
+  75% { opacity: 0.5; }
+}
+
+@keyframes border-ambient {
+  0%, 100% { border-color: rgba(180,130,50,0.15); box-shadow: 0 0 20px rgba(180,130,50,0.06); }
+  50% { border-color: rgba(180,130,50,0.25); box-shadow: 0 0 35px rgba(180,130,50,0.12); }
+}
+
+@keyframes input-glow {
+  0%, 100% { box-shadow: inset 0 0 8px rgba(180,130,50,0.04); }
+  50% { box-shadow: inset 0 0 16px rgba(180,130,50,0.1); }
+}
+
+@keyframes subtitle-type {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@keyframes blink-cursor {
+  0%, 100% { border-right-color: rgba(200,180,140,0.6); }
+  50% { border-right-color: transparent; }
+}
+
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes corner-glow {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes tree-sway {
+  0%, 100% { transform: skewX(0deg); }
+  50% { transform: skewX(0.5deg); }
+}
+
+@keyframes glow-star {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* Forest background - tree silhouettes via box-shadow */
+.forest-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.forest-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+
+/* Tree trunk bumps (bottom of screen) */
+.forest-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8%;
+  background: linear-gradient(0deg, rgba(5,8,5,1) 0%, rgba(5,8,5,0) 100%);
+}
+
+/* Fireflies */
+.menu-firefly {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: firefly 4s ease-in-out infinite;
+  box-shadow: 0 0 4px 1px currentColor;
+}
+
+.menu-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #b8860b;
+  pointer-events: none;
+  animation: float-particle 7s ease-out infinite;
+}
+
+.menu-rune {
+  position: absolute;
+  font-size: 16px;
+  pointer-events: none;
+  animation: float-rune 12s ease-out infinite;
+  color: #8a7a5a;
+  font-family: monospace;
+}
+
+.menu-title {
+  animation: title-pulse 4s ease-in-out infinite;
+  letter-spacing: 8px;
+}
+
+.menu-box-enter {
+  animation: fade-up 0.8s ease-out forwards;
+}
+
+.menu-input-glow:focus {
+  animation: input-glow 2s ease-in-out infinite;
+  box-shadow: 0 0 0 1px rgba(180,130,50,0.3), inset 0 0 16px rgba(180,130,50,0.06);
+}
+
+.menu-btn-primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-btn-primary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(180,130,50,0.4);
+}
+
+.menu-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.menu-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 35%, rgba(255,220,150,0.08) 45%, transparent 55%);
+  animation: shimmer 4s infinite;
+  pointer-events: none;
+}
+
+.menu-card {
+  position: relative;
+  border: 1px solid rgba(180,130,50,0.15);
+  animation: border-ambient 3s ease-in-out infinite;
+}
+
+.menu-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: rgba(180,130,50,0.5);
+  border-style: solid;
+  animation: corner-glow 2.5s ease-in-out infinite;
+}
+
+.menu-controls {
+  position: relative;
+}
+
+.menu-controls::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,130,50,0.2), transparent);
+}
+
+.menu-control-item {
+  display: inline-block;
+  min-width: 44px;
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: rgba(100,80,50,0.15);
+  color: #b8a080;
+  font-size: 10px;
+  font-family: monospace;
+  text-align: center;
+}
