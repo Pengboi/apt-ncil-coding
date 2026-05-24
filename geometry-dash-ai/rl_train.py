@@ -1,6 +1,5 @@
 import os
 import time
-import shutil
 import argparse
 import threading
 import numpy as np
@@ -12,7 +11,7 @@ import config
 from capture import (
     create_browser, wait_for_game, find_game_element, get_scale_factor,
     capture_frame, preprocess_frame, send_key_down, send_key_up,
-    DeathDetector, restart_level,
+    restart_level,
 )
 from train import JumpNet
 
@@ -31,6 +30,10 @@ MODE_COLORS = {
 MODE_PATHS = {
     config.CUBE_MODE: config.CUBE_MODEL_PATH,
     config.SHIP_MODE: config.SHIP_MODEL_PATH,
+}
+RL_PATHS = {
+    config.CUBE_MODE: config.CUBE_RL_MODEL_PATH,
+    config.SHIP_MODE: config.SHIP_RL_MODEL_PATH,
 }
 
 
@@ -51,16 +54,6 @@ def compute_discounted_returns(rewards, gamma):
         g = r + gamma * g
         returns.insert(0, g)
     return returns
-
-
-def archive_bc_weights(mode):
-    path = MODE_PATHS[mode]
-    if not os.path.exists(path):
-        return
-    label = MODE_LABELS[mode].lower()
-    archive_name = f"{label}_bc_pre_rl.pt"
-    shutil.copy2(path, os.path.join(config.ARCHIVE_DIR, archive_name))
-    print(f"  Archived BC weights: {archive_name}")
 
 
 def sample_action(model, stacked, device):
@@ -167,7 +160,6 @@ def rl_train(train_mode=None):
                 return
             continue
 
-        archive_bc_weights(mode)
         model = JumpNet().to(device)
         model.load_state_dict(torch.load(path, map_location=device, weights_only=True))
         model.eval()
@@ -181,7 +173,7 @@ def rl_train(train_mode=None):
         models[mode] = model
         bc_models[mode] = bc_model
         optimizers[mode] = torch.optim.Adam(model.parameters(), lr=config.RL_LEARNING_RATE)
-        print(f"  {mlabel}: loaded from {path} (BC reference saved)")
+        print(f"  {mlabel}: loaded BC from {path}")
 
     if not models:
         print("\nNo models to train! Run 'python train.py' first.")
@@ -200,9 +192,11 @@ def rl_train(train_mode=None):
     print(f"2. Click PLAY to start the level")
     print(f"3. Press 'G' to START RL training")
     print(f"4. Press 'S' to STOP RL training")
-    print(f"5. Press 'M' to SWITCH expert (CUBE <-> ROCKET) mid-episode")
-    print(f"6. Press 'W' to SAVE fine-tuned models to disk")
-    print(f"7. Press Ctrl+C or Q to QUIT without saving\n")
+    print(f"5. Press 'D' to SIGNAL DEATH (when you see the AI die)")
+    print(f"6. Press 'M' to SIGNAL MODE SWITCH (survived to cube<->ship transition)")
+    print(f"7. Press 'W' to SAVE RL models to disk (*_model_rl.pt, BC untouched)")
+    print(f"8. Press Ctrl+C or Q to QUIT without saving")
+    print(f"\n  (Keys also work in the OpenCV preview window if pynput fails)\n")
 
     driver = create_browser()
     print("Browser opened! Detecting game iframe...")
@@ -220,6 +214,8 @@ def rl_train(train_mode=None):
         "episode": 0,
         "current_expert": config.CUBE_MODE if config.CUBE_MODE in models else list(models.keys())[0],
         "reset_frame_buffer": False,
+        "death_signaled": False,
+        "mode_switch_signaled": False,
         "preview_lock": threading.Lock(),
         "expert_lock": threading.Lock(),
         "driver_dead": False,
@@ -229,7 +225,6 @@ def rl_train(train_mode=None):
     all_episode_rewards = []
 
     def play_loop():
-        detector = DeathDetector()
         frame_buffer = None
         space_held = False
         episode = 0
@@ -248,7 +243,6 @@ def rl_train(train_mode=None):
                 start_time = time.time()
 
                 if episode_frames == 0:
-                    detector.reset()
                     frame_buffer = None
                     transitions = []
                     episode_rewards = []
@@ -293,7 +287,8 @@ def rl_train(train_mode=None):
                 episode_rewards.append(reward)
                 episode_frames += 1
 
-                dead = detector.check(raw)
+                dead = shared["death_signaled"]
+                mode_switch = shared["mode_switch_signaled"]
                 maxed = episode_frames >= config.RL_MAX_EPISODE_FRAMES
 
                 preview = build_preview(processed, action, probs_display, episode, current_expert)
@@ -307,14 +302,22 @@ def rl_train(train_mode=None):
 
                 if shared["should_save"]:
                     for m, mdl in models.items():
-                        torch.save(mdl.state_dict(), MODE_PATHS[m])
+                        torch.save(mdl.state_dict(), RL_PATHS[m])
                     shared["should_save"] = False
-                    print(f"[RL] Models SAVED")
+                    print(f"[RL] Models SAVED to *_model_rl.pt")
 
-                if dead or maxed:
+                if dead or mode_switch or maxed:
+                    shared["death_signaled"] = False
+                    shared["mode_switch_signaled"] = False
                     episode += 1
                     shared["episode"] = episode
-                    reason = "DEATH" if dead else "MAX FRAMES"
+                    if mode_switch:
+                        reason = "MODE SWITCH"
+                        episode_rewards.append(50.0)
+                    elif dead:
+                        reason = "DEATH"
+                    else:
+                        reason = "MAX FRAMES"
                     total_reward = sum(episode_rewards)
                     all_episode_rewards.append(total_reward)
 
@@ -349,6 +352,14 @@ def rl_train(train_mode=None):
 
                     if dead and shared["is_running"]:
                         restart_level(driver)
+
+                    if mode_switch:
+                        with shared["expert_lock"]:
+                            cur = shared["current_expert"]
+                            other = config.SHIP_MODE if cur == config.CUBE_MODE else config.CUBE_MODE
+                            if other in models:
+                                shared["current_expert"] = other
+                                shared["reset_frame_buffer"] = True
 
                     episode_frames = 0
                     transitions = []
@@ -385,19 +396,15 @@ def rl_train(train_mode=None):
         if key_char == "g":
             shared["training_active"] = True
             print("\n[RL] Training STARTED")
+        elif key_char == "d":
+            shared["death_signaled"] = True
+            print("\n[RL] DEATH signaled")
         elif key_char == "s":
             shared["training_active"] = False
             print("\n[RL] Training STOPPED")
         elif key_char == "m":
-            with shared["expert_lock"]:
-                cur = shared["current_expert"]
-                other = config.SHIP_MODE if cur == config.CUBE_MODE else config.CUBE_MODE
-                if other in models:
-                    shared["current_expert"] = other
-                    shared["reset_frame_buffer"] = True
-                    print(f"\n[RL] Expert switched to {MODE_LABELS[other]} (frame buffer reset)")
-                else:
-                    print(f"\n[RL] {MODE_LABELS[other]} model not loaded, staying on {MODE_LABELS[cur]}")
+            shared["mode_switch_signaled"] = True
+            print("\n[RL] MODE SWITCH signaled (episode ends, expert switches)")
         elif key_char == "w":
             shared["should_save"] = True
             print("\n[RL] Saving models...")
@@ -433,9 +440,25 @@ def rl_train(train_mode=None):
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv2.LINE_AA)
                 cv2.imshow(window_name, black)
 
-            if cv2.waitKey(33) & 0xFF == ord("q"):
+            key = cv2.waitKey(33) & 0xFF
+            if key == ord("q"):
                 shared["is_running"] = False
                 break
+            elif key == ord("d"):
+                shared["death_signaled"] = True
+                print("\n[RL] DEATH signaled (OpenCV)")
+            elif key == ord("m"):
+                shared["mode_switch_signaled"] = True
+                print("\n[RL] MODE SWITCH signaled (OpenCV)")
+            elif key == ord("g"):
+                shared["training_active"] = True
+                print("\n[RL] Training STARTED (OpenCV)")
+            elif key == ord("s"):
+                shared["training_active"] = False
+                print("\n[RL] Training STOPPED (OpenCV)")
+            elif key == ord("w"):
+                shared["should_save"] = True
+                print("\n[RL] Saving models... (OpenCV)")
     except KeyboardInterrupt:
         shared["is_running"] = False
 
@@ -444,8 +467,8 @@ def rl_train(train_mode=None):
 
     if shared["should_save"]:
         for m, mdl in models.items():
-            torch.save(mdl.state_dict(), MODE_PATHS[m])
-        print(f"\n[RL] Models SAVED")
+            torch.save(mdl.state_dict(), RL_PATHS[m])
+        print(f"\n[RL] Models SAVED to *_model_rl.pt")
     else:
         print(f"\n[RL] Quit without saving — BC weights unchanged")
 

@@ -132,7 +132,16 @@ class Recorder:
             self.modes = []
             self.frame_count = 0
         self.latest_preview = None
-        print(f"\n[DISCARD] Threw away {count} frames. Press '{config.RECORD_KEY.upper()}' to start again.")
+
+        last_session = self.session_count - 1
+        last_dir = os.path.join(config.DATA_DIR, f"session_{last_session:03d}")
+        if os.path.isdir(last_dir):
+            import shutil
+            shutil.rmtree(last_dir)
+            self.session_count = last_session
+            print(f"\n[DELETE] Discarded {count} in-flight frames + DELETED session_{last_session:03d} from disk. Press '{config.RECORD_KEY.upper()}' to start again.")
+        else:
+            print(f"\n[DELETE] Discarded {count} frames. No saved session to delete. Press '{config.RECORD_KEY.upper()}' to start again.")
 
     def _build_preview(self, processed):
         preview = (processed * 255).astype(np.uint8)

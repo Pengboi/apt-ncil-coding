@@ -25,10 +25,14 @@ MODE_PATHS = {
     config.CUBE_MODE: config.CUBE_MODEL_PATH,
     config.SHIP_MODE: config.SHIP_MODEL_PATH,
 }
+RL_PATHS = {
+    config.CUBE_MODE: config.CUBE_RL_MODEL_PATH,
+    config.SHIP_MODE: config.SHIP_RL_MODEL_PATH,
+}
 
 
 class AIPlayer:
-    def __init__(self):
+    def __init__(self, use_rl=False):
         self.models = {}
         self.device = None
         self.ai_active = False
@@ -40,20 +44,23 @@ class AIPlayer:
         self.latest_preview = None
         self.preview_lock = threading.Lock()
         self.frame_count = 0
+        self.use_rl = use_rl
 
     def load_models(self):
         self.device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
         print(f"Using device: {self.device}")
 
+        paths = RL_PATHS if self.use_rl else MODE_PATHS
+        model_type = "RL" if self.use_rl else "BC"
         loaded_any = False
-        for mode, path in MODE_PATHS.items():
+        for mode, path in paths.items():
             label = MODE_LABELS[mode]
             if os.path.exists(path):
                 model = JumpNet().to(self.device)
                 model.load_state_dict(torch.load(path, map_location=self.device, weights_only=True))
                 model.eval()
                 self.models[mode] = model
-                print(f"  {label} expert loaded from {path}")
+                print(f"  {label} expert ({model_type}) loaded from {path}")
                 loaded_any = True
             else:
                 print(f"  {label} expert: no model found at {path} (skipping)")
@@ -158,8 +165,9 @@ class AIPlayer:
                 time.sleep(0.01)
 
     def run(self):
+        model_type = "RL" if self.use_rl else "BC"
         print("=" * 60)
-        print("  GEOMETRY DASH AI - MIXTURE OF EXPERTS PLAYER")
+        print(f"  GEOMETRY DASH AI - MIXTURE OF EXPERTS PLAYER ({model_type})")
         print("=" * 60)
 
         if not self.load_models():
@@ -223,5 +231,11 @@ class AIPlayer:
 
 
 if __name__ == "__main__":
-    player = AIPlayer()
+    import argparse
+    parser = argparse.ArgumentParser(description="Geometry Dash AI Player")
+    parser.add_argument("--rl", action="store_true",
+                        help="Load RL-finetuned models (*_model_rl.pt) instead of BC models")
+    args = parser.parse_args()
+
+    player = AIPlayer(use_rl=args.rl)
     player.run()

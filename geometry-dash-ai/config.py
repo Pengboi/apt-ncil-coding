@@ -29,7 +29,8 @@ SHIP_MODE = 1
 
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 64
-EPOCHS = 30
+EPOCHS = 80
+EARLY_STOP_PATIENCE = 15
 VALIDATION_SPLIT = 0.2
 DROPOUT = 0.3
 
@@ -42,6 +43,8 @@ VERSION_FILE = os.path.join(MODELS_DIR, "version.txt")
 
 CUBE_MODEL_PATH = os.path.join(MODELS_DIR, "cube_model.pt")
 SHIP_MODEL_PATH = os.path.join(MODELS_DIR, "ship_model.pt")
+CUBE_RL_MODEL_PATH = os.path.join(MODELS_DIR, "cube_model_rl.pt")
+SHIP_RL_MODEL_PATH = os.path.join(MODELS_DIR, "ship_model_rl.pt")
 MODEL_PATH = CUBE_MODEL_PATH
 
 # --- RL Fine-Tuning ---

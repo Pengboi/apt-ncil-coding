@@ -47,7 +47,10 @@ class JumpNet(nn.Module):
         return x
 
 
-def load_and_split_data():
+MIN_SESSION_FRAMES = 10
+
+
+def load_and_split_data(pure_only=False):
     sessions = sorted([d for d in os.listdir(config.DATA_DIR) if d.startswith("session_")])
 
     if not sessions:
@@ -56,6 +59,7 @@ def load_and_split_data():
 
     cube_sessions = []
     ship_sessions = []
+    skipped = 0
 
     for session in sessions:
         session_path = os.path.join(config.DATA_DIR, session)
@@ -64,10 +68,16 @@ def load_and_split_data():
         modes_path = os.path.join(session_path, "modes.npy")
 
         if not (os.path.exists(frames_path) and os.path.exists(actions_path)):
+            skipped += 1
             continue
 
         frames = np.load(frames_path)
         actions = np.load(actions_path)
+
+        if len(frames) < MIN_SESSION_FRAMES:
+            print(f"  {session}: {len(frames)} frames - SKIPPED (below {MIN_SESSION_FRAMES})")
+            skipped += 1
+            continue
 
         if os.path.exists(modes_path):
             modes = np.load(modes_path)
@@ -80,13 +90,24 @@ def load_and_split_data():
 
         cube_count = cube_mask.sum()
         ship_count = ship_mask.sum()
+        is_mixed = cube_count > 0 and ship_count > 0
+
+        if pure_only and is_mixed:
+            print(f"  {session}: {len(frames)} frames ({cube_count} cube, {ship_count} ship) - SKIPPED (mixed, --pure)")
+            skipped += 1
+            continue
+
+        tag = " [mixed]" if is_mixed else ""
         jump_pct = (actions.sum() / len(actions)) * 100
-        print(f"  {session}: {len(frames)} frames ({cube_count} cube, {ship_count} ship), {jump_pct:.1f}% jumps")
+        print(f"  {session}: {len(frames)} frames ({cube_count} cube, {ship_count} ship), {jump_pct:.1f}% jumps{tag}")
 
         if cube_mask.any():
             cube_sessions.append((frames[cube_mask], actions[cube_mask]))
         if ship_mask.any():
             ship_sessions.append((frames[ship_mask], actions[ship_mask]))
+
+    if skipped:
+        print(f"\n  Skipped {skipped} sessions")
 
     result = {}
     if cube_sessions:
@@ -157,8 +178,10 @@ def train_expert(name, model_path, stacked_frames, actions, device):
     val_accs = []
     val_jump_recalls = []
     best_val_acc = 0
+    best_epoch = 0
+    patience_counter = 0
 
-    print(f"\nTraining for {config.EPOCHS} epochs...\n")
+    print(f"\nTraining for up to {config.EPOCHS} epochs (early stop after {config.EARLY_STOP_PATIENCE} without improvement)...\n")
 
     for epoch in range(config.EPOCHS):
         model.train()
@@ -218,7 +241,11 @@ def train_expert(name, model_path, stacked_frames, actions, device):
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            best_epoch = epoch
+            patience_counter = 0
             torch.save(model.state_dict(), model_path)
+        else:
+            patience_counter += 1
 
         if (epoch + 1) % 5 == 0 or epoch == 0:
             print(f"Epoch {epoch + 1:3d}/{config.EPOCHS} | "
@@ -226,7 +253,11 @@ def train_expert(name, model_path, stacked_frames, actions, device):
                   f"Val Loss: {val_loss:.4f} Acc: {val_acc:.4f} JumpRecall: {val_jump_recall:.4f}"
                   f"{' *' if val_acc >= best_val_acc else ''}")
 
-    print(f"\nBest validation accuracy: {best_val_acc:.4f}")
+        if patience_counter >= config.EARLY_STOP_PATIENCE:
+            print(f"\nEarly stopping at epoch {epoch + 1} (no improvement for {config.EARLY_STOP_PATIENCE} epochs)")
+            break
+
+    print(f"\nBest validation accuracy: {best_val_acc:.4f} (epoch {best_epoch + 1})")
     print(f"Final jump recall: {val_jump_recalls[-1]:.4f} (1.0 = never misses a jump)")
     print(f"Model saved to: {model_path}")
 
@@ -285,9 +316,13 @@ def archive_current_models(version):
     return archived_any
 
 
-def train():
+def train(train_mode=None, pure_only=False):
     print("=" * 60)
-    print("  GEOMETRY DASH AI - MIXTURE OF EXPERTS TRAINER")
+    if train_mode is not None:
+        label = "CUBE" if train_mode == config.CUBE_MODE else "SHIP"
+        print(f"  GEOMETRY DASH AI - MIXTURE OF EXPERTS TRAINER ({label} only)")
+    else:
+        print("  GEOMETRY DASH AI - MIXTURE OF EXPERTS TRAINER")
     print("=" * 60)
 
     version = get_next_version()
@@ -300,7 +335,7 @@ def train():
 
     print(f"\nFrame stacking: {config.FRAME_STACK} frames per sample (per-session)")
     print("\nLoading recorded data...")
-    data = load_and_split_data()
+    data = load_and_split_data(pure_only=pure_only)
 
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"\nUsing device: {device}")
@@ -308,34 +343,42 @@ def train():
     results = {}
 
     if "cube" in data:
-        sessions = data["cube"]
-        total_raw = sum(len(f) for f, a in sessions)
-        print(f"\n--- CUBE DATA ---")
-        print(f"Sessions: {len(sessions)}, Raw frames: {total_raw:,}")
-        stacked, stacked_actions = build_stacked_per_session(sessions)
-        print(f"Stacked samples: {len(stacked):,}")
-        if len(stacked) > 0:
-            acc = train_expert("cube", config.CUBE_MODEL_PATH, stacked, stacked_actions, device)
-            results["cube"] = acc
+        if train_mode is not None and train_mode != config.CUBE_MODE:
+            print("\n--- CUBE DATA --- skipped (--mode ship)")
         else:
-            print("Not enough cube data to train. Skipping.")
+            sessions = data["cube"]
+            total_raw = sum(len(f) for f, a in sessions)
+            print(f"\n--- CUBE DATA ---")
+            print(f"Sessions: {len(sessions)}, Raw frames: {total_raw:,}")
+            stacked, stacked_actions = build_stacked_per_session(sessions)
+            print(f"Stacked samples: {len(stacked):,}")
+            if len(stacked) > 0:
+                acc = train_expert("cube", config.CUBE_MODEL_PATH, stacked, stacked_actions, device)
+                results["cube"] = acc
+            else:
+                print("Not enough cube data to train. Skipping.")
     else:
-        print("\nNo cube mode data found! Record some with mode=CUBE first.")
+        if train_mode is None or train_mode == config.CUBE_MODE:
+            print("\nNo cube mode data found! Record some with mode=CUBE first.")
 
     if "ship" in data:
-        sessions = data["ship"]
-        total_raw = sum(len(f) for f, a in sessions)
-        print(f"\n--- SHIP DATA ---")
-        print(f"Sessions: {len(sessions)}, Raw frames: {total_raw:,}")
-        stacked, stacked_actions = build_stacked_per_session(sessions)
-        print(f"Stacked samples: {len(stacked):,}")
-        if len(stacked) > 0:
-            acc = train_expert("ship", config.SHIP_MODEL_PATH, stacked, stacked_actions, device)
-            results["ship"] = acc
+        if train_mode is not None and train_mode != config.SHIP_MODE:
+            print("\n--- SHIP DATA --- skipped (--mode cube)")
         else:
-            print("Not enough ship data to train. Skipping.")
+            sessions = data["ship"]
+            total_raw = sum(len(f) for f, a in sessions)
+            print(f"\n--- SHIP DATA ---")
+            print(f"Sessions: {len(sessions)}, Raw frames: {total_raw:,}")
+            stacked, stacked_actions = build_stacked_per_session(sessions)
+            print(f"Stacked samples: {len(stacked):,}")
+            if len(stacked) > 0:
+                acc = train_expert("ship", config.SHIP_MODEL_PATH, stacked, stacked_actions, device)
+                results["ship"] = acc
+            else:
+                print("Not enough ship data to train. Skipping.")
     else:
-        print("\nNo ship mode data found! Record some with mode=SHIP (press M) first.")
+        if train_mode is None or train_mode == config.SHIP_MODE:
+            print("\nNo ship mode data found! Record some with mode=SHIP (press M) first.")
 
     with open(config.VERSION_FILE, "w") as f:
         f.write(str(version))
@@ -350,4 +393,18 @@ def train():
 
 
 if __name__ == "__main__":
-    train()
+    import argparse
+    parser = argparse.ArgumentParser(description="Train Geometry Dash AI experts")
+    parser.add_argument("--mode", choices=["cube", "ship"], default=None,
+                        help="Train only one expert (omit for both)")
+    parser.add_argument("--pure", action="store_true",
+                        help="Only use single-mode sessions (skip mixed cube+ship sessions)")
+    args = parser.parse_args()
+
+    train_mode = None
+    if args.mode == "cube":
+        train_mode = config.CUBE_MODE
+    elif args.mode == "ship":
+        train_mode = config.SHIP_MODE
+
+    train(train_mode, pure_only=args.pure)
