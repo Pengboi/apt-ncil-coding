@@ -44,5 +44,15 @@ CUBE_MODEL_PATH = os.path.join(MODELS_DIR, "cube_model.pt")
 SHIP_MODEL_PATH = os.path.join(MODELS_DIR, "ship_model.pt")
 MODEL_PATH = CUBE_MODEL_PATH
 
+# --- RL Fine-Tuning ---
+RL_LEARNING_RATE = 5e-4
+RL_NUM_EPISODES = 500
+RL_BATCH_SIZE = 10
+RL_GAMMA = 0.99
+RL_ENTROPY_COEFF = 0.05
+RL_BASELINE_DECAY = 0.99
+RL_MAX_EPISODE_FRAMES = 900
+RL_KL_COEFF = 0.1
+
 for d in [DATA_DIR, MODELS_DIR, LOGS_DIR, ARCHIVE_DIR]:
     os.makedirs(d, exist_ok=True)

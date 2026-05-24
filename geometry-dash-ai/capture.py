@@ -101,3 +101,40 @@ def send_key_up(driver):
     from selenium.webdriver.common.action_chains import ActionChains
     from selenium.webdriver.common.keys import Keys
     ActionChains(driver).key_up(Keys.SPACE).perform()
+
+
+class DeathDetector:
+    def __init__(self, still_threshold=2.0, still_frames=15):
+        self.prev_frame = None
+        self.still_threshold = still_threshold
+        self.still_frames = still_frames
+        self.still_count = 0
+        self.warmup = 5
+
+    def check(self, frame):
+        if self.warmup > 0:
+            self.warmup -= 1
+            self.prev_frame = frame.copy()
+            return False
+        if self.prev_frame is None:
+            self.prev_frame = frame.copy()
+            return False
+        diff = np.abs(frame.astype(np.int16) - self.prev_frame.astype(np.int16)).mean()
+        self.prev_frame = frame.copy()
+        if diff < self.still_threshold:
+            self.still_count += 1
+        else:
+            self.still_count = 0
+        return self.still_count >= self.still_frames
+
+    def reset(self):
+        self.prev_frame = None
+        self.still_count = 0
+        self.warmup = 5
+
+
+def restart_level(driver):
+    from selenium.webdriver.common.action_chains import ActionChains
+    from selenium.webdriver.common.keys import Keys
+    ActionChains(driver).key_down(Keys.SPACE).pause(0.05).key_up(Keys.SPACE).perform()
+    time.sleep(0.3)
