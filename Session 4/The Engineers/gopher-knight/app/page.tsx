@@ -14,7 +14,7 @@ const T = {
   BRIDGE_H: 6, BRIDGE_V: 7, FLOWER: 8, TALL_GRASS: 9,
   HOUSE_WALL: 10, HOUSE_ROOF: 11, HOUSE_DOOR: 12, FLOOR: 13,
   FENCE: 14, DEEP_WATER: 15, SAND: 16, STONE: 17, SIGN: 18,
-  ROCK: 19, RUINS: 20,
+  ROCK: 19, RUINS: 20, CAMPFIRE: 21,
 };
 
 function makeMap() {
@@ -360,6 +360,7 @@ interface NpcData {
   id: string; x: number; y: number; name: string; color: string; hatColor: string;
   dialogue: string[]; isShop?: boolean; shopItems?: { id: string; name: string; icon: string; price: number }[];
   dir: number; patrol?: { x1: number; y1: number; x2: number; y2: number };
+  targetX: number; targetY: number; moving: boolean;
 }
 interface SignData { x: number; y: number; text: string; }
 interface WorldEnemy {
@@ -395,13 +396,13 @@ const RECIPES: Recipe[] = [
 ];
 
 const NPC_DATA: NpcData[] = [
-  { id: 'old_man', x: 42, y: 28, name: 'Old Sage', color: '#4a6a8a', hatColor: '#2a2a4a', dir: 0, dialogue: ['Welcome, traveler...', 'Beyond these woods lies great danger.', 'Train well, and you may survive.'], patrol: { x1: 40, y1: 28, x2: 44, y2: 28 } },
+  { id: 'old_man', x: 42, y: 28, name: 'Old Sage', color: '#4a6a8a', hatColor: '#2a2a4a', dir: 0, dialogue: ['Welcome, traveler...', 'Beyond these woods lies great danger.', 'Train well, and you may survive.'], patrol: { x1: 40, y1: 28, x2: 44, y2: 28 }, targetX: 42, targetY: 28, moving: false },
   { id: 'merchant', x: 55, y: 38, name: 'Merchant Klang', color: '#8a6a3a', hatColor: '#5a3a1a', dir: 2, dialogue: ['Care to see my wares?', 'I have the finest goods!'], isShop: true, shopItems: [
     { id: 'potion', name: 'Health Potion', icon: '🧪', price: 50 }, { id: 'torch', name: 'Torch', icon: '🔥', price: 30 },
     { id: 'compass', name: 'Compass', icon: '🧭', price: 100 }, { id: 'herb', name: 'Herb', icon: '🌿', price: 15 }, { id: 'stick', name: 'Stick', icon: '🥢', price: 5 },
-  ] },
-  { id: 'hermit', x: 65, y: 20, name: 'Hermit', color: '#5a7a5a', hatColor: '#2a3a1a', dir: 1, dialogue: ['Shh... the forest speaks.', 'Listen to the wind between the trees.', 'It carries secrets of old.'] },
-  { id: 'traveler', x: 30, y: 45, name: 'Traveler Lynn', color: '#7a5a7a', hatColor: '#4a2a4a', dir: 3, dialogue: ['I\'ve walked many roads.', 'The house to the east is abandoned...', 'Or so they say.'], patrol: { x1: 28, y1: 45, x2: 33, y2: 45 } },
+  ], targetX: 55, targetY: 38, moving: false },
+  { id: 'hermit', x: 65, y: 20, name: 'Hermit', color: '#5a7a5a', hatColor: '#2a3a1a', dir: 1, dialogue: ['Shh... the forest speaks.', 'Listen to the wind between the trees.', 'It carries secrets of old.'], targetX: 65, targetY: 20, moving: false },
+  { id: 'traveler', x: 30, y: 45, name: 'Traveler Lynn', color: '#7a5a7a', hatColor: '#4a2a4a', dir: 3, dialogue: ['I\'ve walked many roads.', 'The house to the east is abandoned...', 'Or so they say.'], patrol: { x1: 28, y1: 45, x2: 33, y2: 45 }, targetX: 30, targetY: 45, moving: false },
 ];
 const SIGN_DATA: SignData[] = [
   { x: 49, y: 36, text: '~ Welcome to ~\nRookwood Manor\n~ Enter freely ~' },
@@ -468,6 +469,9 @@ function makeCaveMap() {
   for (let ex = 20; ex <= 23; ex++) { m[12][ex] = T.SAND; }
   m[11][22] = T.SAND; m[13][22] = T.SAND;
   m[11][23] = T.SAND; m[13][23] = T.SAND;
+  // Campfires
+  const campfires = [[6, 10], [18, 10], [6, 18], [18, 18], [12, 8], [12, 16]];
+  for (const [cx, cy] of campfires) if (m[cy] && m[cy][cx] !== undefined && m[cy][cx] !== T.STONE) m[cy][cx] = T.CAMPFIRE;
   return m;
 }
 
@@ -491,6 +495,8 @@ export default function AdventurePage() {
     battleActive: false, battleEnemy: null as WorldEnemy | null, battleTurn: 'player' as 'player' | 'enemy',
     battleLog: [] as string[], battleAnimating: false, battleAnimTimer: 0, battleFade: 0, battleChoice: 0,
     battleSubMenu: '' as '' | 'attack' | 'skills' | 'items' | 'flee', battleSubChoice: 0,
+    battleEnemyDisplayHp: 0, battlePlayerDisplayHp: 0, battleEnemyFlash: 0, battlePlayerFlash: 0,
+    battleMsgTime: 0,
     inventoryOpen: false, inventoryChoice: 0, inventoryTab: 0,
     quests: JSON.parse(JSON.stringify(QUESTS)) as Quest[],
     craftOpen: false, craftChoice: 0,
@@ -516,6 +522,7 @@ export default function AdventurePage() {
       { x: 12, y: 4 }, { x: 12, y: 20 }, { x: 4, y: 12 }, { x: 20, y: 12 },
       { x: 21, y: 11 }, { x: 21, y: 13 },
     ],
+    justDefeated: false,
   });
 
   const firefliesRef = useRef<Firefly[]>([]);
@@ -533,6 +540,12 @@ export default function AdventurePage() {
   const nwMapRef = useRef<number[][]>(makeNewWorldMap());
   const caveFogRef = useRef<{ x: number; y: number; size: number; speed: number; opacity: number }[]>([]);
   const rainRef = useRef<Raindrop[]>([]);
+  const caveEnemiesRef = useRef<WorldEnemy[]>([
+    { id: 'ce1', name: 'Cave Bat', icon: '🦇', color: '#5a4a6a', x: 5, y: 6, level: 3, hp: 20, maxHp: 20, atk: 8, def: 3, spd: 6, xpReward: 18, goldReward: 6, aggroRange: 5, dir: 0, state: 'patrol', patrol: { x1: 3, y1: 3, x2: 8, y2: 8 }, moveTimer: 0, abilities: ['strike', 'fury'] },
+    { id: 'ce2', name: 'Rock Lizard', icon: '🦎', color: '#6a6a4a', x: 19, y: 6, level: 4, hp: 35, maxHp: 35, atk: 10, def: 7, spd: 3, xpReward: 25, goldReward: 10, aggroRange: 4, dir: 1, state: 'patrol', patrol: { x1: 16, y1: 4, x2: 22, y2: 8 }, moveTimer: 0, abilities: ['strike', 'shield_bash'] },
+    { id: 'ce3', name: 'Fungus Crawler', icon: '🍄', color: '#4a6a3a', x: 5, y: 18, level: 5, hp: 40, maxHp: 40, atk: 12, def: 5, spd: 4, xpReward: 30, goldReward: 12, aggroRange: 5, dir: 2, state: 'patrol', patrol: { x1: 3, y1: 16, x2: 9, y2: 22 }, moveTimer: 0, abilities: ['strike', 'heal'] },
+    { id: 'ce4', name: 'Shadow Wraith', icon: '👻', color: '#3a3a5a', x: 19, y: 18, level: 6, hp: 45, maxHp: 45, atk: 16, def: 6, spd: 5, xpReward: 40, goldReward: 18, aggroRange: 6, dir: 3, state: 'patrol', patrol: { x1: 16, y1: 16, x2: 22, y2: 22 }, moveTimer: 0, abilities: ['strike', 'flame', 'roar'] },
+  ]);
   const [menuVisible, setMenuVisible] = useState(true);
   const [playerName, setPlayerName] = useState('');
 
@@ -731,6 +744,13 @@ export default function AdventurePage() {
       const color = terrain === T.DIRT || terrain === T.PATH ? '#6a5a3a' : terrain === T.FLOOR ? '#5a4a3a' : '#8a9a7a';
       for (let i = 0; i < 3; i++) fp.push({ x: tx * TILE + (Math.random() - 0.5) * 12, y: ty * TILE + TILE - 4, vx: (Math.random() - 0.5) * 1.5, vy: -Math.random() * 1.5 - 0.5, life: 20, maxLife: 20, size: 2 + Math.random() * 2, color });
     }
+    function roundRect(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+      c.beginPath(); c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.arcTo(x + w, y, x + w, y + r, r); c.lineTo(x + w, y + h - r); c.arcTo(x + w, y + h, x + w - r, y + h, r); c.lineTo(x + r, y + h); c.arcTo(x, y + h, x, y + h - r, r); c.lineTo(x, y + r); c.arcTo(x, y, x + r, y, r); c.closePath(); c.fill();
+    }
+    function roundRectStroke(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+      c.beginPath(); c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.arcTo(x + w, y, x + w, y + r, r); c.lineTo(x + w, y + h - r); c.arcTo(x + w, y + h, x + w - r, y + h, r); c.lineTo(x + r, y + h); c.arcTo(x, y + h, x, y + h - r, r); c.lineTo(x, y + r); c.arcTo(x, y, x + r, y, r); c.closePath(); c.stroke();
+    }
+
     function closeAllPanels() { s.dialogueActive = false; s.shopActive = false; s.signActive = false; s.cutsceneActive = false; s.inventoryOpen = false; s.craftOpen = false; s.menuOpen = false; s.skillsOpen = false; s.dialogueNpcData = null; }
     function buyItemFromUI(idx: number) {
       const items = s.shopItems;
@@ -791,7 +811,7 @@ export default function AdventurePage() {
               addXp(q.rewards.xp);
               s.playerGold += q.rewards.gold;
               if (q.rewards.items) for (const ii of q.rewards.items) s.inventory.push({ id: ii, name: ii.charAt(0).toUpperCase() + ii.slice(1), icon: '📦' });
-              s.battleLog.push(`Quest complete: ${q.name}!`);
+              blog(`Quest complete: ${q.name}!`);
             }
           }
         }
@@ -810,10 +830,13 @@ export default function AdventurePage() {
 
     function startBattle(enemy: WorldEnemy) {
       closeAllPanels(); s.battleActive = true; s.battleEnemy = { ...enemy, hp: enemy.maxHp };
-      s.battleTurn = 'player'; s.battleLog = [`A wild ${enemy.name} appears!`];
+      s.battleTurn = 'player'; s.battleLog = [`A wild ${enemy.name} appears!`]; s.battleMsgTime = 0;
       s.battleFade = 0; s.battleAnimating = true; s.battleAnimTimer = 0; s.battleChoice = 0; s.battleSubMenu = ''; s.battleSubChoice = 0;
+      s.battleEnemyDisplayHp = enemy.maxHp; s.battlePlayerDisplayHp = s.hp; s.battleEnemyFlash = 0; s.battlePlayerFlash = 0;
       playSound('battle_start');
     }
+
+    function blog(msg: string) { s.battleLog.push(msg); s.battleMsgTime = s.time; }
 
     function playerAttack(abilityId: string) {
       const e = s.battleEnemy; if (!e) return;
@@ -821,12 +844,13 @@ export default function AdventurePage() {
       if (ab.type === 'heal') {
         const healAmt = ab.power + Math.floor(s.atk * 0.3);
         s.hp = Math.min(s.maxHp, s.hp + healAmt);
-        s.battleLog.push(`You cast ${ab.name}! +${healAmt} HP`);
+        blog(`You cast ${ab.name}! +${healAmt} HP`);
         playSound('heal');
       } else {
         const { dmg, crit } = calcDamage(s.atk + ab.power, e.def);
         e.hp = Math.max(0, e.hp - dmg);
-        s.battleLog.push(crit ? `CRIT! ${ab.name} deals ${dmg} damage!` : `${ab.name} deals ${dmg} damage.`);
+        blog(crit ? `CRIT! ${ab.name} deals ${dmg} damage!` : `${ab.name} deals ${dmg} damage.`);
+        s.battleEnemyFlash = 12;
         playSound(crit ? 'crit' : 'hit');
         if (crit) triggerShake(6);
         if (dmg > 15) triggerShake(4);
@@ -835,15 +859,26 @@ export default function AdventurePage() {
       setTimeout(() => {
         if (!s.battleEnemy) return;
         if (s.battleEnemy.hp <= 0) {
-          s.battleLog.push(`${s.battleEnemy.name} defeated!`);
+          blog(`${s.battleEnemy.name} defeated!`);
           s.totalKills++;
           updateQuest('kill', s.battleEnemy.id);
           updateQuest('kill', 'any');
-          if (s.battleEnemy.isBoss) s.battleLog.push('Boss vanquished! Tremendous power surges through you!');
+          if (s.battleEnemy.isBoss) {
+            blog('Boss vanquished! Tremendous power surges through you!');
+            if (s.battleEnemy.id === 'cave_boss') {
+              s.caveBossDefeated = true;
+              s.caveBossAggro = false;
+              s.caveBossHp = 0;
+              s.caveKeyDropped = true;
+              s.caveKeyX = s.caveBossX; s.caveKeyY = s.caveBossY;
+              s.caveBossRespawnTimer = 1800;
+              blog('The Cave Guardian crumbles! A golden key falls to the ground.');
+            }
+          }
           addXp(s.battleEnemy.xpReward); s.playerGold += s.battleEnemy.goldReward;
           const dropChance = Math.random();
-          if (dropChance < 0.3) { s.inventory.push({ id: 'herb', name: 'Herb', icon: '🌿' }); s.battleLog.push('Dropped: Herb'); }
-          else if (dropChance < 0.4) { s.inventory.push({ id: 'potion', name: 'Health Potion', icon: '🧪' }); s.battleLog.push('Dropped: Potion'); }
+          if (dropChance < 0.3) { s.inventory.push({ id: 'herb', name: 'Herb', icon: '🌿' }); blog('Dropped: Herb'); }
+          else if (dropChance < 0.4) { s.inventory.push({ id: 'potion', name: 'Health Potion', icon: '🧪' }); blog('Dropped: Potion'); }
           playSound('victory');
           setTimeout(() => { s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }, 2000);
           return;
@@ -856,19 +891,20 @@ export default function AdventurePage() {
           const ab2 = getAbility(eAb);
           const { dmg: eDmg, crit: eCrit } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
           s.hp = Math.max(0, s.hp - eDmg);
-          s.battleLog.push(eCrit ? `CRIT! ${s.battleEnemy.name}'s ${ab2.name} hits for ${eDmg}!` : `${s.battleEnemy.name} uses ${ab2.name} for ${eDmg} damage.`);
+          blog(eCrit ? `CRIT! ${s.battleEnemy.name}'s ${ab2.name} hits for ${eDmg}!` : `${s.battleEnemy.name} uses ${ab2.name} for ${eDmg} damage.`);
+          s.battlePlayerFlash = 12;
           playSound('hit');
           if (eCrit) triggerShake(8);
           triggerShake(4);
           if (s.hp <= 0) {
-            s.battleLog.push('You have been defeated...');
+            blog('You have been defeated...');
             playSound('flee');
-            setTimeout(() => { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }, 2000);
+            setTimeout(() => { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }, 2000);
           } else {
             s.battleTurn = 'player'; s.battleSubMenu = '';
             if (s.battleEnemy?.isBoss && s.battleEnemy.hp < s.battleEnemy.maxHp * 0.5 && s.battleEnemy.phase === 1) {
               s.battleEnemy.phase = 2;
-              s.battleLog.push(`The ${s.battleEnemy.name} enters phase 2! It grows stronger!`);
+              blog(`The ${s.battleEnemy.name} enters phase 2! It grows stronger!`);
               s.battleEnemy.atk += 5; s.battleEnemy.def += 3;
             }
           }
@@ -877,13 +913,13 @@ export default function AdventurePage() {
     }
 
     function playerFlee() {
-      if (s.battleEnemy?.isBoss) { s.battleLog.push('Cannot flee from a boss!'); return; }
+      if (s.battleEnemy?.isBoss) { blog('Cannot flee from a boss!'); return; }
       if (Math.random() < 0.6) {
-        s.battleLog.push('You fled successfully!');
+        blog('You fled successfully!');
         playSound('flee');
         setTimeout(() => { s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }, 500);
       } else {
-        s.battleLog.push('Failed to flee!');
+        blog('Failed to flee!');
         playSound('interact', 0.5);
         s.battleTurn = 'enemy';
         setTimeout(() => {
@@ -891,8 +927,9 @@ export default function AdventurePage() {
           const ab2 = getAbility(s.battleEnemy.abilities[Math.floor(Math.random() * s.battleEnemy.abilities.length)]);
           const { dmg } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
           s.hp = Math.max(0, s.hp - dmg);
-          s.battleLog.push(`${s.battleEnemy.name} strikes as you flee! -${dmg} HP`);
-          if (s.hp <= 0) { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }
+          blog(`${s.battleEnemy.name} strikes as you flee! -${dmg} HP`);
+          s.battlePlayerFlash = 12;
+          if (s.hp <= 0) { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }
           else { s.battleTurn = 'player'; s.battleSubMenu = ''; }
         }, 600);
       }
@@ -904,7 +941,7 @@ export default function AdventurePage() {
         if (idx >= 0) {
           s.inventory.splice(idx, 1);
           s.hp = Math.min(s.maxHp, s.hp + 30);
-          s.battleLog.push('Used Health Potion! +30 HP');
+          blog('Used Health Potion! +30 HP');
           playSound('heal');
           s.battleTurn = 'enemy';
           setTimeout(() => {
@@ -912,8 +949,9 @@ export default function AdventurePage() {
             const ab2 = getAbility(s.battleEnemy.abilities[Math.floor(Math.random() * s.battleEnemy.abilities.length)]);
             const { dmg } = calcDamage(s.battleEnemy.atk + ab2.power, s.def);
             s.hp = Math.max(0, s.hp - dmg);
-            s.battleLog.push(`${s.battleEnemy.name} uses ${ab2.name}! -${dmg} HP`);
-            if (s.hp <= 0) { s.hp = Math.floor(s.maxHp / 2); s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; saveGame(); }
+            blog(`${s.battleEnemy.name} uses ${ab2.name}! -${dmg} HP`);
+            s.battlePlayerFlash = 12;
+            if (s.hp <= 0) { s.justDefeated = true; s.hp = 1; s.battleActive = false; s.battleEnemy = null; s.battleSubMenu = ''; }
             else { s.battleTurn = 'player'; s.battleSubMenu = ''; }
           }, 800);
         }
@@ -930,13 +968,14 @@ export default function AdventurePage() {
       if (s.inNewWorld) {
         if (Math.abs(px - (NW_COLS - 3)) + Math.abs(py - 3) <= 1.5) { exitNewWorld(); s.interactCooldown = 20; return; }
       } else if (s.inShop) {
-        if (px >= 8 && py === 10) { exitShop(); s.interactCooldown = 20; return; }
+        if (Math.abs(px - 4) + Math.abs(py - 10) <= 1.5) { exitShop(); s.interactCooldown = 20; return; }
         const merchantDist = Math.abs(px - 7) + Math.abs(py - 4);
         if (merchantDist <= 1.5) {
           closeAllPanels(); s.shopActive = true;
           s.shopItems = [
             { id: 'potion', name: 'Health Potion', icon: '🧪', price: 50 },
             { id: 'torch', name: 'Torch', icon: '🔥', price: 30 },
+            { id: 'compass', name: 'Compass', icon: '🧭', price: 100 },
             { id: 'herb', name: 'Herb', icon: '🌿', price: 15 },
             { id: 'stick', name: 'Stick', icon: '🥢', price: 5 },
           ];
@@ -968,6 +1007,7 @@ export default function AdventurePage() {
       }
       s.caveKeyDropped = false; s.caveKeyPickedUp = false;
       s.caveBossAggro = false; s.caveBossAttackCooldown = 0;
+      for (const e of caveEnemiesRef.current) { e.hp = e.maxHp; e.state = 'patrol'; e.x = e.patrol.x1; e.y = e.patrol.y1; }
       playSound('door', 0.6);
     }
 
@@ -1079,23 +1119,32 @@ export default function AdventurePage() {
       if (s.battleActive && down) {
         if (s.battleAnimating) return;
         if (s.battleTurn === 'player') {
-          if (k === 'arrowup') { if (s.battleSubMenu) s.battleSubChoice = Math.max(0, s.battleSubChoice - 1); else s.battleChoice = Math.max(0, s.battleChoice - 1); }
-          else if (k === 'arrowdown') { if (s.battleSubMenu) { const max = s.battleSubMenu === 'skills' ? s.learnedAbilities.length : s.battleSubMenu === 'items' ? s.inventory.filter(i => i.id === 'potion').length : 0; s.battleSubChoice = Math.min(max - 1, s.battleSubChoice + 1); } else s.battleChoice = Math.min(3, s.battleChoice + 1); }
+          if (k === 'arrowup') { if (s.battleSubMenu) s.battleSubChoice = Math.max(0, s.battleSubChoice - 1); else s.battleChoice = Math.max(0, s.battleChoice - 2); }
+          else if (k === 'arrowdown') { if (s.battleSubMenu) { const max = s.battleSubMenu === 'skills' ? s.learnedAbilities.length : s.battleSubMenu === 'items' ? s.inventory.filter(i => i.id === 'potion').length : 0; s.battleSubChoice = Math.min(max - 1, s.battleSubChoice + 1); } else s.battleChoice = Math.min(3, s.battleChoice + 2); }
+          else if (k === 'arrowleft') { if (!s.battleSubMenu && s.battleChoice % 2 === 1) s.battleChoice--; }
+          else if (k === 'arrowright') { if (!s.battleSubMenu && s.battleChoice % 2 === 0) s.battleChoice++; }
           else if (k === 'e' || k === 'enter') {
             if (s.battleSubMenu === '') {
-              if (s.battleChoice === 0) s.battleSubMenu = 'skills';
-              else if (s.battleChoice === 1) s.battleSubMenu = 'items';
-              else if (s.battleChoice === 2) { if (s.inventory.some(i => i.id === 'potion')) { useItemInBattle('potion'); } else { s.battleLog.push('No potions!'); } }
+               if (s.battleChoice === 0) playerAttack('strike');
+              else if (s.battleChoice === 1) s.battleSubMenu = 'skills';
+              else if (s.battleChoice === 2) s.battleSubMenu = 'items';
               else if (s.battleChoice === 3) playerFlee();
             } else {
               if (s.battleSubMenu === 'skills') { const ab = s.learnedAbilities[s.battleSubChoice]; if (ab) playerAttack(ab); }
-              else if (s.battleSubMenu === 'items') { /* handled by potion choice above */ }
+              else if (s.battleSubMenu === 'items') { if (s.inventory.some(i => i.id === 'potion')) { useItemInBattle('potion'); } else { blog('No potions!'); } }
             }
           }
           else if ((k === 'q' || k === 'escape') && s.battleSubMenu) s.battleSubMenu = '';
         }
         e.preventDefault();
         return;
+      }
+      if (s.shopActive && down) {
+        if (k === 'arrowup') s.shopSelected = Math.max(0, s.shopSelected - 1);
+        else if (k === 'arrowdown') s.shopSelected = Math.min(s.shopItems.length - 1, s.shopSelected + 1);
+        else if (k === 'e' || k === 'enter') buyItemFromUI(s.shopSelected);
+        else if (k === 'q' || k === 'escape') { closeAllPanels(); playSound('interact', 0.5); }
+        e.preventDefault(); return;
       }
       if (s.craftOpen && down) {
         if (k === 'arrowup') s.craftChoice = Math.max(0, s.craftChoice - 1);
@@ -1113,7 +1162,7 @@ export default function AdventurePage() {
           if (ab && !s.learnedAbilities.includes(ab.id)) {
             s.learnedAbilities.push(ab.id);
             s.sp--;
-            s.battleLog.push(`Learned ${ab.name}!`);
+            blog(`Learned ${ab.name}!`);
             playSound('levelup');
             saveGame();
           }
@@ -1196,8 +1245,41 @@ export default function AdventurePage() {
       }
       if (s.lightningFlash > 0) { s.lightningFlash -= dt * 0.035; if (s.lightningFlash < 0) s.lightningFlash = 0; }
 
+      if (s.battleActive && s.battleEnemy) {
+        s.battleEnemyDisplayHp += (s.battleEnemy.hp - s.battleEnemyDisplayHp) * 0.06 * dt;
+        s.battlePlayerDisplayHp += (s.hp - s.battlePlayerDisplayHp) * 0.06 * dt;
+        if (s.battleEnemyFlash > 0) s.battleEnemyFlash -= dt;
+        if (s.battlePlayerFlash > 0) s.battlePlayerFlash -= dt;
+      }
+
       // Auto-save every 30s
       if (Math.floor(s.time) % 1800 < dt) saveGame();
+
+      if (s.justDefeated && !s.battleActive && !s.dialogueActive && !s.shopActive && !s.signActive && !s.inventoryOpen && !s.craftOpen && !s.menuOpen) {
+        s.justDefeated = false;
+        const goldLost = Math.floor(s.playerGold * 0.25);
+        s.playerGold = Math.max(0, s.playerGold - goldLost);
+        s.hp = Math.floor(s.maxHp / 2);
+        s.mp = Math.floor(s.maxMp / 2);
+        s.caveActive = false; s.caveFade = 1;
+        s.inShop = false;
+        s.px = 52; s.py = 42;
+        s.camX = s.px * TILE - c.width / 2;
+        s.camY = s.py * TILE - c.height / 2;
+        enemiesRef.current = makeEnemies();
+        closeAllPanels();
+        s.dialogueActive = true;
+        s.dialogueNpc = 'Old Sage';
+        s.dialogueLines = [
+          'You took quite a beating out there...',
+          'I found you collapsed and brought you back to the village.',
+          'Rest up. And try to be more careful next time.',
+          `You lost ${goldLost} gold in the chaos...`,
+        ];
+        s.dialogueIndex = 0;
+        playSound('interact');
+        saveGame();
+      }
 
       const { px, py } = s;
       const W = c.width, H = c.height;
@@ -1250,7 +1332,32 @@ export default function AdventurePage() {
 
       // NPC patrol
       const offsets = s.npcOffsets; const npcTimers = npcTimersRef.current;
-      for (let i = 0; i < NPC_DATA.length; i++) { const npc = NPC_DATA[i]; npcTimers[i] += dt; if (npc.patrol && npcTimers[i] > 120 + Math.random() * 80) { npcTimers[i] = 0; const dx_ = npc.patrol.x2 - npc.patrol.x1, dy_ = npc.patrol.y2 - npc.patrol.y1; if (Math.abs(dx_) > Math.abs(dy_)) { if (npc.x <= npc.patrol.x1) { npc.x = npc.patrol.x2; npc.dir = 2; } else { npc.x = npc.patrol.x1; npc.dir = 3; } } else { if (npc.y <= npc.patrol.y1) { npc.y = npc.patrol.y2; npc.dir = 1; } else { npc.y = npc.patrol.y1; npc.dir = 0; } } offsets[i].step = !offsets[i].step; playFootstep(T.DIRT); } }
+      for (let i = 0; i < NPC_DATA.length; i++) {
+        const npc = NPC_DATA[i];
+        if (npc.moving) {
+          const dx = npc.targetX - npc.x, dy = npc.targetY - npc.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const npcSpeed = 0.02 * dt;
+          if (dist < npcSpeed + 0.01) {
+            npc.x = npc.targetX; npc.y = npc.targetY; npc.moving = false;
+          } else {
+            npc.x += (dx / dist) * npcSpeed;
+            npc.y += (dy / dist) * npcSpeed;
+            if (Math.abs(dx) > Math.abs(dy)) npc.dir = dx > 0 ? 3 : 2;
+            else npc.dir = dy > 0 ? 0 : 1;
+            if (Math.floor(s.time * 0.12) % 2 === 0) offsets[i].step = !offsets[i].step;
+          }
+        } else if (npc.patrol) {
+          npcTimers[i] += dt;
+          if (npcTimers[i] > 120 + Math.random() * 80) {
+            npcTimers[i] = 0;
+            const nearStart = Math.abs(npc.x - npc.patrol.x1) + Math.abs(npc.y - npc.patrol.y1) < Math.abs(npc.x - npc.patrol.x2) + Math.abs(npc.y - npc.patrol.y2);
+            if (nearStart) { npc.targetX = npc.patrol.x2; npc.targetY = npc.patrol.y2; }
+            else { npc.targetX = npc.patrol.x1; npc.targetY = npc.patrol.y1; }
+            npc.moving = true;
+          }
+        }
+      }
 
       // Enemy AI
       const enemies = enemiesRef.current;
@@ -1343,36 +1450,9 @@ export default function AdventurePage() {
         } else {
           s.caveBossAggro = false;
         }
-        // Boss contact damage
-        if (bDist < 1.2) {
-          s.caveBossAttackCooldown -= dt;
-          if (s.caveBossAttackCooldown <= 0) {
-            s.hp = Math.max(0, s.hp - 8);
-            s.caveBossAttackCooldown = 60;
-            triggerShake(6);
-            playSound('hit');
-          }
-        }
-        // Player SPACE attack with cooldown
-        s.playerCaveAttackCooldown -= dt;
-        if (bDist < 2.5 && s.spacePressed && s.playerCaveAttackCooldown <= 0) {
-          s.spacePressed = false;
-          s.playerCaveAttackCooldown = 20;
-          const { dmg, crit } = calcDamage(s.atk + 10, 5);
-          s.caveBossHp = Math.max(0, s.caveBossHp - dmg);
-          s.battleLog.push(crit ? `CRIT! You strike the Cave Guardian for ${dmg}!` : `You strike the Cave Guardian for ${dmg}.`);
-          playSound(crit ? 'crit' : 'hit');
-          if (crit) triggerShake(8); else triggerShake(3);
-          if (s.caveBossHp <= 0) {
-            s.caveBossDefeated = true;
-            s.caveBossAggro = false;
-            s.caveBossHp = 0;
-            s.caveKeyDropped = true;
-            s.caveKeyX = bx; s.caveKeyY = by;
-            s.caveBossRespawnTimer = 1800;
-            s.battleLog.push('The Cave Guardian crumbles! A golden key falls to the ground.');
-            playSound('victory');
-          }
+        if (bDist < 1.2 && !s.battleActive) {
+          startBattle({ id: 'cave_boss', name: 'Cave Guardian', icon: '👹', color: '#4a3a2a', x: bx, y: by, level: 10, hp: s.caveBossHp, maxHp: s.caveBossMaxHp, atk: 22, def: 15, spd: 2, xpReward: 300, goldReward: 120, aggroRange: 8, dir: s.caveBossDir, state: 'chase', patrol: { x1: 8, y1: 8, x2: 16, y2: 16 }, moveTimer: 0, isBoss: true, maxPhase: 2, phase: 1, abilities: ['claw', 'roar', 'dark_blast'] });
+          s.caveBossAggro = false;
         }
       }
       // Boss respawn timer (ticks down even outside cave)
@@ -1384,8 +1464,29 @@ export default function AdventurePage() {
           s.caveBossX = 12; s.caveBossY = 12;
           s.caveBossAggro = false;
           s.caveBossAttackCooldown = 0;
-          s.battleLog.push('The Cave Guardian has returned!');
+          blog('The Cave Guardian has returned!');
           playSound('battle_start');
+        }
+      }
+      // Cave enemy AI
+      if (s.caveActive) {
+        const caveEnemies = caveEnemiesRef.current;
+        const caveMap = caveMapRef.current;
+        for (const e of caveEnemies) {
+          if (e.hp <= 0) continue;
+          const dist = Math.abs(s.px - e.x) + Math.abs(s.py - e.y);
+          if (dist < e.aggroRange && !s.battleActive) {
+            e.state = 'chase'; e.moveTimer += dt;
+            const ex = e.x < s.px ? 1 : e.x > s.px ? -1 : 0;
+            const ey = e.y < s.py ? 1 : e.y > s.py ? -1 : 0;
+            if (e.moveTimer > 12) { e.moveTimer = 0; const nx = e.x + ex, ny = e.y + ey; if (!isCaveBlocked(nx, ny, caveMap)) { e.x = nx; e.y = ny; } }
+            if (dist <= 1.2) { startBattle(e); e.hp = 0; break; }
+          } else if (e.state === 'chase' && dist >= e.aggroRange * 2) { e.state = 'patrol'; }
+          else if (e.state === 'patrol') {
+            e.moveTimer += dt;
+            if (e.moveTimer > 70 + Math.random() * 50) { e.moveTimer = 0; const dx_ = e.patrol.x2 - e.patrol.x1, dy_ = e.patrol.y2 - e.patrol.y1; const nx = e.x + (Math.random() < 0.5 ? (dx_ > 0 ? 1 : -1) : 0), ny = e.y + (Math.random() < 0.5 ? 0 : (dy_ > 0 ? 1 : -1)); if (!isCaveBlocked(nx, ny, caveMap) && nx >= Math.min(e.patrol.x1, e.patrol.x2) && nx <= Math.max(e.patrol.x1, e.patrol.x2) && ny >= Math.min(e.patrol.y1, e.patrol.y2) && ny <= Math.max(e.patrol.y1, e.patrol.y2)) { e.x = nx; e.y = ny; } }
+          }
+          if (e.hp <= 0 && s.time % 500 < dt && !s.battleActive) { e.hp = e.maxHp; }
         }
       }
       // Cave key pickup
@@ -1394,7 +1495,7 @@ export default function AdventurePage() {
         if (kDist <= 1.5 && s.ePressed) {
           s.caveKeyPickedUp = true;
           s.hasCaveKey = true;
-          s.battleLog.push('You picked up the Cave Key!');
+          blog('You picked up the Cave Key!');
           playSound('levelup');
           s.ePressed = false;
         }
@@ -1524,6 +1625,44 @@ export default function AdventurePage() {
         ctx.fillRect(counterX + 2, counterY + 2, TILE * 2 - 4, TILE - 4);
         ctx.fillStyle = '#2a1a0a';
         ctx.fillRect(counterX, counterY, TILE * 2, 3);
+        // Items on counter
+        ctx.font = '12px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('🧪', counterX + 12, counterY + 20);
+        ctx.fillText('🔥', counterX + 28, counterY + 20);
+        ctx.fillText('🧭', counterX + 44, counterY + 20);
+        // Sign above counter
+        ctx.fillStyle = '#4a2a10'; ctx.fillRect(counterX - 4, counterY - 20, TILE * 2 + 8, 16);
+        ctx.fillStyle = '#d8c878'; ctx.font = '10px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('⚔ WARES ⚔', counterX + TILE, counterY - 8);
+        // Hearth in bottom-left corner
+        const hearthX = 1 * TILE - camX, hearthY = (SHOP_ROWS - 2) * TILE - camY;
+        ctx.fillStyle = '#2a1a0a'; ctx.fillRect(hearthX, hearthY, TILE, TILE);
+        ctx.fillStyle = '#3a2a1a'; ctx.fillRect(hearthX + 2, hearthY + 8, TILE - 4, TILE - 10);
+        const hearthGlow = 0.5 + Math.sin(s.time * 0.08) * 0.3;
+        ctx.shadowColor = '#ff6020'; ctx.shadowBlur = 14 * hearthGlow;
+        ctx.fillStyle = `rgba(255,${80 + Math.sin(s.time * 0.12) * 40},20,${0.8 * hearthGlow})`;
+        ctx.beginPath(); ctx.arc(hearthX + 16, hearthY + 20, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(255,200,50,${0.5 * hearthGlow})`;
+        ctx.beginPath(); ctx.arc(hearthX + 12, hearthY + 18, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(hearthX + 20, hearthY + 16, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+        const hGrad = ctx.createRadialGradient(hearthX + 16, hearthY + 20, 5, hearthX + 16, hearthY + 20, 60);
+        hGrad.addColorStop(0, `rgba(255,150,50,${0.15 * hearthGlow})`);
+        hGrad.addColorStop(1, 'rgba(255,150,50,0)');
+        ctx.fillStyle = hGrad; ctx.beginPath(); ctx.arc(hearthX + 16, hearthY + 20, 60, 0, Math.PI * 2); ctx.fill();
+        // Rug in center
+        const rugX = 3 * TILE - camX, rugY = 5 * TILE - camY;
+        ctx.fillStyle = 'rgba(80,30,30,0.4)'; ctx.fillRect(rugX, rugY, TILE * 4, TILE * 2);
+        ctx.strokeStyle = 'rgba(150,100,50,0.3)'; ctx.lineWidth = 1; ctx.strokeRect(rugX + 2, rugY + 2, TILE * 4 - 4, TILE * 2 - 4);
+        ctx.strokeStyle = 'rgba(200,150,80,0.15)'; ctx.strokeRect(rugX + 6, rugY + 6, TILE * 4 - 12, TILE * 2 - 12);
+        // Barrels in corner
+        const barrelX = 8 * TILE - camX, barrelY = (SHOP_ROWS - 2) * TILE - camY;
+        ctx.fillStyle = '#3a2a10'; ctx.beginPath(); ctx.ellipse(barrelX + 16, barrelY + 20, 10, 12, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#4a3a20'; ctx.beginPath(); ctx.ellipse(barrelX + 16, barrelY + 18, 9, 10, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2a1a0a'; ctx.fillRect(barrelX + 8, barrelY + 10, 16, 2);
+        ctx.fillStyle = '#3a2a10'; ctx.beginPath(); ctx.ellipse(barrelX + 38, barrelY + 22, 9, 11, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#4a3a20'; ctx.beginPath(); ctx.ellipse(barrelX + 38, barrelY + 20, 8, 9, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2a1a0a'; ctx.fillRect(barrelX + 30, barrelY + 12, 16, 2);
       } else if (s.inNewWorld) {
         const nwMap = nwMapRef.current;
         ctx.fillStyle = '#0a1a2a'; ctx.fillRect(0, 0, W, H);
@@ -1629,6 +1768,23 @@ export default function AdventurePage() {
               dg.addColorStop(1, 'rgba(200,160,80,0)');
               ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(sx + 16, sy + 16, 120, 0, Math.PI * 2); ctx.fill();
             }
+          } else if (t === T.CAMPFIRE) {
+            ctx.fillStyle = `hsl(0, 0%, ${7 + dh(55) * 3}%)`;
+            ctx.fillRect(sx, sy, TILE, TILE);
+            const cFlicker = 0.6 + Math.sin(s.time * 0.1 + x * 3 + y * 7) * 0.3 + Math.sin(s.time * 0.17 + x) * 0.1;
+            ctx.fillStyle = '#3a2a1a'; ctx.fillRect(sx + 4, sy + 12, TILE - 8, 12);
+            for (let i = 0; i < 5; i++) {
+              const sparkX = sx + 8 + dh(i * 3) * 16, sparkY = sy + 4 + Math.sin(s.time * 0.12 + i * 1.5) * 6;
+              ctx.fillStyle = `hsla(${20 + dh(i * 7) * 30}, 100%, ${50 + cFlicker * 30}%, ${0.4 + cFlicker * 0.3})`;
+              ctx.beginPath(); ctx.arc(sparkX, sparkY, 2 + cFlicker * 2, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.shadowColor = '#ff6020'; ctx.shadowBlur = 20 * cFlicker;
+            ctx.fillStyle = `rgba(255,140,40,${0.3 * cFlicker})`; ctx.beginPath(); ctx.arc(sx + 16, sy + 10, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+            const cGrad = ctx.createRadialGradient(sx + 16, sy + 10, 3, sx + 16, sy + 10, 50 * cFlicker);
+            cGrad.addColorStop(0, `rgba(255,150,50,${0.15 * cFlicker})`);
+            cGrad.addColorStop(1, 'rgba(255,100,20,0)');
+            ctx.fillStyle = cGrad; ctx.beginPath(); ctx.arc(sx + 16, sy + 10, 50 * cFlicker, 0, Math.PI * 2); ctx.fill();
           } else {
             const noise = dh(55) * 3;
             ctx.fillStyle = `hsl(0, 0%, ${7 + noise}%)`;
@@ -1716,6 +1872,20 @@ export default function AdventurePage() {
             ctx.fillStyle = '#ffd700';
             ctx.font = '18px monospace'; ctx.textAlign = 'center'; ctx.fillText('🗝️', kx + 16, ky + 22);
             ctx.shadowBlur = 0;
+          }
+        }
+        // Cave enemies
+        for (const e of caveEnemiesRef.current) {
+          if (e.hp <= 0) continue;
+          const ex = e.x * TILE - camX, ey = e.y * TILE - camY;
+          if (ex < -TILE || ex > W + TILE || ey < -TILE || ey > H + TILE) continue;
+          const bob = Math.sin(s.time * 0.06 + e.x + e.y) * 2;
+          ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(ex + TILE / 2, ey + TILE - 2, 10, 4, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = e.color; ctx.fillRect(ex + 6, ey + 6 + bob, TILE - 12, TILE - 10);
+          ctx.font = '14px monospace'; ctx.textAlign = 'center'; ctx.fillText(e.icon, ex + 16, ey + 22 + bob);
+          if (e.state === 'chase') {
+            const aggroGlow = 0.3 + Math.sin(s.time * 0.15) * 0.2;
+            ctx.fillStyle = `rgba(255,50,50,${aggroGlow})`; ctx.beginPath(); ctx.arc(ex + 16, ey + 16, 18, 0, Math.PI * 2); ctx.fill();
           }
         }
       } else {
@@ -2067,7 +2237,7 @@ export default function AdventurePage() {
         if (s.inNewWorld) {
           if (Math.abs(pxi - (NW_COLS - 3)) + Math.abs(pyi - 3) <= 1.5) { showE = true; label = 'Exit Portal'; }
         } else if (s.inShop) {
-          if (pxi >= 8 && pyi === 10) { showE = true; label = 'Exit Shop'; }
+          if (Math.abs(pxi - 4) + Math.abs(pyi - 10) <= 1.5) { showE = true; label = 'Exit Shop'; }
           if (!showE && Math.abs(pxi - 7) + Math.abs(pyi - 4) <= 1.5) { showE = true; label = 'Shop'; }
         } else if (s.caveActive) {
           if (pxi >= 22 && pyi === 12) { showE = true; label = 'Exit Cave'; }
@@ -2163,63 +2333,241 @@ export default function AdventurePage() {
         ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.fillText('I=Inv  C=Craft  K=Skills  M=Menu  L=Load', W - 302, 78);
       }
 
-      // --- Battle overlay ---
+      // --- Battle overlay (Pokemon-style) ---
       if (s.battleActive && s.battleEnemy) {
-        ctx.fillStyle = `rgba(0,0,0,${s.battleFade * 0.85})`; ctx.fillRect(0, 0, W, H);
         const e = s.battleEnemy;
+        const bf = s.battleFade;
 
-        // Enemy sprite area
-        const eSize = 80; const ex_ = W / 2 - eSize / 2, ey_ = 40;
-        ctx.fillStyle = 'rgba(20,10,15,0.6)'; ctx.fillRect(ex_ - 20, ey_ - 10, eSize + 40, eSize + 20);
-        ctx.font = '40px monospace'; ctx.textAlign = 'center';
-        ctx.fillText(e.icon, W / 2, ey_ + eSize / 2 + 10);
-        if (e.isBoss) { ctx.fillStyle = `rgba(255,200,0,${0.3 + Math.sin(s.time * 0.05) * 0.2})`; ctx.beginPath(); ctx.arc(W / 2, ey_ + eSize / 2, 44, 0, Math.PI * 2); ctx.fill(); }
+        const arenaTop = H * 0.02, arenaBot = H * 0.65;
+        const bskyGrad = ctx.createLinearGradient(0, arenaTop, 0, arenaBot);
+        bskyGrad.addColorStop(0, `rgba(8,12,25,${bf * 0.95})`);
+        bskyGrad.addColorStop(0.4, `rgba(12,20,35,${bf * 0.92})`);
+        bskyGrad.addColorStop(1, `rgba(15,25,20,${bf * 0.9})`);
+        ctx.fillStyle = bskyGrad; ctx.fillRect(0, 0, W, arenaBot);
 
-        ctx.fillStyle = '#c88'; ctx.font = 'bold 12px monospace'; ctx.fillText(e.name, W / 2, ey_ + eSize + 14);
-        ctx.fillStyle = '#a44'; ctx.fillRect(W / 2 - 60, ey_ + eSize + 20, 120, 8);
-        ctx.fillStyle = '#e44'; ctx.fillRect(W / 2 - 60, ey_ + eSize + 20, Math.max(0, (e.hp / e.maxHp) * 120), 8);
-        ctx.fillStyle = '#fff'; ctx.font = '12px monospace'; ctx.fillText(`${e.hp}/${e.maxHp}`, W / 2, ey_ + eSize + 27);
-        if (e.isBoss && e.maxPhase !== undefined && e.phase !== undefined && e.maxPhase > 1) { ctx.fillStyle = '#fa0'; ctx.font = '12px monospace'; ctx.fillText(`Phase ${e.phase}/${e.maxPhase}`, W / 2, ey_ + eSize + 38); }
+        const groundY = arenaBot - H * 0.18;
+        const groundGrad = ctx.createLinearGradient(0, groundY, 0, arenaBot);
+        groundGrad.addColorStop(0, `rgba(20,35,25,${bf * 0.9})`);
+        groundGrad.addColorStop(1, `rgba(12,20,15,${bf * 0.95})`);
+        ctx.fillStyle = groundGrad; ctx.fillRect(0, groundY, W, arenaBot - groundY);
 
-        // Player stats bottom
-        const py_ = H - 120;
-        ctx.fillStyle = '#448'; ctx.fillRect(20, py_, 160, 8);
-        ctx.fillStyle = '#48f'; ctx.fillRect(20, py_, Math.max(0, (s.hp / s.maxHp) * 160), 8);
-        ctx.fillStyle = '#fff'; ctx.font = '12px monospace'; ctx.textAlign = 'left'; ctx.fillText(`HP: ${s.hp}/${s.maxHp}`, 22, py_ + 7);
+        ctx.fillStyle = `rgba(60,120,80,${bf * 0.15})`; ctx.fillRect(0, groundY - 2, W, 4);
 
-        // Battle log
-        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(20, py_ + 14, W - 260, 60);
-        ctx.fillStyle = '#ddd'; ctx.font = '12px monospace';
-        const logLines = s.battleLog.slice(-3);
-        for (let i = 0; i < logLines.length; i++) ctx.fillText(logLines[i], 24, py_ + 26 + i * 16);
+        ctx.fillStyle = `rgba(0,0,0,${bf * 0.7})`; ctx.fillRect(0, arenaBot, W, H - arenaBot);
 
-        // Battle menu
+        // Enemy platform (top-right)
+        const ePlatX = W * 0.68, ePlatY = groundY - H * 0.04;
+        ctx.fillStyle = `rgba(30,50,40,${bf * 0.6})`;
+        ctx.beginPath(); ctx.ellipse(ePlatX, ePlatY, 70, 16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(50,80,60,${bf * 0.3})`;
+        ctx.beginPath(); ctx.ellipse(ePlatX, ePlatY - 2, 65, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Enemy icon
+        const eIconX = ePlatX, eIconY = ePlatY - 56;
+        if (e.isBoss) {
+          ctx.fillStyle = `rgba(255,200,0,${(0.25 + Math.sin(s.time * 0.05) * 0.15) * bf})`;
+          ctx.beginPath(); ctx.arc(eIconX, eIconY, 50, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.font = '52px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const eOpacity = e.hp <= 0 ? Math.max(0, bf * 0.3) : bf;
+        ctx.globalAlpha = eOpacity;
+        ctx.fillText(e.icon, eIconX, eIconY);
+        ctx.textBaseline = 'alphabetic';
+
+        if (s.battleEnemyFlash > 0) {
+          const flashAlpha = (s.battleEnemyFlash / 12) * 0.6 * bf;
+          ctx.fillStyle = `rgba(255,255,255,${flashAlpha})`;
+          ctx.beginPath(); ctx.arc(eIconX, eIconY, 36, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // Enemy info box (top-left)
+        const eBoxX = W * 0.04, eBoxY = H * 0.06, eBoxW = W * 0.38, eBoxH = 72;
+        ctx.fillStyle = `rgba(15,20,30,${bf * 0.85})`; roundRect(ctx, eBoxX, eBoxY, eBoxW, eBoxH, 12);
+        ctx.strokeStyle = `rgba(180,200,220,${bf * 0.25})`; ctx.lineWidth = 2;
+        roundRectStroke(ctx, eBoxX, eBoxY, eBoxW, eBoxH, 12);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#c88'; ctx.font = 'bold 18px monospace';
+        ctx.fillText(e.name, eBoxX + 16, eBoxY + 24);
+        ctx.fillStyle = '#8a8'; ctx.font = '14px monospace';
+        ctx.fillText(`Lv.${e.level}`, eBoxX + eBoxW - 70, eBoxY + 24);
+
+        const eHpPct = Math.max(0, s.battleEnemyDisplayHp / e.maxHp);
+        const eBarX = eBoxX + 16, eBarY = eBoxY + 36, eBarW = eBoxW - 32, eBarH = 16;
+        const eHpColor = eHpPct > 0.5 ? '#4a8' : eHpPct > 0.25 ? '#ca8' : '#c44';
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, eBarX, eBarY, eBarW, eBarH, 4);
+        ctx.fillStyle = eHpColor; roundRect(ctx, eBarX, eBarY, Math.max(0, eBarW * eHpPct), eBarH, 4);
+        ctx.fillStyle = `rgba(255,255,255,${0.1 * bf})`;
+        roundRect(ctx, eBarX, eBarY, Math.max(0, eBarW * eHpPct), eBarH / 2, 4);
+        ctx.fillStyle = '#fff'; ctx.font = '12px monospace'; ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(s.battleEnemyDisplayHp)}/${e.maxHp}`, eBarX + eBarW, eBarY + eBarH + 16);
+
+        if (e.isBoss && e.maxPhase !== undefined && e.phase !== undefined && e.maxPhase > 1) {
+          ctx.fillStyle = '#fa0'; ctx.font = '14px monospace'; ctx.textAlign = 'left';
+          ctx.fillText(`Phase ${e.phase}/${e.maxPhase}`, eBoxX + 16, eBoxY + eBoxH + 14);
+        }
+
+        // Player platform (bottom-left)
+        const pPlatX = W * 0.28, pPlatY = arenaBot + H * 0.02;
+        ctx.fillStyle = `rgba(25,40,35,${bf * 0.6})`;
+        ctx.beginPath(); ctx.ellipse(pPlatX, pPlatY, 80, 18, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(40,70,55,${bf * 0.3})`;
+        ctx.beginPath(); ctx.ellipse(pPlatX, pPlatY - 2, 75, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Player sprite (from behind)
+        const pSprX = pPlatX, pSprY = pPlatY - 60;
+        ctx.globalAlpha = bf;
+        ctx.fillStyle = '#3a6a8a'; ctx.fillRect(pSprX - 14, pSprY + 8, 28, 24);
+        ctx.fillStyle = '#4a7a9a'; ctx.fillRect(pSprX - 18, pSprY + 8, 36, 10);
+        ctx.fillStyle = '#2a1a0a'; ctx.fillRect(pSprX - 10, pSprY - 8, 20, 18);
+        ctx.fillStyle = '#1a0a00'; ctx.fillRect(pSprX - 8, pSprY - 6, 16, 14);
+        ctx.fillStyle = '#e8c090'; ctx.fillRect(pSprX - 10, pSprY + 2, 3, 4);
+        ctx.fillRect(pSprX + 7, pSprY + 2, 3, 4);
+        ctx.fillStyle = '#2a4a6a'; ctx.fillRect(pSprX - 12, pSprY + 14, 24, 8);
+        ctx.fillStyle = '#2a2a3a';
+        ctx.fillRect(pSprX - 10, pSprY + 32, 8, 14);
+        ctx.fillRect(pSprX + 2, pSprY + 32, 8, 14);
+        ctx.fillStyle = '#8a8a9a'; ctx.fillRect(pSprX + 16, pSprY - 4, 3, 30);
+        ctx.fillStyle = '#c8a848'; ctx.fillRect(pSprX + 14, pSprY + 12, 7, 4);
+
+        if (s.battlePlayerFlash > 0) {
+          const pFlashAlpha = (s.battlePlayerFlash / 12) * 0.5 * bf;
+          ctx.fillStyle = `rgba(255,255,255,${pFlashAlpha})`;
+          ctx.fillRect(pSprX - 20, pSprY - 10, 40, 58);
+        }
+        ctx.globalAlpha = 1;
+
+        // Player info box (bottom-right of arena)
+        const pBoxX = W * 0.48, pBoxY = arenaBot - H * 0.08, pBoxW = W * 0.38, pBoxH = 80;
+        ctx.fillStyle = `rgba(15,20,30,${bf * 0.85})`; roundRect(ctx, pBoxX, pBoxY, pBoxW, pBoxH, 12);
+        ctx.strokeStyle = `rgba(180,200,220,${bf * 0.25})`; ctx.lineWidth = 2;
+        roundRectStroke(ctx, pBoxX, pBoxY, pBoxW, pBoxH, 12);
+
+        ctx.textAlign = 'left';
+        const pName = s.playerName || 'Hero';
+        ctx.fillStyle = '#8af'; ctx.font = 'bold 18px monospace';
+        ctx.fillText(pName, pBoxX + 16, pBoxY + 24);
+        ctx.fillStyle = '#8a8'; ctx.font = '14px monospace';
+        ctx.fillText(`Lv.${s.level}`, pBoxX + pBoxW - 70, pBoxY + 24);
+
+        const pHpPct = Math.max(0, s.battlePlayerDisplayHp / s.maxHp);
+        const pBarX = pBoxX + 16, pBarY = pBoxY + 36, pBarW = pBoxW - 32, pBarH = 14;
+        const pHpColor = pHpPct > 0.5 ? '#4a8' : pHpPct > 0.25 ? '#ca8' : '#c44';
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, pBarX, pBarY, pBarW, pBarH, 4);
+        ctx.fillStyle = pHpColor; roundRect(ctx, pBarX, pBarY, Math.max(0, pBarW * pHpPct), pBarH, 4);
+        ctx.fillStyle = `rgba(255,255,255,${0.1 * bf})`;
+        roundRect(ctx, pBarX, pBarY, Math.max(0, pBarW * pHpPct), pBarH / 2, 4);
+
+        const pMpPct = Math.max(0, s.mp / s.maxMp);
+        const pMpY = pBarY + pBarH + 6;
+        ctx.fillStyle = 'rgba(60,60,60,0.5)'; roundRect(ctx, pBarX, pMpY, pBarW, 10, 3);
+        ctx.fillStyle = '#48f'; roundRect(ctx, pBarX, pMpY, Math.max(0, pBarW * pMpPct), 10, 3);
+        ctx.fillStyle = `rgba(255,255,255,${0.08 * bf})`;
+        roundRect(ctx, pBarX, pMpY, Math.max(0, pBarW * pMpPct), 5, 3);
+
+        ctx.fillStyle = '#aaa'; ctx.font = '12px monospace'; ctx.textAlign = 'right';
+        ctx.fillText(`HP ${Math.round(s.battlePlayerDisplayHp)}/${s.maxHp}  MP ${s.mp}/${s.maxMp}`, pBoxX + pBoxW - 16, pBoxY + pBoxH - 6);
+
+        // Bottom panel
+        const panelH = H * 0.22, panelY = H - panelH;
+        ctx.fillStyle = `rgba(12,15,25,${bf * 0.92})`; ctx.fillRect(0, panelY, W, panelH);
+        ctx.strokeStyle = `rgba(120,160,180,${bf * 0.3})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, panelY); ctx.lineTo(W, panelY); ctx.stroke();
+
+        const msgX = 24, msgY = panelY + 24;
+        ctx.textAlign = 'left';
+        const latestMsg = s.battleLog.length > 0 ? s.battleLog[s.battleLog.length - 1] : '';
+        ctx.fillStyle = '#ddd'; ctx.font = '18px monospace';
+
+        const twSpeed = 0.8;
+        const twElapsed = s.time - s.battleMsgTime;
+        const twLen = Math.min(latestMsg.length, Math.floor(twElapsed * twSpeed * 60));
+        ctx.fillText(latestMsg.substring(0, twLen), msgX, msgY);
+
         if (s.battleTurn === 'player' && !s.battleAnimating) {
-          const mx = W - 220, my = py_ - 10, mw = 200;
-          ctx.fillStyle = 'rgba(10,10,20,0.9)'; ctx.fillRect(mx, my, mw, 100);
+          const menuX = W * 0.5, menuW = W * 0.48;
+          const menuY = panelY + 8;
 
           if (s.battleSubMenu === '') {
-            const opts = ['Attack', 'Items', 'Potion', 'Flee'];
+            const opts = [
+              { label: 'FIGHT', icon: '⚔️', row: 0, col: 0 },
+              { label: 'SKILLS', icon: '✨', row: 0, col: 1 },
+              { label: 'ITEMS', icon: '🧪', row: 1, col: 0 },
+              { label: 'FLEE', icon: '💨', row: 1, col: 1 },
+            ];
+            const optW = menuW / 2, optH = (panelH - 16) / 2;
             for (let i = 0; i < opts.length; i++) {
-              ctx.fillStyle = s.battleChoice === i ? '#4af' : '#aaa';
-              ctx.font = s.battleChoice === i ? 'bold 13px monospace' : '13px monospace';
+              const o = opts[i];
+              const ox = menuX + o.col * optW, oy = menuY + o.row * optH;
+              const sel = s.battleChoice === i;
+              if (sel) {
+                ctx.fillStyle = 'rgba(60,140,220,0.15)';
+                roundRect(ctx, ox + 4, oy + 2, optW - 8, optH - 4, 8);
+              }
               ctx.textAlign = 'left';
-              ctx.fillText(`${s.battleChoice === i ? '>' : ' '} ${opts[i]}`, mx + 12, my + 20 + i * 20);
+              ctx.fillStyle = sel ? '#6cf' : '#aaa';
+              ctx.font = sel ? 'bold 20px monospace' : '20px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              ctx.fillText(`${cursor}${o.icon} ${o.label}`, ox + 14, oy + optH / 2 + 6);
             }
           } else if (s.battleSubMenu === 'skills') {
-            ctx.fillStyle = '#8af'; ctx.font = '12px monospace'; ctx.textAlign = 'left'; ctx.fillText('> Skills', mx + 12, my + 14);
+            const optH = Math.min(36, (panelH - 20) / Math.max(1, s.learnedAbilities.length + 1));
             for (let i = 0; i < s.learnedAbilities.length; i++) {
               const ab = getAbility(s.learnedAbilities[i]);
-              ctx.fillStyle = s.battleSubChoice === i ? '#4f4' : '#aaa';
-              ctx.font = s.battleSubChoice === i ? 'bold 12px monospace' : '12px monospace';
-              ctx.fillText(`${s.battleSubChoice === i ? '>' : ' '} ${ab.icon} ${ab.name} (${ab.power})`, mx + 12, my + 32 + i * 16);
+              const oy = menuY + 4 + i * optH;
+              const sel = s.battleSubChoice === i;
+              if (sel) {
+                ctx.fillStyle = 'rgba(60,220,100,0.12)';
+                roundRect(ctx, menuX + 4, oy, menuW - 8, optH - 2, 6);
+              }
+              ctx.textAlign = 'left';
+              ctx.fillStyle = sel ? '#4f4' : '#aaa';
+              ctx.font = sel ? 'bold 18px monospace' : '18px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              const mpColor = ab.cost > s.mp ? '#c66' : '#88f';
+              ctx.fillText(`${cursor}${ab.icon} ${ab.name}`, menuX + 14, oy + optH - 8);
+              ctx.fillStyle = mpColor; ctx.font = '14px monospace'; ctx.textAlign = 'right';
+              ctx.fillText(`${ab.cost}MP  PWR:${ab.power}`, menuX + menuW - 14, oy + optH - 8);
             }
-            ctx.fillStyle = '#666'; ctx.font = '12px monospace'; ctx.fillText('Q back', mx + 12, my + 94);
+            const backY = menuY + 4 + s.learnedAbilities.length * optH;
+            ctx.fillStyle = '#666'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
+            ctx.fillText('  ◂ Back (Q)', menuX + 14, backY + optH - 6);
+          } else if (s.battleSubMenu === 'items') {
+            const optH = 36;
+            const oy = menuY + 4;
+            const potionCount = s.inventory.filter(i => i.id === 'potion').length;
+            ctx.textAlign = 'left';
+            if (potionCount > 0) {
+              const sel = s.battleSubChoice === 0;
+              ctx.fillStyle = sel ? 'rgba(60,220,100,0.12)' : 'transparent';
+              if (sel) roundRect(ctx, menuX + 4, oy, menuW - 8, optH - 2, 6);
+              ctx.fillStyle = sel ? '#4f4' : '#aaa';
+              ctx.font = sel ? 'bold 18px monospace' : '18px monospace';
+              const cursor = sel && Math.sin(s.time * 0.12) > 0 ? '▸ ' : '  ';
+              ctx.fillText(`${cursor}🧪 Health Potion`, menuX + 14, oy + optH - 8);
+              ctx.fillStyle = '#8a8'; ctx.font = '14px monospace'; ctx.textAlign = 'right';
+              ctx.fillText(`x${potionCount}`, menuX + menuW - 14, oy + optH - 8);
+            } else {
+              ctx.fillStyle = '#666'; ctx.font = '18px monospace';
+              ctx.fillText('  No items...', menuX + 14, oy + optH - 8);
+            }
+            const itemsBackY = oy + optH;
+            ctx.fillStyle = '#666'; ctx.font = '16px monospace'; ctx.textAlign = 'left';
+            ctx.fillText('  ◂ Back (Q)', menuX + 14, itemsBackY + optH - 6);
           }
         }
 
         if (s.battleTurn === 'enemy' && !s.battleAnimating) {
-          ctx.fillStyle = '#c66'; ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.fillText('Enemy is acting...', W / 2, py_ + 50);
+          const dots = '.'.repeat(1 + Math.floor(s.time * 0.04) % 3);
+          ctx.fillStyle = '#c66'; ctx.font = '18px monospace'; ctx.textAlign = 'left';
+          ctx.fillText(`Enemy is acting${dots}`, 24, panelY + 24);
+        }
+
+        if (s.hp <= 0 && s.battleActive) {
+          ctx.fillStyle = `rgba(0,0,0,${0.6 + Math.sin(s.time * 0.03) * 0.1})`; ctx.fillRect(0, 0, W, H);
+          ctx.fillStyle = '#c66'; ctx.font = 'bold 28px monospace'; ctx.textAlign = 'center';
+          ctx.fillText('You have been defeated...', W / 2, H / 2);
         }
       }
 
