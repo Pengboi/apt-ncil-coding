@@ -82,12 +82,3 @@ yarn-error.log*
 
 # Geometry Dash AI
 geometry-dash-ai/data/.outdated/
-**/geometry-dash-ai/data/session_*/*.npy
-**/geometry-dash-ai/models/archive/*.pt
-**/geometry-dash-ai/models/cube_model.pt
-**/geometry-dash-ai/models/ship_model.pt
-**/geometry-dash-ai/models/cube_model_rl.pt
-**/geometry-dash-ai/models/ship_model_rl.pt
-**/geometry-dash-ai/models/model.pt
-**/geometry-dash-ai/models/version.txt
-**/geometry-dash-ai/logs/*.png
