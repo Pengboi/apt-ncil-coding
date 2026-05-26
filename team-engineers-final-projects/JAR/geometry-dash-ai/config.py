@@ -18,6 +18,8 @@ RECORD_KEY = "r"
 AI_TOGGLE_KEY = "u"
 MODE_KEY = "m"
 DISCARD_KEY = "p"
+TRIM_KEY = "t"
+TRIM_FRAMES = 30
 JUMP_KEY = "space"
 
 ACTION_JUMP = 1

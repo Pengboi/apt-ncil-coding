@@ -20,6 +20,8 @@ MODE_LABELS = {
     config.SHIP_MODE: "ROCKET",
 }
 
+JUMP_HOLD_DURATION = 0.04  # seconds — guarantee a tap spans >=1 frame at 30fps
+
 
 class Recorder:
     def __init__(self):
@@ -29,7 +31,9 @@ class Recorder:
         self.is_recording = False
         self.is_running = True
         self.jump_pressed = False
+        self.last_jump_time = 0.0
         self.current_mode = config.CUBE_MODE
+        self.trim_flash_until = 0.0
         self.session_count = self._get_next_session()
         self.frame_count = 0
         self.keyboard_detected = False
@@ -60,6 +64,7 @@ class Recorder:
             print(f"[KEYBOARD] Input monitoring is working! Detected key: {key_name or key_char}")
 
         if key_name == config.JUMP_KEY:
+            self.last_jump_time = time.monotonic()
             if not self.jump_pressed:
                 print("[SPACE] Key pressed - JUMP")
             self.jump_pressed = True
@@ -75,6 +80,9 @@ class Recorder:
 
         if key_char == config.DISCARD_KEY:
             self.discard_recording()
+
+        if key_char == config.TRIM_KEY:
+            self.trim_frames()
 
     def on_key_release(self, key):
         key_name = str(key).replace("Key.", "").lower()
@@ -125,6 +133,7 @@ class Recorder:
 
     def discard_recording(self):
         with self.data_lock:
+            was_recording = self.is_recording
             self.is_recording = False
             count = self.frame_count
             self.frames = []
@@ -133,15 +142,42 @@ class Recorder:
             self.frame_count = 0
         self.latest_preview = None
 
-        print(f"\n[DELETE] Discarded {count} in-flight frames. Press '{config.RECORD_KEY.upper()}' to start again.")
+        if was_recording:
+            print(f"\n[DELETE] Discarded {count} in-flight frames. Press '{config.RECORD_KEY.upper()}' to start again.")
+        else:
+            print(f"\n[DELETE] Cleared memory buffers. Press '{config.RECORD_KEY.upper()}' to start recording.")
+
+    def trim_frames(self, count=config.TRIM_FRAMES):
+        with self.data_lock:
+            if not self.is_recording:
+                print("[TRIM] Not recording — nothing to trim.")
+                return
+            if self.frame_count == 0:
+                print("[TRIM] No frames to trim.")
+                return
+            actual = min(count, self.frame_count)
+            self.frames = self.frames[:-actual]
+            self.actions = self.actions[:-actual]
+            self.modes = self.modes[:-actual]
+            self.frame_count -= actual
+            self.trim_flash_until = time.monotonic() + 0.3
+        print(f"[TRIM] Removed last {actual} frames ({self.frame_count} remain).")
+
+    @property
+    def _jump_active(self):
+        if self.jump_pressed:
+            return True
+        return (time.monotonic() - self.last_jump_time) < JUMP_HOLD_DURATION
 
     def _build_preview(self, processed):
         preview = (processed * 255).astype(np.uint8)
         preview_color = cv2.cvtColor(preview, cv2.COLOR_GRAY2BGR)
-        if self.jump_pressed:
+        if self._jump_active:
             preview_color[:, :, 2] = np.minimum(preview_color[:, :, 2].astype(np.int16) + 80, 255).astype(np.uint8)
         else:
             preview_color[:, :, 0] = np.minimum(preview_color[:, :, 0].astype(np.int16) + 40, 255).astype(np.uint8)
+        if time.monotonic() < self.trim_flash_until:
+            preview_color[:, :, :] = cv2.addWeighted(preview_color, 0.5, np.full_like(preview_color, (0, 200, 0)), 0.5, 0)
         mode_color = MODE_COLORS[self.current_mode]
         label = MODE_LABELS[self.current_mode]
         preview_color[:12, :, :] = mode_color
@@ -158,12 +194,17 @@ class Recorder:
 
             if should_record:
                 start = time.time()
-                raw = capture_frame(driver, game_element, scale_factor)
-                processed = preprocess_frame(raw)
+                try:
+                    raw = capture_frame(driver, game_element, scale_factor)
+                    processed = preprocess_frame(raw)
+                except Exception as e:
+                    print(f"[ERROR] Capture failed: {e}")
+                    time.sleep(0.1)
+                    continue
                 current_mode = self.current_mode
                 with self.data_lock:
                     self.frames.append(processed)
-                    self.actions.append(config.ACTION_JUMP if self.jump_pressed else config.ACTION_NONE)
+                    self.actions.append(config.ACTION_JUMP if self._jump_active else config.ACTION_NONE)
                     self.modes.append(current_mode)
                     self.frame_count += 1
                     fc = self.frame_count
@@ -173,7 +214,7 @@ class Recorder:
                     self.latest_preview = preview
 
                 if fc % 30 == 0:
-                    action_str = "JUMP" if self.jump_pressed else "idle"
+                    action_str = "JUMP" if self._jump_active else "idle"
                     mode_str = MODE_LABELS[current_mode]
                     print(f"[CAPTURE] Frame {fc} | action={action_str} | mode={mode_str} | shape={processed.shape}")
                 elapsed = time.time() - start
@@ -193,7 +234,8 @@ class Recorder:
         print(f"5. Press '{config.RECORD_KEY.upper()}' to STOP recording (saves)")
         print(f"6. Press '{config.MODE_KEY.upper()}' to TOGGLE mode (CUBE <-> SHIP)")
         print(f"7. Press '{config.DISCARD_KEY.upper()}' to DISCARD current recording")
-        print(f"8. Press Ctrl+C to quit\n")
+        print(f"8. Press '{config.TRIM_KEY.upper()}' to TRIM last {config.TRIM_FRAMES} frames (die recovery)")
+        print(f"9. Press Ctrl+C to quit\n")
 
         driver = create_browser()
         print("Browser opened! Detecting game iframe...")
