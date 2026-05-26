@@ -1,0 +1,48 @@
+<svg width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heavy Walking (Slow Plodding Stride) -->
+  
+  <!-- Back leg -->
+  <rect x="2" y="34" width="10" height="12" fill="#1a1a2e"/>
+  <rect x="0" y="44" width="12" height="4" fill="#0a0a14"/>
+  
+  <!-- Front leg -->
+  <rect x="18" y="32" width="10" height="16" fill="#1a1a2e"/>
+  <rect x="16" y="44" width="12" height="4" fill="#0a0a14"/>
+  
+  <!-- Body -->
+  <rect x="2" y="16" width="28" height="20" fill="#2d132c"/>
+  <rect x="4" y="18" width="24" height="16" fill="#4a2349"/>
+  
+  <!-- Armor -->
+  <rect x="6" y="20" width="8" height="6" fill="#1a0f19"/>
+  <rect x="18" y="20" width="8" height="6" fill="#1a0f19"/>
+  
+  <!-- Arms -->
+  <rect x="0" y="16" width="6" height="14" fill="#2d132c"/>
+  <rect x="26" y="18" width="6" height="14" fill="#2d132c"/>
+  
+  <!-- Gloves -->
+  <rect x="0" y="28" width="6" height="6" fill="#1a0f19"/>
+  <rect x="26" y="30" width="6" height="6" fill="#1a0f19"/>
+  
+  <!-- Head -->
+  <rect x="8" y="4" width="16" height="14" fill="#b0855a"/>
+  
+  <!-- Helmet -->
+  <rect x="5" y="2" width="22" height="10" fill="#1a0f19"/>
+  <rect x="5" y="10" width="22" height="3" fill="#2d132c"/>
+  <rect x="4" y="10" width="24" height="1" fill="#0a0510"/>
+  
+  <!-- Visor -->
+  <rect x="9" y="8" width="14" height="4" fill="#1a1a1a"/>
+  <rect x="10" y="9" width="4" height="2" fill="#c0392b"/>
+  <rect x="16" y="9" width="4" height="2" fill="#c0392b"/>
+  
+  <!-- LMG carried low -->
+  <rect x="0" y="28" width="28" height="5" fill="#4a4a5a"/>
+  <rect x="2" y="28" width="10" height="5" fill="#333344"/>
+  <rect x="24" y="29" width="6" height="3" fill="#2a2a3a"/>
+  <rect x="12" y="33" width="4" height="5" fill="#333344"/>
+  <rect x="18" y="26" width="4" height="2" fill="#555"/>
+  <rect x="18" y="33" width="4" height="2" fill="#555"/>
+</svg>

@@ -1,0 +1,64 @@
+<svg width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Enemy Soldier - Idle/Ready Stance (SWAT/Tactical) -->
+  
+  <!-- Legs (standing, slightly apart) -->
+  <rect x="6" y="32" width="8" height="16" fill="#2a3a5d"/>
+  <rect x="18" y="32" width="8" height="16" fill="#2a3a5d"/>
+  
+  <!-- Boots (heavy tactical) -->
+  <rect x="5" y="44" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="17" y="44" width="10" height="4" fill="#1a1a2e"/>
+  <rect x="5" y="43" width="10" height="1" fill="#2a2a3e"/>
+  <rect x="17" y="43" width="10" height="1" fill="#2a2a3e"/>
+  
+  <!-- Body/Torso (tactical vest - blue) -->
+  <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+  <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+  
+  <!-- Tactical vest details (kevlar plates) -->
+  <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+  <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+  
+  <!-- Arms (at ready position) -->
+  <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+  <rect x="26" y="18" width="6" height="14" fill="#3a4a6d"/>
+  
+  <!-- Gloves (black tactical) -->
+  <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+  <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+  
+  <!-- Head -->
+  <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+  
+  <!-- Helmet (full coverage tactical) -->
+  <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+  <rect x="6" y="10" width="20" height="3" fill="#3a4a6d"/>
+  <!-- Helmet rim -->
+  <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+  
+  <!-- Visor (glowing orange - menacing) -->
+  <rect x="10" y="8" width="12" height="4" fill="#1a1a1a"/>
+  <rect x="11" y="9" width="4" height="2" fill="#e67e22"/>
+  <rect x="17" y="9" width="4" height="2" fill="#e67e22"/>
+  <!-- Visor reflection -->
+  <rect x="12" y="9" width="1" height="1" fill="#f39c12"/>
+  <rect x="18" y="9" width="1" height="1" fill="#f39c12"/>
+  
+  <!-- Rifle held ready (tan/desert color) -->
+  <!-- Main body -->
+  <rect x="20" y="24" width="12" height="4" fill="#c4956a"/>
+  <!-- Stock -->
+  <rect x="28" y="22" width="4" height="2" fill="#b08555"/>
+  <!-- Barrel -->
+  <rect x="16" y="25" width="4" height="2" fill="#b08555"/>
+  <!-- Magazine -->
+  <rect x="24" y="28" width="3" height="5" fill="#8b6f4e"/>
+  <!-- Hand grip area -->
+  <rect x="22" y="28" width="4" height="3" fill="#a07545"/>
+  <!-- Front sight -->
+  <rect x="16" y="24" width="1" height="1" fill="#2a2a2a"/>
+  
+  <!-- Outline accents for pixel depth -->
+  <rect x="4" y="16" width="1" height="20" fill="#2a3a5d"/>
+  <rect x="27" y="16" width="1" height="20" fill="#2a3a5d"/>
+</svg>
