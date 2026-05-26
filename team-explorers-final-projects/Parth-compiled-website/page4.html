@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Try using AI now</title>
+  <style>
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 100; src: url('fonts/Inter%20Tight/100.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 200; src: url('fonts/Inter%20Tight/200.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 300; src: url('fonts/Inter%20Tight/300.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 500; src: url('fonts/Inter%20Tight/500.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 600; src: url('fonts/Inter%20Tight/600.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 700; src: url('fonts/Inter%20Tight/700.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 800; src: url('fonts/Inter%20Tight/800.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 900; src: url('fonts/Inter%20Tight/900.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 400; src: url('fonts/Inter%20Tight/regular.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 100; src: url('fonts/Inter%20Tight/100italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 200; src: url('fonts/Inter%20Tight/200italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 300; src: url('fonts/Inter%20Tight/300italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 400; src: url('fonts/Inter%20Tight/italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 500; src: url('fonts/Inter%20Tight/500italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 600; src: url('fonts/Inter%20Tight/600italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 700; src: url('fonts/Inter%20Tight/700italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 800; src: url('fonts/Inter%20Tight/800italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 900; src: url('fonts/Inter%20Tight/900italic.ttf') format('truetype'); }
+  </style>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<nav class="navbar navbar-dropdown">
+  <div class="container">
+    <div class="navbar-brand">
+      <span class="navbar-caption-wrap"><a class="navbar-caption text-black" href="index.html">AI</a></span>
+    </div>
+    <button class="navbar-toggler" type="button" onclick="toggleMenu()">
+      <div class="hamburger"><span></span><span></span><span></span><span></span></div>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav nav-dropdown">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="page1.html">LLMs</a></li>
+        <li class="nav-item"><a class="nav-link" href="page2.html">The best way to use AI</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#ask-parth-ai">Try using AI now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<section style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding-top:90px;background:#f5f5f5;">
+  <div class="text-center" style="max-width:600px;margin:0 auto;padding:2rem;">
+    <h1 class="display-1 mb-4">Try using AI now</h1>
+    <p class="display-7 mb-4">Visit Gemini to start asking questions and exploring the power of AI.</p>
+    <a class="btn btn-primary" href="index.html#ask-parth-ai">Try Parth AI</a>
+  </div>
+</section>
+<script>
+function toggleMenu() {
+  document.querySelector('.navbar').classList.toggle('opened');
+  document.getElementById('navbarNav').classList.toggle('show');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var links = document.querySelectorAll('.nav-link');
+  var current = window.location.pathname.split('/').pop();
+  links.forEach(function(l) {
+    if (l.getAttribute('href') === current) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
