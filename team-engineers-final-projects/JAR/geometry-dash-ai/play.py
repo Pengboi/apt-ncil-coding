@@ -31,6 +31,17 @@ RL_PATHS = {
 }
 
 
+MODE_CHANNELS = {
+    config.CUBE_MODE: config.FRAME_STACK,
+    config.SHIP_MODE: config.SHIP_IN_CHANNELS,
+}
+
+MODE_HISTORY = {
+    config.CUBE_MODE: config.FRAME_STACK,
+    config.SHIP_MODE: config.SHIP_HISTORY,
+}
+
+
 class AIPlayer:
     def __init__(self, use_rl=False):
         self.models = {}
@@ -38,7 +49,7 @@ class AIPlayer:
         self.ai_active = False
         self.is_running = True
         self.driver = None
-        self.frame_buffer = None
+        self.frame_buffers = {config.CUBE_MODE: None, config.SHIP_MODE: None}
         self.current_expert = config.CUBE_MODE
         self.space_held = False
         self.latest_preview = None
@@ -55,12 +66,13 @@ class AIPlayer:
         loaded_any = False
         for mode, path in paths.items():
             label = MODE_LABELS[mode]
+            in_ch = MODE_CHANNELS[mode]
             if os.path.exists(path):
-                model = JumpNet().to(self.device)
+                model = JumpNet(in_channels=in_ch).to(self.device)
                 model.load_state_dict(torch.load(path, map_location=self.device, weights_only=True))
                 model.eval()
                 self.models[mode] = model
-                print(f"  {label} expert ({model_type}) loaded from {path}")
+                print(f"  {label} expert ({model_type}) loaded from {path} (in_channels={in_ch})")
                 loaded_any = True
             else:
                 print(f"  {label} expert: no model found at {path} (skipping)")
@@ -96,7 +108,7 @@ class AIPlayer:
                 send_key_up(self.driver)
                 self.space_held = False
             self.ai_active = not self.ai_active
-            self.frame_buffer = None
+            self.frame_buffers[self.current_expert] = None
             self.frame_count = 0
             status = "ON" if self.ai_active else "OFF"
             expert = MODE_LABELS[self.current_expert]
@@ -107,11 +119,25 @@ class AIPlayer:
                 send_key_up(self.driver)
                 self.space_held = False
             self.current_expert = config.SHIP_MODE if self.current_expert == config.CUBE_MODE else config.CUBE_MODE
-            self.frame_buffer = None
+            self.frame_buffers[self.current_expert] = None
+            self.frame_count = 0
             label = MODE_LABELS[self.current_expert]
             print(f"\n{'=' * 40}")
             print(f"  [EXPERT] >>> {label} <<<")
             print(f"{'=' * 40}")
+
+    def _build_input(self, expert_mode, buf):
+        if expert_mode == config.CUBE_MODE:
+            return buf
+        n_channels = MODE_CHANNELS[expert_mode]
+        diff_offsets = config.SHIP_DIFF_OFFSETS
+        inp = np.zeros((n_channels, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32)
+        t = len(buf) - 1
+        inp[0] = buf[t]
+        for c, offset in enumerate(diff_offsets):
+            if t - offset >= 0:
+                inp[c + 1] = buf[t] - buf[t - offset]
+        return inp
 
     def play_loop(self, driver, game_element, scale_factor):
         interval = 1.0 / config.FPS
@@ -121,12 +147,18 @@ class AIPlayer:
                 raw = capture_frame(driver, game_element, scale_factor)
                 processed = preprocess_frame(raw)
 
-                if self.frame_buffer is None:
-                    self.frame_buffer = np.tile(processed, (config.FRAME_STACK, 1, 1))
-                else:
-                    self.frame_buffer = np.concatenate([self.frame_buffer[1:], processed[np.newaxis, ...]], axis=0)
+                history_depth = MODE_HISTORY[self.current_expert]
+                buf = self.frame_buffers[self.current_expert]
 
-                action, probs = self.predict(self.frame_buffer)
+                if buf is None:
+                    buf = np.tile(processed, (history_depth, 1, 1))
+                else:
+                    buf = np.concatenate([buf[1:], processed[np.newaxis, ...]], axis=0)
+
+                self.frame_buffers[self.current_expert] = buf
+
+                model_input = self._build_input(self.current_expert, buf)
+                action, probs = self.predict(model_input)
 
                 should_hold = action == config.ACTION_JUMP
                 if should_hold and not self.space_held:
@@ -174,6 +206,7 @@ class AIPlayer:
             return
 
         print(f"\nJump threshold: {config.JUMP_THRESHOLD} (jump when probability >= {config.JUMP_THRESHOLD})")
+        print(f"Input: CUBE={config.FRAME_STACK} raw frames, SHIP=1+{len(config.SHIP_DIFF_OFFSETS)} diff channels (history={config.SHIP_HISTORY})")
 
         print(f"\n1. The game will open in Chrome")
         print(f"2. Click PLAY to start the game")

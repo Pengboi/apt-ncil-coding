@@ -23,10 +23,14 @@ class GeometryDashDataset(Dataset):
 
 
 class JumpNet(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels=None, dropout=None):
         super().__init__()
+        if in_channels is None:
+            in_channels = config.FRAME_STACK
+        if dropout is None:
+            dropout = config.DROPOUT
         self.features = nn.Sequential(
-            nn.Conv2d(config.FRAME_STACK, 32, kernel_size=8, stride=4, padding=0),
+            nn.Conv2d(in_channels, 32, kernel_size=8, stride=4, padding=0),
             nn.ReLU(),
             nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
             nn.ReLU(),
@@ -37,7 +41,7 @@ class JumpNet(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(64 * 7 * 7, 512),
             nn.ReLU(),
-            nn.Dropout(config.DROPOUT),
+            nn.Dropout(dropout),
             nn.Linear(512, config.NUM_ACTIONS),
         )
 
@@ -48,6 +52,19 @@ class JumpNet(nn.Module):
 
 
 MIN_SESSION_FRAMES = 10
+
+
+def _find_mode_segments(frames, actions, modes):
+    segments = []
+    start = 0
+    current_mode = modes[0]
+    for i in range(1, len(modes)):
+        if modes[i] != current_mode:
+            segments.append((frames[start:i], actions[start:i], current_mode))
+            start = i
+            current_mode = modes[i]
+    segments.append((frames[start:], actions[start:], current_mode))
+    return segments
 
 
 def load_and_split_data(pure_only=False):
@@ -85,11 +102,8 @@ def load_and_split_data(pure_only=False):
             modes = np.full(len(frames), config.CUBE_MODE, dtype=np.int8)
             print(f"  {session}: {len(frames)} frames - no modes.npy, defaulting to CUBE")
 
-        cube_mask = modes == config.CUBE_MODE
-        ship_mask = modes == config.SHIP_MODE
-
-        cube_count = cube_mask.sum()
-        ship_count = ship_mask.sum()
+        cube_count = (modes == config.CUBE_MODE).sum()
+        ship_count = (modes == config.SHIP_MODE).sum()
         is_mixed = cube_count > 0 and ship_count > 0
 
         if pure_only and is_mixed:
@@ -101,10 +115,14 @@ def load_and_split_data(pure_only=False):
         jump_pct = (actions.sum() / len(actions)) * 100
         print(f"  {session}: {len(frames)} frames ({cube_count} cube, {ship_count} ship), {jump_pct:.1f}% jumps{tag}")
 
-        if cube_mask.any():
-            cube_sessions.append((frames[cube_mask], actions[cube_mask]))
-        if ship_mask.any():
-            ship_sessions.append((frames[ship_mask], actions[ship_mask]))
+        segments = _find_mode_segments(frames, actions, modes)
+        for seg_frames, seg_actions, seg_mode in segments:
+            if len(seg_frames) < MIN_SESSION_FRAMES:
+                continue
+            if seg_mode == config.CUBE_MODE:
+                cube_sessions.append((seg_frames, seg_actions))
+            else:
+                ship_sessions.append((seg_frames, seg_actions))
 
     if skipped:
         print(f"\n  Skipped {skipped} sessions")
@@ -117,30 +135,85 @@ def load_and_split_data(pure_only=False):
     return result
 
 
-def build_stacked_per_session(sessions):
+def build_stacked_per_session(sessions, frame_stack=None):
+    if frame_stack is None:
+        frame_stack = config.FRAME_STACK
     all_stacked = []
     all_actions = []
 
     for frames, actions in sessions:
-        if len(frames) < config.FRAME_STACK:
+        if len(frames) < frame_stack:
             continue
 
-        n_samples = len(frames) - config.FRAME_STACK + 1
-        stacked = np.zeros((n_samples, config.FRAME_STACK, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32)
+        n_samples = len(frames) - frame_stack + 1
+        stacked = np.zeros((n_samples, frame_stack, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32)
         for i in range(n_samples):
-            stacked[i] = frames[i:i + config.FRAME_STACK]
-        stacked_actions = actions[config.FRAME_STACK - 1:]
+            stacked[i] = frames[i:i + frame_stack]
+        stacked_actions = actions[frame_stack - 1:]
+
+        if n_samples > config.SESSION_STACK_CAP:
+            idx = np.random.choice(n_samples, config.SESSION_STACK_CAP, replace=False)
+            idx.sort()
+            stacked = stacked[idx]
+            stacked_actions = stacked_actions[idx]
 
         all_stacked.append(stacked)
         all_actions.append(stacked_actions)
 
     if not all_stacked:
-        return np.empty((0, config.FRAME_STACK, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32), np.empty(0, dtype=np.int8)
+        return np.empty((0, frame_stack, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32), np.empty(0, dtype=np.int8)
 
     return np.concatenate(all_stacked, axis=0), np.concatenate(all_actions, axis=0)
 
 
-def train_expert(name, model_path, stacked_frames, actions, device):
+def build_diff_stacked_per_session(sessions, history=None, diff_offsets=None):
+    if history is None:
+        history = config.SHIP_HISTORY
+    if diff_offsets is None:
+        diff_offsets = config.SHIP_DIFF_OFFSETS
+    n_channels = 1 + len(diff_offsets)
+    all_stacked = []
+    all_actions = []
+
+    for frames, actions in sessions:
+        if len(frames) < history:
+            continue
+
+        n_samples = len(frames) - history + 1
+        stacked = np.zeros((n_samples, n_channels, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32)
+        for i in range(n_samples):
+            t = history - 1 + i
+            stacked[i, 0] = frames[t]
+            for c, offset in enumerate(diff_offsets):
+                stacked[i, c + 1] = frames[t] - frames[t - offset]
+        stacked_actions = actions[history - 1:]
+
+        if n_samples > config.SESSION_STACK_CAP:
+            idx = np.random.choice(n_samples, config.SESSION_STACK_CAP, replace=False)
+            idx.sort()
+            stacked = stacked[idx]
+            stacked_actions = stacked_actions[idx]
+
+        all_stacked.append(stacked)
+        all_actions.append(stacked_actions)
+
+    if not all_stacked:
+        return np.empty((0, n_channels, config.FRAME_HEIGHT, config.FRAME_WIDTH), dtype=np.float32), np.empty(0, dtype=np.int8)
+
+    return np.concatenate(all_stacked, axis=0), np.concatenate(all_actions, axis=0)
+
+
+def train_expert(name, model_path, stacked_frames, actions, device,
+                 in_channels=None, lr=None, dropout=None, patience=None):
+    if in_channels is None:
+        in_channels = config.FRAME_STACK
+    if lr is None:
+        lr = config.LEARNING_RATE
+    if dropout is None:
+        dropout = config.DROPOUT
+    if patience is None:
+        patience = config.EARLY_STOP_PATIENCE
+
     print(f"\n{'=' * 60}")
     print(f"  Training {name.upper()} expert")
     print(f"{'=' * 60}")
@@ -162,8 +235,8 @@ def train_expert(name, model_path, stacked_frames, actions, device):
     train_loader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
 
-    model = JumpNet().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+    model = JumpNet(in_channels=in_channels, dropout=dropout).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     idle_count = (actions == 0).sum()
     jump_count = (actions == 1).sum()
@@ -181,7 +254,7 @@ def train_expert(name, model_path, stacked_frames, actions, device):
     best_epoch = 0
     patience_counter = 0
 
-    print(f"\nTraining for up to {config.EPOCHS} epochs (early stop after {config.EARLY_STOP_PATIENCE} without improvement)...\n")
+    print(f"\nTraining for up to {config.EPOCHS} epochs (early stop after {patience} without improvement)...\n")
 
     for epoch in range(config.EPOCHS):
         model.train()
@@ -253,8 +326,8 @@ def train_expert(name, model_path, stacked_frames, actions, device):
                   f"Val Loss: {val_loss:.4f} Acc: {val_acc:.4f} JumpRecall: {val_jump_recall:.4f}"
                   f"{' *' if val_acc >= best_val_acc else ''}")
 
-        if patience_counter >= config.EARLY_STOP_PATIENCE:
-            print(f"\nEarly stopping at epoch {epoch + 1} (no improvement for {config.EARLY_STOP_PATIENCE} epochs)")
+        if patience_counter >= patience:
+            print(f"\nEarly stopping at epoch {epoch + 1} (no improvement for {patience} epochs)")
             break
 
     print(f"\nBest validation accuracy: {best_val_acc:.4f} (epoch {best_epoch + 1})")
@@ -333,8 +406,9 @@ def train(train_mode=None, pure_only=False):
     else:
         print("  No previous models to archive")
 
-    print(f"\nFrame stacking: {config.FRAME_STACK} frames per sample (per-session)")
-    print("\nLoading recorded data...")
+    print(f"\nFrame stacking: CUBE={config.FRAME_STACK} raw frames, SHIP=1+{len(config.SHIP_DIFF_OFFSETS)} diff channels (history={config.SHIP_HISTORY})")
+    print(f"Session cap: {config.SESSION_STACK_CAP} stacked samples per segment\n")
+    print("Loading recorded data...")
     data = load_and_split_data(pure_only=pure_only)
 
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
@@ -369,10 +443,14 @@ def train(train_mode=None, pure_only=False):
             total_raw = sum(len(f) for f, a in sessions)
             print(f"\n--- SHIP DATA ---")
             print(f"Sessions: {len(sessions)}, Raw frames: {total_raw:,}")
-            stacked, stacked_actions = build_stacked_per_session(sessions)
-            print(f"Stacked samples: {len(stacked):,}")
+            stacked, stacked_actions = build_diff_stacked_per_session(sessions)
+            print(f"Stacked samples: {len(stacked):,} (diff channels={config.SHIP_IN_CHANNELS}, history={config.SHIP_HISTORY})")
             if len(stacked) > 0:
-                acc = train_expert("ship", config.SHIP_MODEL_PATH, stacked, stacked_actions, device)
+                acc = train_expert("ship", config.SHIP_MODEL_PATH, stacked, stacked_actions, device,
+                                   in_channels=config.SHIP_IN_CHANNELS,
+                                   lr=config.SHIP_LEARNING_RATE,
+                                   dropout=config.SHIP_DROPOUT,
+                                   patience=config.SHIP_EARLY_STOP_PATIENCE)
                 results["ship"] = acc
             else:
                 print("Not enough ship data to train. Skipping.")
