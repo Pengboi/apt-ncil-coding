@@ -1,9 +1,5 @@
 {
-<<<<<<<< HEAD:team-engineers-final-projects/Chloe/eternal-flowers/package.json
-  "name": "eternal-flowers",
-========
   "name": "tactical-ops",
->>>>>>>> origin/merged-projects:team-engineers-final-projects/Orges/tactical-ops/package.json
   "version": "0.1.0",
   "private": true,
   "scripts": {
