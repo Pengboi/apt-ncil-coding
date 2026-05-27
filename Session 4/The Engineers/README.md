@@ -27,7 +27,7 @@ Today you're going to build your first website using Next.js, React, and Tailwin
 
 ### Step 1: Navigate to Your Project
 ```bash
-cd "Session 4/The Engineers/my-first-website"
+cd "Session 4/The Engineers/eternal-flowers"
 ```
 
 ### Step 2: Install Dependencies
@@ -131,7 +131,7 @@ and two buttons (one primary, one secondary)."
 ## 📁 Project Structure
 
 ```
-my-first-website/
+eternal-flowers/
 ├── app/
 │   ├── page.tsx          # Homepage (what you see at /)
 │   ├── layout.tsx        # Wraps every page (add nav/footer here)
@@ -285,7 +285,7 @@ Style elements using utility classes directly in your HTML:
 
 ### Step 1: Navigate to Your Project Folder
 ```bash
-cd "Session 4/The Engineers/my-first-website"
+cd "Session 4/The Engineers/eternal-flowers"
 ```
 
 ### Step 2: Install Dependencies
@@ -475,7 +475,7 @@ that highlights the current page."
 ## 📁 Project Structure Explained
 
 ```
-my-first-website/
+eternal-flowers/
 ├── app/                    # All your pages live here
 │   ├── layout.tsx          # Wraps every page (header, footer)
 │   ├── page.tsx            # Homepage (/)
