@@ -15,8 +15,20 @@ exports.handler = async function(event) {
       })
     });
 
+    if (!res.ok) {
+      const err = await res.json();
+      return {
+        statusCode: res.status,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: err.error?.message || 'Gemini API error' })
+      };
+    }
+
     const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const candidates = data.candidates || [];
+    const parts = candidates[0]?.content?.parts || [];
+    const textPart = parts.find(p => p.text && !p.thought);
+    const reply = textPart?.text || '';
 
     return {
       statusCode: 200,
@@ -26,6 +38,7 @@ exports.handler = async function(event) {
   } catch (e) {
     return {
       statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: e.message })
     };
   }
