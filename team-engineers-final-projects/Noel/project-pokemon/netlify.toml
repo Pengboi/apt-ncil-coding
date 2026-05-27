@@ -4,3 +4,8 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[headers]]
+  for = "/_error.js.map"
+    [headers.values]
+    Content-Type = "application/json"
