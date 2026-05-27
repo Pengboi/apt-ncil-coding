@@ -88,3 +88,6 @@ yarn-error.log*
 
 # Geometry Dash AI
 geometry-dash-ai/data/.outdated/
+
+# Local Netlify folder
+.netlify
