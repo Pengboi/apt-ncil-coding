@@ -1,21 +1,58 @@
 // app/api/prices/history/route.ts
-// API to get price history for a specific card
-// Used for drawing price charts and showing price trends
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
-// GET /api/prices/history?cardId=base1-4&days=30&source=tcgplayer
+const TCG_API = 'https://api.tcgdex.net/v2/en';
+const USD_TO_GBP = 0.79;
+const EUR_TO_GBP = 0.85;
+
+async function fetchLivePrice(cardId: string): Promise<{ price: number; previousPrice: number; source: string } | null> {
+  try {
+    const res = await fetch(`${TCG_API}/cards/${cardId}`, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const pricing = data?.pricing;
+    if (!pricing) return null;
+
+    if (pricing.tcgplayer?.holofoil?.marketPrice) {
+      return {
+        price: Math.round(pricing.tcgplayer.holofoil.marketPrice * USD_TO_GBP * 100) / 100,
+        previousPrice: Math.round((pricing.tcgplayer.holofoil.trendPrice || pricing.tcgplayer.holofoil.marketPrice) * USD_TO_GBP * 100) / 100,
+        source: 'TCGPlayer',
+      };
+    }
+    if (pricing.tcgplayer?.normal?.marketPrice) {
+      return {
+        price: Math.round(pricing.tcgplayer.normal.marketPrice * USD_TO_GBP * 100) / 100,
+        previousPrice: Math.round((pricing.tcgplayer.normal.trendPrice || pricing.tcgplayer.normal.marketPrice) * USD_TO_GBP * 100) / 100,
+        source: 'TCGPlayer',
+      };
+    }
+    if (pricing.cardmarket?.trend) {
+      return {
+        price: Math.round(pricing.cardmarket.trend * EUR_TO_GBP * 100) / 100,
+        previousPrice: Math.round((pricing.cardmarket.avg30 || pricing.cardmarket.avg7 || pricing.cardmarket.avg || pricing.cardmarket.trend) * EUR_TO_GBP * 100) / 100,
+        source: 'CardMarket',
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
   
-  // Get query parameters
   const { searchParams } = new URL(request.url);
   const cardId = searchParams.get('cardId');
   const days = parseInt(searchParams.get('days') || '30');
   const source = searchParams.get('source') || 'tcgplayer';
   
-  // Validate required parameters
   if (!cardId) {
     return NextResponse.json(
       { error: 'cardId query parameter is required' },
@@ -24,11 +61,9 @@ export async function GET(request: NextRequest) {
   }
   
   try {
-    // Calculate the date range
     const since = new Date();
     since.setDate(since.getDate() - days);
     
-    // Fetch price history from database
     const { data, error } = await supabase
       .from('price_history')
       .select('*')
@@ -39,16 +74,55 @@ export async function GET(request: NextRequest) {
     
     if (error) {
       console.error('Error fetching price history:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch price history' },
-        { status: 500 }
-      );
     }
     
-    // Calculate some statistics
+    let priceData = data || [];
+    
+    if (priceData.length === 0) {
+      const live = await fetchLivePrice(cardId);
+      if (live && live.price > 0) {
+        const now = new Date().toISOString();
+        const syntheticRow = {
+          card_id: cardId,
+          price_gbp: live.price,
+          source,
+          condition: 'raw',
+          fetched_at: now,
+        };
+        priceData = [syntheticRow];
+
+        const { data: existingCard } = await supabase
+          .from('cards')
+          .select('id')
+          .eq('id', cardId)
+          .maybeSingle();
+
+        if (existingCard) {
+          await supabase.from('price_history').upsert(
+            { card_id: cardId, price_gbp: live.price, source, condition: 'raw', fetched_at: now },
+            { onConflict: 'card_id,source,condition,fetched_at' }
+          );
+          await supabase.from('price_snapshots').upsert(
+            {
+              card_id: cardId,
+              source,
+              condition: 'raw',
+              current_price: live.price,
+              previous_price: live.previousPrice,
+              change_percent: live.previousPrice > 0
+                ? Math.round(((live.price - live.previousPrice) / live.previousPrice) * 1000) / 10
+                : 0,
+              updated_at: now,
+            },
+            { onConflict: 'card_id,source,condition' }
+          );
+        }
+      }
+    }
+    
     let stats = null;
-    if (data && data.length > 0) {
-      const prices = data.map(d => d.price_gbp);
+    if (priceData.length > 0) {
+      const prices = priceData.map(d => d.price_gbp);
       const firstPrice = prices[0];
       const lastPrice = prices[prices.length - 1];
       const minPrice = Math.min(...prices);
@@ -66,11 +140,10 @@ export async function GET(request: NextRequest) {
         avg_price: parseFloat(avgPrice.toFixed(2)),
         change_percent: parseFloat(changePercent as string),
         change_amount: parseFloat((lastPrice - firstPrice).toFixed(2)),
-        data_points: data.length,
+        data_points: priceData.length,
       };
     }
     
-    // Also get the current snapshot for comparison
     const { data: snapshot } = await supabase
       .from('price_snapshots')
       .select('*')
@@ -82,7 +155,7 @@ export async function GET(request: NextRequest) {
       card_id: cardId,
       days,
       source,
-      prices: data || [],
+      prices: priceData,
       stats,
       snapshot,
     });
