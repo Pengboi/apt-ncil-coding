@@ -3,12 +3,10 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import config
 
 GAME_IFRAME_ID = "iframehtml5"
@@ -23,8 +21,7 @@ def create_browser():
     options.add_argument("--no-first-run")
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-extensions")
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(options=options)
     driver.get(config.GAME_URL)
     return driver
 
