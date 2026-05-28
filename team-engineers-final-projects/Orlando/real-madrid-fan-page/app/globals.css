@@ -1,0 +1,447 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Sora:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Authentic Real Madrid - White & Gold */
+  --rm-white: #FFFFFF;
+  --rm-cream: #FAFAF8;
+  --rm-ivory: #F5F5F0;
+  --rm-gold: #D4AF37;
+  --rm-gold-light: #E8C547;
+  --rm-gold-pale: #F4E4A6;
+  --rm-purple: #1A0F2E;
+  --rm-purple-soft: rgba(26, 15, 46, 0.08);
+  
+  /* Theme - Royal White & Gold */
+  --bg-primary: var(--rm-white);
+  --bg-secondary: var(--rm-cream);
+  --bg-elevated: var(--rm-ivory);
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-muted: #8a8a9a;
+  --accent-primary: var(--rm-gold);
+  --accent-secondary: var(--rm-gold-light);
+  --border-subtle: rgba(212, 175, 55, 0.15);
+  --border-gold: rgba(212, 175, 55, 0.3);
+  --shadow-soft: 0 2px 20px rgba(26, 15, 46, 0.06);
+  --shadow-gold: 0 4px 30px rgba(212, 175, 55, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Sora', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Typography */
+.font-display {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.font-body {
+  font-family: 'Sora', sans-serif;
+}
+
+/* Royal Background */
+.bg-royal {
+  background: linear-gradient(180deg, var(--rm-white) 0%, var(--rm-cream) 100%);
+  position: relative;
+}
+
+.bg-royal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 50 L50 40 M50 50 L58 54 M50 50 L42 54' stroke='%23D4AF37' stroke-width='0.5' stroke-opacity='0.03' fill='none'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Header - Royal */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Navigation - Elegant */
+nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  position: relative;
+}
+
+nav a:hover {
+  color: var(--rm-gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+nav a.active {
+  color: var(--rm-gold);
+  background: rgba(212, 175, 55, 0.12);
+}
+
+/* Page Header - Royal Badge */
+.page-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  background: var(--rm-white);
+  border: 2px solid var(--rm-gold);
+  border-radius: 12px;
+  box-shadow: var(--shadow-gold);
+}
+
+.page-header-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--rm-gold);
+  letter-spacing: 0.05em;
+}
+
+/* Buttons - Royal Gold */
+.btn-primary {
+  background: var(--rm-gold);
+  color: var(--rm-purple);
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-gold);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: var(--rm-gold-light);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--rm-gold);
+  color: var(--rm-gold);
+  padding: 12px 26px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: var(--rm-gold);
+  color: var(--rm-purple);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Cards - Royal White */
+.card-royal {
+  background: var(--rm-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.4s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.card-royal:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-gold);
+  border-color: var(--border-gold);
+}
+
+/* Match Cards - Authentic */
+.match-card-rm {
+  background: var(--rm-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.match-card-rm:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-gold), 0 20px 40px rgba(26, 15, 46, 0.08);
+  border-color: var(--border-gold);
+}
+
+/* Match Header */
+.match-header-rm {
+  background: linear-gradient(135deg, var(--rm-cream) 0%, var(--rm-ivory) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Gold Badge */
+.gold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--rm-gold);
+  color: var(--rm-purple);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Score Display */
+.score-display-rm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--rm-gold);
+  line-height: 1;
+}
+
+/* Time Display */
+.time-display-rm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--rm-gold);
+}
+
+/* Team Name - Elegant */
+.team-name-rm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.team-name-highlight {
+  color: var(--rm-gold);
+  font-weight: 700;
+}
+
+/* Status Badge */
+.status-badge-ft {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #16a34a;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Modern Tabs - Gold */
+.tab-rm {
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-rm-active {
+  background: var(--rm-gold);
+  color: var(--rm-purple);
+  box-shadow: var(--shadow-gold);
+}
+
+.tab-rm-inactive {
+  background: var(--rm-white);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.tab-rm-inactive:hover {
+  border-color: var(--rm-gold);
+  color: var(--rm-gold);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+/* Section Headers - Royal */
+.section-title-rm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.02em;
+}
+
+.section-title-rm::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: var(--rm-gold);
+  margin: 16px auto 0;
+  border-radius: 2px;
+}
+
+/* Gold Line Accent */
+.gold-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--rm-gold) 50%, transparent 100%);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--rm-white) 0%, var(--rm-cream) 50%, var(--rm-ivory) 100%);
+  position: relative;
+}
+
+/* Countdown - Royal */
+.countdown-rm {
+  background: var(--rm-white);
+  border: 2px solid var(--rm-gold);
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: var(--shadow-gold);
+}
+
+.countdown-digit-rm {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--rm-gold);
+  line-height: 1;
+}
+
+/* Loading Spinner - Gold */
+.spinner-rm {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: var(--rm-gold);
+  border-radius: 50%;
+  animation: spin-rm 1s linear infinite;
+}
+
+@keyframes spin-rm {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text Gradient Gold */
+.text-gold {
+  color: var(--rm-gold);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--rm-gold) 0%, var(--rm-gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Scrollbar - Gold */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--rm-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rm-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rm-gold-light);
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header-text {
+    font-size: 1.25rem;
+  }
+  
+  .section-title-rm {
+    font-size: 1.75rem;
+  }
+  
+  .team-name-rm {
+    font-size: 1rem;
+  }
+  
+  .countdown-digit-rm {
+    font-size: 1.75rem;
+  }
+  
+  .score-display-rm {
+    font-size: 1.5rem;
+  }
+  
+  .tab-rm {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+  }
+}

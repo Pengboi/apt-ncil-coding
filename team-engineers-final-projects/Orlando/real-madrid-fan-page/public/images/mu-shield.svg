@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230">
+  <defs>
+    <style>
+      .bg{fill:#b30009}
+      .border{fill:none;stroke:#000;stroke-width:6}
+      .text{fill:#fff;font-family:Arial-BoldMT, Arial;font-weight:700}
+    </style>
+  </defs>
+  <path class="bg" d="M100 8 L180 40 L170 170 L100 222 L30 170 L20 40 Z"/>
+  <path class="border" d="M100 10 L178 42 L168 168 L100 220 L32 168 L22 42 Z"/>
+  <text x="100" y="110" font-size="34" text-anchor="middle" class="text">MUFC</text>
+  <text x="100" y="150" font-size="12" text-anchor="middle" class="text">Fan Zone</text>
+</svg>
