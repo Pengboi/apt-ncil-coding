@@ -21,7 +21,7 @@ body {
   font-family: Inter Tight;
 }
 .display-1 {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 5rem;
   line-height: 1;
 }
@@ -29,7 +29,7 @@ body {
   font-size: 6.25rem;
 }
 .display-2 {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 4rem;
   line-height: 1;
 }
@@ -37,7 +37,7 @@ body {
   font-size: 5rem;
 }
 .display-4 {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 1.4rem;
   line-height: 1.5;
 }
@@ -45,7 +45,7 @@ body {
   font-size: 1.75rem;
 }
 .display-5 {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 2rem;
   line-height: 1.5;
 }
@@ -53,7 +53,7 @@ body {
   font-size: 2.5rem;
 }
 .display-7 {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
 }
@@ -646,7 +646,7 @@ a:hover {
   display: none;
 }
 .form-control {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
   font-weight: 400;
@@ -661,7 +661,7 @@ a:hover {
   border-color: #9fe870 !important;
 }
 .form-control:-webkit-input-placeholder {
-  font-family: Inter Tight;
+  font-family: 'Inter Tight', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
   font-weight: 400;
@@ -713,13 +713,13 @@ blockquote {
 .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_default,
 .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_current,
 .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box > div > div.xdsoft_current {
-  color: #000 !important;
+  color: #000000 !important;
   background-color: #9fe870 !important;
   box-shadow: none !important;
 }
 .xdsoft_datetimepicker .xdsoft_calendar td:hover,
 .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box > div > div:hover {
-  color: #000 !important;
+  color: #000000 !important;
   background: #ffd7ef !important;
   box-shadow: none !important;
 }
@@ -784,22 +784,13 @@ a {
   outline-offset: 2px !important;
   transition: outline 0.2s ease-in-out;
 }
-.title-3-pink {
-  font-family: Inter Tight;
-  font-size: 1.4rem;
-  line-height: 1.5;
+.cid-vfaqsr7VVw {
+  display: flex;
+  background-image: url("../../../assets/images/future-youth-zone-grand-opening36.jpeg");
 }
-.title-3-pink > .mbr-iconfont {
-  font-size: 1.4rem;
-}
-
-
 .cid-vfaqsr7VVw .mbr-overlay {
   background-color: #f92c50;
   opacity: 0.5;
-}
-.cid-vfaqsr7VVw {
-  background-image: url("../../../assets/images/future-youth-zone-grand-opening36.jpeg");
 }
 .cid-vfaqsr7VVw .mbr-fallback-image.disabled {
   display: none;
@@ -813,20 +804,20 @@ a {
   position: absolute;
   top: 0;
 }
+.cid-vfaqsr7VVw .content-wrap {
+  padding: 5rem 1rem;
+}
 @media (min-width: 992px) {
   .cid-vfaqsr7VVw .content-wrap {
     padding: 5rem 3rem;
   }
 }
-.cid-vfaqsr7VVw .content-wrap {
-  padding: 5rem 1rem;
-}
 @media (min-width: 768px) {
-  .cid-vfaqsr7VVw .row {
-    justify-content: center;
-  }
   .cid-vfaqsr7VVw {
     align-items: center;
+  }
+  .cid-vfaqsr7VVw .row {
+    justify-content: center;
   }
 }
 @media (max-width: 991px) and (min-width: 768px) {
@@ -835,6 +826,10 @@ a {
   }
 }
 @media (max-width: 767px) {
+  .cid-vfaqsr7VVw {
+    -webkit-align-items: center;
+    align-items: center;
+  }
   .cid-vfaqsr7VVw .mbr-row {
     -webkit-justify-content: center;
     justify-content: center;
@@ -842,22 +837,17 @@ a {
   .cid-vfaqsr7VVw .content-wrap {
     width: 100%;
   }
-  .cid-vfaqsr7VVw {
-    -webkit-align-items: center;
-    align-items: center;
-  }
 }
 .cid-vfaqsr7VVw .mbr-section-title {
   text-align: center;
 }
-.cid-vfaqsr7VVw .mbr-text, .mbr-section-btn {
+.cid-vfaqsr7VVw .mbr-text,
+.cid-vfaqsr7VVw .mbr-section-btn {
   text-align: center;
 }
-.cid-vfaqsr7VVw {
-  display: flex;
-}
-
 .cid-vfasogRQgx {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
   background-color: #ffffff;
 }
 .cid-vfasogRQgx .item-subtitle {
@@ -865,16 +855,24 @@ a {
   color: #232323;
   text-align: center;
 }
-.cid-vfasogRQgx .item:focus, span:focus {
+.cid-vfasogRQgx img,
+.cid-vfasogRQgx .item-img {
+  width: 100%;
+  height: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+.cid-vfasogRQgx .item:focus,
+.cid-vfasogRQgx span:focus {
   outline: none;
+}
+.cid-vfasogRQgx .item {
+  margin-bottom: 2rem;
 }
 @media (max-width: 767px) {
   .cid-vfasogRQgx .item {
     margin-bottom: 1rem;
   }
-}
-.cid-vfasogRQgx .item {
-  margin-bottom: 2rem;
 }
 .cid-vfasogRQgx .item-wrapper {
   position: relative;
@@ -886,7 +884,8 @@ a {
 .cid-vfasogRQgx .mbr-section-title {
   color: #232323;
 }
-.cid-vfasogRQgx .mbr-text, .mbr-section-btn {
+.cid-vfasogRQgx .mbr-text,
+.cid-vfasogRQgx .mbr-section-btn {
   color: #232323;
   text-align: center;
 }
@@ -896,9 +895,4 @@ a {
 }
 .cid-vfasogRQgx .content-head {
   max-width: 800px;
-}
-.cid-vfasogRQgx {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-  img, .item-img: {'width': '100%', '& when (@autoSize)': {'height': '100%', 'object-fit': 'cover', '& when (@showCardTitle)': {'height': '(@imageHeight * 100px)', 'object-fit': 'cover'}, '& when (@showText)': {'height': '(@imageHeight * 100px)', 'object-fit': 'cover'}, '& when (@showButtons)': {'height': '(@imageHeight * 100px)', 'object-fit': 'cover'}}};
 }
