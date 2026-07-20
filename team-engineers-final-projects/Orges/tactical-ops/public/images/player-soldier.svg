@@ -1,0 +1,47 @@
+<svg width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soldier Sprite for Tactical Ops -->
+  
+  <!-- Legs (crouched/standing stance) -->
+  <rect x="6" y="32" width="8" height="16" fill="#4a4a3a"/>
+  <rect x="18" y="32" width="8" height="16" fill="#4a4a3a"/>
+  
+  <!-- Boots -->
+  <rect x="5" y="44" width="10" height="4" fill="#2a2a1a"/>
+  <rect x="17" y="44" width="10" height="4" fill="#2a2a1a"/>
+  
+  <!-- Body/Torso (military vest) -->
+  <rect x="4" y="16" width="24" height="20" fill="#5d6d3d"/>
+  <rect x="6" y="18" width="20" height="14" fill="#4a5a2d"/>
+  
+  <!-- Tactical vest details -->
+  <rect x="8" y="20" width="6" height="8" fill="#3a4a1d"/>
+  <rect x="18" y="20" width="6" height="8" fill="#3a4a1d"/>
+  
+  <!-- Arms -->
+  <rect x="0" y="18" width="6" height="14" fill="#5d6d3d"/>
+  <rect x="26" y="18" width="6" height="14" fill="#5d6d3d"/>
+  
+  <!-- Hands -->
+  <rect x="0" y="30" width="6" height="6" fill="#d4a574"/>
+  <rect x="26" y="30" width="6" height="6" fill="#d4a574"/>
+  
+  <!-- Head -->
+  <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+  
+  <!-- Helmet -->
+  <rect x="6" y="2" width="20" height="10" fill="#4a5a2d"/>
+  <rect x="6" y="10" width="20" height="2" fill="#3a4a1d"/>
+  
+  <!-- Goggles/Eye protection -->
+  <rect x="10" y="8" width="12" height="4" fill="#1a1a1a"/>
+  <rect x="11" y="9" width="4" height="2" fill="#2a3a4a"/>
+  <rect x="17" y="9" width="4" height="2" fill="#2a3a4a"/>
+  
+  <!-- Gun (rifle held at ready) -->
+  <rect x="20" y="24" width="12" height="4" fill="#2a2a2a"/>
+  <rect x="28" y="22" width="4" height="2" fill="#2a2a2a"/>
+  
+  <!-- Outline for pixel art effect -->
+  <rect x="4" y="16" width="1" height="20" fill="#3a4a2d"/>
+  <rect x="27" y="16" width="1" height="20" fill="#3a4a2d"/>
+</svg>

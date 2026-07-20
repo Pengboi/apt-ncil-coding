@@ -1,0 +1,290 @@
+<svg width="256" height="48" viewBox="0 0 256 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Enemy Walk Cycle - 8 Frame Animation Strip (matching Craftpix reference) -->
+  
+  <!-- FRAME 1: Standing, slight forward lean -->
+  <g transform="translate(0,0)">
+    <!-- Back leg -->
+    <rect x="6" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="5" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Front leg (slightly forward) -->
+    <rect x="18" y="32" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="17" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="20" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="10" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="8" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="10" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="10" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="22" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="21" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="23" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 2: Right leg stepping forward -->
+  <g transform="translate(32,0)">
+    <!-- Back leg (left, planted) -->
+    <rect x="4" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="3" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Front leg (right, forward, slightly bent) -->
+    <rect x="20" y="30" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="19" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="15" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="17" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="17" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="19" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="3" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="1" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="9" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="9" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="7" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="9" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="9" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="21" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="20" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="22" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 3: Mid-stride, right leg planted -->
+  <g transform="translate(64,0)">
+    <!-- Left leg (back, extended) -->
+    <rect x="2" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="1" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Right leg (front, planted) -->
+    <rect x="20" y="32" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="19" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="20" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="10" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="8" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="10" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="10" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="22" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="21" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="23" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 4: Left leg stepping forward -->
+  <g transform="translate(96,0)">
+    <!-- Back leg (right, planted) -->
+    <rect x="20" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="19" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Front leg (left, forward, slightly bent) -->
+    <rect x="4" y="30" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="3" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="15" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="17" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="17" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="19" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="3" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="1" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="9" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="9" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="7" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="9" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="9" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="21" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="20" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="22" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 5: Mid-stride, left leg planted -->
+  <g transform="translate(128,0)">
+    <!-- Right leg (back, extended) -->
+    <rect x="22" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="21" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Left leg (front, planted) -->
+    <rect x="4" y="32" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="3" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="20" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="10" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="8" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="10" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="10" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="22" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="21" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="23" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 6: Right leg stepping (second phase) -->
+  <g transform="translate(160,0)">
+    <!-- Back leg (left, planted) -->
+    <rect x="2" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="1" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Front leg (right, mid-stride) -->
+    <rect x="18" y="30" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="17" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="15" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="17" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="19" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="17" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="19" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="29" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="3" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="1" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="9" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="9" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="7" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="9" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="9" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="21" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="20" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="22" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 7: Mid transition -->
+  <g transform="translate(192,0)">
+    <!-- Legs even -->
+    <rect x="5" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="4" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <rect x="19" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="18" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="20" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="10" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="8" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="10" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="10" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="22" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="21" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="23" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+  
+  <!-- FRAME 8: Return to start position -->
+  <g transform="translate(224,0)">
+    <!-- Back leg -->
+    <rect x="6" y="34" width="8" height="14" fill="#2a3a5d"/>
+    <rect x="5" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Front leg -->
+    <rect x="18" y="32" width="8" height="16" fill="#2a3a5d"/>
+    <rect x="17" y="44" width="10" height="4" fill="#1a1a2e"/>
+    <!-- Body -->
+    <rect x="4" y="16" width="24" height="20" fill="#3a4a6d"/>
+    <rect x="6" y="18" width="20" height="14" fill="#2a3a5d"/>
+    <!-- Vest -->
+    <rect x="8" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <rect x="18" y="20" width="6" height="8" fill="#1a2a4d"/>
+    <!-- Arms -->
+    <rect x="0" y="18" width="6" height="14" fill="#3a4a6d"/>
+    <rect x="26" y="20" width="6" height="12" fill="#3a4a6d"/>
+    <!-- Gloves -->
+    <rect x="0" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <rect x="26" y="30" width="6" height="6" fill="#1a1a2e"/>
+    <!-- Head -->
+    <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+    <!-- Helmet -->
+    <rect x="6" y="2" width="20" height="10" fill="#4a5a7d"/>
+    <rect x="6" y="10" width="20" height="4" fill="#3a4a6d"/>
+    <rect x="5" y="10" width="22" height="1" fill="#2a3a5d"/>
+    <!-- Visor -->
+    <rect x="10" y="8" width="12" height="6" fill="#1a1a1a"/>
+    <rect x="11" y="10" width="4" height="2" fill="#e67e22"/>
+    <rect x="17" y="10" width="4" height="2" fill="#e67e22"/>
+    <!-- Rifle across body -->
+    <rect x="2" y="22" width="28" height="4" fill="#2a2a2a"/>
+    <rect x="4" y="21" width="6" height="3" fill="#1a1a1a"/>
+    <rect x="26" y="23" width="4" height="3" fill="#3a3a3a"/>
+  </g>
+</svg>

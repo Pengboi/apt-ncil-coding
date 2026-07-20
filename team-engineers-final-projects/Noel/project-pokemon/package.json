@@ -1,0 +1,43 @@
+{
+  "name": "project-pokemon",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "import-cards": "ts-node scripts/import-all-cards.ts",
+    "import-cards:track": "ts-node scripts/import-all-cards.ts --track-all",
+    "import-cards:async": "node scripts/run-import-detached.js",
+    "import-cards:status": "node scripts/import-all-cards-async.js --status",
+    "import-cards:logs": "tail -f import-cards.log 2>/dev/null || cat import-status.json",
+    "seed": "ts-node scripts/seed-all-pokemon.ts",
+    "seed:track": "ts-node scripts/seed-all-pokemon.ts --track",
+    "seed:dry": "ts-node scripts/seed-all-pokemon.ts --dry-run"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.3",
+    "dotenv": "^17.4.2",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-window": "^2.2.7",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.11",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.40",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "supabase": "^2.98.2",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}

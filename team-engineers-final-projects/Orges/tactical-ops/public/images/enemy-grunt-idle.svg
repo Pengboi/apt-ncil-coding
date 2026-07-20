@@ -1,0 +1,46 @@
+<svg width="32" height="48" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Grunt Idle Stance (Melee Combat Ready) -->
+  
+  <!-- Legs -->
+  <rect x="6" y="32" width="8" height="16" fill="#1a1a2e"/>
+  <rect x="18" y="32" width="8" height="16" fill="#1a1a2e"/>
+  
+  <!-- Boots -->
+  <rect x="5" y="44" width="10" height="4" fill="#0f0f1a"/>
+  <rect x="17" y="44" width="10" height="4" fill="#0f0f1a"/>
+  
+  <!-- Body/Torso -->
+  <rect x="4" y="16" width="24" height="20" fill="#2c3e50"/>
+  <rect x="6" y="18" width="20" height="14" fill="#34495e"/>
+  
+  <!-- Vest pouches -->
+  <rect x="8" y="20" width="6" height="8" fill="#1a1a2e"/>
+  <rect x="18" y="20" width="6" height="8" fill="#1a1a2e"/>
+  
+  <!-- Arms (combat ready) -->
+  <rect x="0" y="18" width="6" height="14" fill="#2c3e50"/>
+  <rect x="26" y="18" width="6" height="14" fill="#2c3e50"/>
+  
+  <!-- Hands -->
+  <rect x="0" y="30" width="6" height="6" fill="#d4a574"/>
+  <rect x="26" y="30" width="6" height="6" fill="#d4a574"/>
+  
+  <!-- Head -->
+  <rect x="8" y="4" width="16" height="14" fill="#d4a574"/>
+  
+  <!-- Helmet -->
+  <rect x="6" y="2" width="20" height="10" fill="#1a252f"/>
+  <rect x="6" y="10" width="20" height="2" fill="#0f0f1a"/>
+  
+  <!-- Visor -->
+  <rect x="10" y="8" width="12" height="4" fill="#0f3460"/>
+  <rect x="11" y="9" width="4" height="2" fill="#1a5fb4"/>
+  <rect x="17" y="9" width="4" height="2" fill="#1a5fb4"/>
+  
+  <!-- Helmet detail -->
+  <rect x="13" y="2" width="6" height="2" fill="#4a4a5a"/>
+  
+  <!-- Knife/baton on right hip -->
+  <rect x="24" y="24" width="2" height="8" fill="#c0c0c0"/>
+  <rect x="23" y="24" width="4" height="2" fill="#8b4513"/>
+</svg>

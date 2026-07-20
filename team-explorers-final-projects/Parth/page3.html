@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>More information</title>
+  <style>
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 100; src: url('fonts/Inter%20Tight/100.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 200; src: url('fonts/Inter%20Tight/200.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 300; src: url('fonts/Inter%20Tight/300.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 500; src: url('fonts/Inter%20Tight/500.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 600; src: url('fonts/Inter%20Tight/600.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 700; src: url('fonts/Inter%20Tight/700.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 800; src: url('fonts/Inter%20Tight/800.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 900; src: url('fonts/Inter%20Tight/900.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: normal; font-display: swap; font-weight: 400; src: url('fonts/Inter%20Tight/regular.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 100; src: url('fonts/Inter%20Tight/100italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 200; src: url('fonts/Inter%20Tight/200italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 300; src: url('fonts/Inter%20Tight/300italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 400; src: url('fonts/Inter%20Tight/italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 500; src: url('fonts/Inter%20Tight/500italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 600; src: url('fonts/Inter%20Tight/600italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 700; src: url('fonts/Inter%20Tight/700italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 800; src: url('fonts/Inter%20Tight/800italic.ttf') format('truetype'); }
+@font-face { font-family: 'Inter Tight'; font-style: italic; font-display: swap; font-weight: 900; src: url('fonts/Inter%20Tight/900italic.ttf') format('truetype'); }
+  </style>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<nav class="navbar navbar-dropdown">
+  <div class="container">
+    <div class="navbar-brand">
+      <span class="navbar-caption-wrap"><a class="navbar-caption text-black" href="index.html">AI</a></span>
+    </div>
+    <button class="navbar-toggler" type="button" onclick="toggleMenu()">
+      <div class="hamburger"><span></span><span></span><span></span><span></span></div>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav nav-dropdown">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="page1.html">LLMs</a></li>
+        <li class="nav-item"><a class="nav-link" href="page2.html">The best way to use AI</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.html#ask-parth-ai">Try using AI now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<section class="header09" style="background-image: url('assets/images/background1.jpg')">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="content-wrap col-12 col-md-8">
+        <h1 class="mbr-section-title mbr-fonts-style mbr-white mb-4 display-1"><b>More information</b></h1>
+        <p class="mbr-fonts-style mbr-text mbr-white mb-4 display-7">For better responses, you need to first enhance your prompt.<br>You can ask AI to give you a complex prompt from a simple prompt.<br><br>Or you can use the <b>CREATE</b> technique:<br><br><b>Character (or Context):</b> Defining the persona or role the AI should adopt (e.g., "Act as an expert python programmer").<br><br><b>Request:</b> Clearly and specifically defining the task you want the AI to perform (e.g., "Write a script to...").<br><br><b>Examples:</b> Providing sample outputs or input-output pairs to guide the style, tone, or format.<br><br><b>Adjustments (or Additions/Constraints):</b> Refining the prompt with additional instructions, constraints, or stylistic preferences (e.g., "Avoid jargon," "Keep it under 100 words").<br><br><b>Type of Output (or Type):</b> Specifying the format of the response (e.g., a table, a list, code block, Markdown).<br><br><b>Extras (or Evaluation/Context):</b> Including any additional background information, reference text, or instructions to ensure the model produces the best possible result.</p>
+        <div class="mbr-section-btn"><a class="btn btn-secondary-outline" href="index.html#ask-parth-ai">Try now</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+function toggleMenu() {
+  document.querySelector('.navbar').classList.toggle('opened');
+  document.getElementById('navbarNav').classList.toggle('show');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var links = document.querySelectorAll('.nav-link');
+  var current = window.location.pathname.split('/').pop();
+  links.forEach(function(l) {
+    if (l.getAttribute('href') === current) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
